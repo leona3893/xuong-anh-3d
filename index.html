@@ -407,7 +407,7 @@ footer b{font-weight:500;color:var(--ink)}
         <div class="recbox" id="recResult" hidden>
           <video id="recVideo" controls loop playsinline></video>
           <button class="btn" id="recSave">Lưu về máy</button>
-          <p class="hint">Trên claude.ai sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
+          <p class="hint">Trên web sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
         </div>
       </div>
     </div>
@@ -465,7 +465,7 @@ footer b{font-weight:500;color:var(--ink)}
         <label class="ctl"><span class="ctl-head"><span>Số cột</span><output id="o-cols"></output></span>
           <input type="range" id="cols" min="3" max="16" value="7"></label>
         <div class="seg" id="shapes">
-          <button data-shape="jigsaw" aria-pressed="true">Mộng jigsaw</button>
+          <button data-shape="jigsaw" aria-pressed="true">Jigsaw</button>
           <button data-shape="grid" aria-pressed="false">Ô vuông</button>
         </div>
         <label class="ctl"><span class="ctl-head"><span>Độ dày mảnh</span><output id="o-thick"></output></span>
@@ -589,7 +589,7 @@ footer b{font-weight:500;color:var(--ink)}
         <div class="recbox" id="recResult" hidden>
           <video id="recVideo" controls loop playsinline></video>
           <button class="btn" id="recSave">Lưu về máy</button>
-          <p class="hint">Trên claude.ai sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
+          <p class="hint">Trên web sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
         </div>
       </div>
     </div>
@@ -1557,7 +1557,7 @@ modeBtns.forEach(function(b){ b.onclick = function(){ setMode(b.dataset.mode); }
 setMode(state.mode);
 
 function segGroup(sel, attr, key, after){
-  var btns = Array.prototype.slice.call(document.querySelectorAll(sel + " button"));
+  var btns = Array.prototype.slice.call(root.querySelectorAll(sel + " button"));
   btns.forEach(function(b){
     b.onclick = function(){
       var v = b.dataset[attr];
@@ -1611,7 +1611,7 @@ $("reset").onclick = function(){
   [["#recModes","recmode","recMode"], ["#recResGroup","res","recRes"], ["#recFpsGroup","fps","recFps"],
    ["#recAspectGroup","aspect","recAspect"]]
     .forEach(function(g){
-      Array.prototype.slice.call(document.querySelectorAll(g[0] + " button")).forEach(function(b){
+      Array.prototype.slice.call(root.querySelectorAll(g[0] + " button")).forEach(function(b){
         b.setAttribute("aria-pressed", String(b.dataset[g[1]] === String(DEFAULTS[g[2]])));
       });
     });
@@ -2562,7 +2562,7 @@ TOGGLES.forEach(function(id){
 });
 
 function segGroup(sel, attr, key, after){
-  var btns = Array.prototype.slice.call(document.querySelectorAll(sel + " button"));
+  var btns = Array.prototype.slice.call(root.querySelectorAll(sel + " button"));
   btns.forEach(function(b){
     b.onclick = function(){
       var v = b.dataset[attr];
@@ -2596,7 +2596,7 @@ $("reset").onclick = function(){
   [["#shapes","shape","shape"], ["#orders","order","order"], ["#recModes","recmode","recMode"],
    ["#recResGroup","res","recRes"], ["#recFpsGroup","fps","recFps"],
    ["#recAspectGroup","aspect","recAspect"]].forEach(function(g){
-    Array.prototype.slice.call(document.querySelectorAll(g[0] + " button")).forEach(function(b){
+    Array.prototype.slice.call(root.querySelectorAll(g[0] + " button")).forEach(function(b){
       b.setAttribute("aria-pressed", String(b.dataset[g[1]] === String(DEFAULTS[g[2]])));
     });
   });

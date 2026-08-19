@@ -82,7 +82,9 @@ phòng khi cần một trang chỉ có đúng một công cụ; xoá cả thư m
 
 **Hai công cụ chung một trang thế nào:** mỗi bên vẫn là một khối mã độc lập trong một IIFE
 riêng, chỉ khác là mọi tra cứu phần tử được thu hẹp vào đúng khối DOM của nó
-(`root.querySelector`), nên hai bên trùng tên id vẫn không giẫm chân nhau. Vòng vẽ và phím tắt
+(`root.querySelector`), nên hai bên trùng tên id vẫn không giẫm chân nhau. Chỗ này phải làm
+triệt để: cả những tra cứu có bộ chọn nằm trong biến (các nhóm nút chọn) cũng phải đi qua
+`root` — sót một chỗ là tab này bấm nút lại đổi cài đặt của tab kia. Vòng vẽ và phím tắt
 của tab đang ẩn thì nghỉ, không tốn máy. Đang quay video thì thanh tab khoá lại, đổi giữa
 chừng là hỏng clip.
 
