@@ -1481,19 +1481,40 @@ var SAVE_ERR = {
   rejected_extension: "Định dạng này không lưu được ở đây — chọn MP4 hoặc WebM."
 };
 
+function saveFallback(name, size){
+  // Trong khung nhúng, trình duyệt vô hiệu hoá mọi lệnh tự tải file: bấm sẽ không
+  // có gì xảy ra, nên phải nói ra thay vì im lặng.
+  if(window.top !== window.self){
+    recStatus.textContent = "Khung nhúng chặn tải file — chuột phải lên video rồi chọn lưu, " +
+      "hoặc mở bản đầy đủ ở leona3893.github.io/xuong-anh-3d";
+    return;
+  }
+  saveViaAnchor(name);
+  recStatus.textContent = "Đã tải về máy: " + name + " · " + size + " — xem thư mục Tải xuống.";
+}
+
 function saveRec(){
-  if(!rec.url || !rec.blob) return;
+  if(!rec.blob){
+    recStatus.textContent = "Chưa có clip nào để lưu — bấm Bắt đầu quay trước đã.";
+    return;
+  }
+  if(!rec.url) rec.url = URL.createObjectURL(rec.blob);   // dựng lại nếu đã thu hồi
   var name = "thi-sai." + rec.ext;
-  if(!(window.claude && typeof claude.use === "function")){ saveViaAnchor(name); return; }
+  var size = (rec.blob.size/1048576).toFixed(1) + " MB";
+
+  if(!(window.claude && typeof claude.use === "function")){ saveFallback(name, size); return; }
+
+  recStatus.textContent = "Đang xin phép lưu…";
   claude.use("downloads").then(function(d){
-    if(!d){ saveViaAnchor(name); return; }
+    if(!d){ saveFallback(name, size); return; }
     return d.save({filename:name, data:rec.blob}).then(function(){
-      recStatus.textContent = "Đã lưu " + name + " · " + (rec.blob.size/1048576).toFixed(1) + " MB";
+      recStatus.textContent = "Đã lưu " + name + " · " + size;
     }, function(err){
-      recStatus.textContent = SAVE_ERR[err && err.code] ||
-        "Không lưu được. Chuột phải lên video để lưu thủ công.";
+      var code = err && err.code;
+      recStatus.textContent = SAVE_ERR[code] ||
+        ("Không lưu được" + (code ? " (" + code + ")" : "") + " — chuột phải lên video để lưu.");
     });
-  }, function(){ saveViaAnchor(name); });
+  }, function(){ saveFallback(name, size); });
 }
 
 recBtn.onclick = function(){ if(rec.active) stopRec(); else startRec(); };
@@ -2497,19 +2518,40 @@ var SAVE_ERR = {
   rejected_extension: "Định dạng này không lưu được ở đây — chọn MP4 hoặc WebM."
 };
 
+function saveFallback(name, size){
+  // Trong khung nhúng, trình duyệt vô hiệu hoá mọi lệnh tự tải file: bấm sẽ không
+  // có gì xảy ra, nên phải nói ra thay vì im lặng.
+  if(window.top !== window.self){
+    recStatus.textContent = "Khung nhúng chặn tải file — chuột phải lên video rồi chọn lưu, " +
+      "hoặc mở bản đầy đủ ở leona3893.github.io/xuong-anh-3d";
+    return;
+  }
+  saveViaAnchor(name);
+  recStatus.textContent = "Đã tải về máy: " + name + " · " + size + " — xem thư mục Tải xuống.";
+}
+
 function saveRec(){
-  if(!rec.url || !rec.blob) return;
+  if(!rec.blob){
+    recStatus.textContent = "Chưa có clip nào để lưu — bấm Bắt đầu quay trước đã.";
+    return;
+  }
+  if(!rec.url) rec.url = URL.createObjectURL(rec.blob);   // dựng lại nếu đã thu hồi
   var name = "ghep-manh." + rec.ext;
-  if(!(window.claude && typeof claude.use === "function")){ saveViaAnchor(name); return; }
+  var size = (rec.blob.size/1048576).toFixed(1) + " MB";
+
+  if(!(window.claude && typeof claude.use === "function")){ saveFallback(name, size); return; }
+
+  recStatus.textContent = "Đang xin phép lưu…";
   claude.use("downloads").then(function(d){
-    if(!d){ saveViaAnchor(name); return; }
+    if(!d){ saveFallback(name, size); return; }
     return d.save({filename:name, data:rec.blob}).then(function(){
-      recStatus.textContent = "Đã lưu " + name + " · " + (rec.blob.size/1048576).toFixed(1) + " MB";
+      recStatus.textContent = "Đã lưu " + name + " · " + size;
     }, function(err){
-      recStatus.textContent = SAVE_ERR[err && err.code] ||
-        "Không lưu được. Chuột phải lên video để lưu thủ công.";
+      var code = err && err.code;
+      recStatus.textContent = SAVE_ERR[code] ||
+        ("Không lưu được" + (code ? " (" + code + ")" : "") + " — chuột phải lên video để lưu.");
     });
-  }, function(){ saveViaAnchor(name); });
+  }, function(){ saveFallback(name, size); });
 }
 
 // máy trạng thái: dẫn đúng một vòng nguyên vẹn → bung → trôi → lắp lại
