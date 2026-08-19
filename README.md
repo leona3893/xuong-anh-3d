@@ -3,6 +3,28 @@
 Bộ công cụ tĩnh chạy trong trình duyệt, biến ảnh phẳng thành hiệu ứng 3D.
 Không cần cài đặt, không cần server, không gửi ảnh ra ngoài — mở file HTML là dùng.
 
+**Bản công khai:** https://leona3893.github.io/xuong-anh-3d/
+**Mã nguồn:** https://github.com/leona3893/xuong-anh-3d
+
+## Muốn sửa hay thêm tính năng thì làm gì
+
+Nguồn duy nhất là **`index.html`** ở thư mục này. Sửa xong thì ba lệnh:
+
+```
+git add -A
+git commit -m "mô tả ngắn việc vừa sửa"
+git push
+```
+
+Chừng nửa phút sau bản công khai tự cập nhật, link không đổi. Không phải bấm gì trên GitHub nữa
+— Pages đã bật sẵn, cứ có commit mới trên nhánh `main` là nó dựng lại.
+
+Đẩy lên bằng SSH (khoá `~/.ssh/id_ed25519` đã nạp lên GitHub), nên `git push` chạy thẳng, không
+hỏi tài khoản mật khẩu.
+
+Lỡ sửa hỏng thì git giữ đủ lịch sử: `git log --oneline` xem các mốc, `git revert <mã>` để lùi
+đúng một commit, hoặc `git checkout <mã> -- index.html` để lấy lại nguyên file ở mốc cũ.
+
 ## Cách chạy
 
 Nhấp đúp vào `index.html`. Chọn công cụ bằng tab trên đầu trang; mở kèm `#ghep` là vào
