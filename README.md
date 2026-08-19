@@ -8,7 +8,9 @@ Không cần cài đặt, không cần server, không gửi ảnh ra ngoài — 
 
 ## Muốn sửa hay thêm tính năng thì làm gì
 
-Nguồn duy nhất là **`index.html`** ở thư mục này. Sửa xong thì ba lệnh:
+Bản thân xưởng nằm trọn trong **`xuong/index.html`** — sửa hiệu ứng, thêm tính năng là vào file
+đó. Còn **`index.html`** ngoài cùng là trang giới thiệu, chỉ chữ nghĩa và ảnh chụp. Sửa xong thì
+ba lệnh:
 
 ```
 git add -A
@@ -27,8 +29,8 @@ Lỡ sửa hỏng thì git giữ đủ lịch sử: `git log --oneline` xem các
 
 ## Cách chạy
 
-Nhấp đúp vào `index.html`. Chọn công cụ bằng tab trên đầu trang; mở kèm `#ghep` là vào
-thẳng tab ghép mảnh.
+Nhấp đúp vào `index.html` để xem trang giới thiệu, hoặc mở thẳng `xuong/index.html` để vào
+xưởng. Chọn công cụ bằng tab trên đầu trang; mở kèm `#ghep` là vào thẳng tab ghép mảnh.
 Nếu muốn chạy qua localhost cho chắc:
 
 ```
@@ -73,12 +75,14 @@ Vài điều đi kèm:
 
 | File | Nội dung |
 |---|---|
-| `index.html` | **Toàn bộ xưởng** — hai công cụ trong một trang, chuyển bằng tab trên đầu |
-| `rieng-le/thi-sai.html` | Bản rời của công cụ thị sai (không còn cập nhật) |
-| `rieng-le/ghep-manh.html` | Bản rời của công cụ ghép mảnh (không còn cập nhật) |
+| `index.html` | Trang giới thiệu: mở đầu, bốn hiệu ứng, ba bước, bảng khung hình |
+| `xuong/index.html` | **Toàn bộ xưởng** — hai công cụ trong một trang, chuyển bằng tab trên đầu |
+| `anh/` | Ảnh chụp dùng cho trang giới thiệu và cho thẻ xem trước khi dán link |
+| `favicon.svg` | Biểu tượng tab: ba lớp ảnh xếp so le thành chiều sâu |
+| `rieng-le/` | Bản rời của hai công cụ hồi còn tách đôi (không còn cập nhật, không lên mạng) |
 
-Từ nay chỉ sửa `index.html`. Hai file trong `rieng-le/` là ảnh chụp lúc còn tách đôi, giữ lại
-phòng khi cần một trang chỉ có đúng một công cụ; xoá cả thư mục cũng không mất gì.
+Ảnh trong `anh/` đều chụp thẳng từ chính công cụ bằng trình duyệt ẩn, không phải dựng tay —
+muốn làm mới thì mở xưởng, chỉnh cho ưng rồi chụp lại.
 
 **Hai công cụ chung một trang thế nào:** mỗi bên vẫn là một khối mã độc lập trong một IIFE
 riêng, chỉ khác là mọi tra cứu phần tử được thu hẹp vào đúng khối DOM của nó

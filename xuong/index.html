@@ -1,0 +1,2634 @@
+<title>Xưởng Ảnh 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta property="og:url" content="https://leona3893.github.io/xuong-anh-3d/xuong/">
+<meta property="og:image" content="https://leona3893.github.io/xuong-anh-3d/anh/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Biến ảnh phẳng thành hiệu ứng 3D ngay trong trình duyệt: thị sai theo độ sâu, sóng, đố hình lộ dần, ghép mảnh jigsaw tự lắp — xuất video 9:16 cho TikTok, Reels, YouTube.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Xưởng Ảnh 3D">
+<meta property="og:description" content="Thị sai theo độ sâu, sóng, đố hình lộ dần, ghép mảnh jigsaw tự lắp — xuất video 9:16 cho TikTok, Reels, YouTube.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,500;1,6..72,300&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+
+:root{
+  --ground:#EEE8DD;
+  --surface:#F8F4EC;
+  --sunk:#E2D9CA;
+  --line:#D2C6B2;
+  --ink:#241F19;
+  --muted:#6B6053;
+  --accent:#C0552A;
+  --accent-ink:#FFF6F0;
+  --stage:#DCD3C4;
+  --shadow:rgba(60,46,30,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#151210; --surface:#1E1A15; --sunk:#120F0C; --line:#3A3126;
+    --ink:#EFE7D9; --muted:#A2957F; --accent:#E4794A; --accent-ink:#1A0F09;
+    --stage:#0E0C0A; --shadow:rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#151210; --surface:#1E1A15; --sunk:#120F0C; --line:#3A3126;
+  --ink:#EFE7D9; --muted:#A2957F; --accent:#E4794A; --accent-ink:#1A0F09;
+  --stage:#0E0C0A; --shadow:rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1440px;margin:0 auto;padding:28px 24px 56px;display:flex;flex-direction:column;gap:22px}
+
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);padding-bottom:16px}
+h1{font-family:"Newsreader",Georgia,serif;font-weight:300;font-size:clamp(30px,4.4vw,46px);
+  line-height:1;margin:0;letter-spacing:-.015em;text-wrap:balance}
+h1 em{font-style:italic;color:var(--accent)}
+.lede{margin:8px 0 0;color:var(--muted);max-width:58ch;font-size:14.5px}
+.stamp{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);border:1px solid var(--line);
+  padding:6px 10px;border-radius:2px;white-space:nowrap}
+
+.work{display:grid;grid-template-columns:minmax(0,1fr) 322px;gap:22px;align-items:start}
+@media (max-width:940px){.work{grid-template-columns:minmax(0,1fr)}}
+
+.stage{position:relative;background:var(--stage);border:1px solid var(--line);border-radius:3px;
+  min-height:360px;overflow:hidden}
+.stage.drag{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+canvas#board{display:block;width:100%;height:auto;cursor:pointer;touch-action:pan-y}
+.stage[data-empty="1"] canvas#board{visibility:hidden;height:360px}
+
+.drop{position:absolute;inset:20px;border:1px dashed var(--line);border-radius:3px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  text-align:center;padding:24px;color:var(--muted)}
+.stage[data-empty="0"] .drop{display:none}
+.drop strong{display:block;font-family:"Newsreader",Georgia,serif;font-weight:500;font-size:22px;color:var(--ink)}
+.drop p{margin:6px 0 0;max-width:46ch;font-size:14px}
+.drop-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+.readout{position:absolute;left:18px;bottom:18px;display:flex;gap:9px;align-items:center;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);background:var(--stage);padding:5px 9px;
+  border-radius:2px;pointer-events:none}
+.stage[data-empty="1"] .readout{display:none}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;flex:none}
+
+.rail{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:16px}
+.panel > h2{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:transparent;border:1px solid var(--line);border-radius:2px;padding:7px 12px;
+  font-size:13px;transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+:where(button,input,a):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{background:transparent;border:1px solid var(--line);border-radius:2px;
+  padding:8px 6px;font-size:12.5px;transition:.15s}
+.seg button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.seg button[aria-pressed="false"]:hover{border-color:var(--ink)}
+
+.phase{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.phase b{font-family:"Newsreader",Georgia,serif;font-weight:500;font-size:19px}
+.phase span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;
+  font-variant-numeric:tabular-nums;color:var(--muted)}
+.meter{height:3px;background:var(--sunk);border-radius:2px;overflow:hidden;margin-bottom:14px}
+.meter i{display:block;height:100%;width:0;background:var(--accent);transition:width .12s linear}
+
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13px}
+.ctl-head output{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;
+  font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line)}
+input[type=range]::-moz-range-track{height:2px;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:var(--accent);margin-top:-5.5px;border:none}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:none}
+
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;cursor:pointer}
+.switch input{position:absolute;opacity:0;pointer-events:none}
+.track{width:38px;height:20px;border-radius:10px;background:var(--sunk);border:1px solid var(--line);
+  position:relative;transition:.18s;flex:none}
+.track::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+  background:var(--muted);transition:.18s}
+.switch input:checked + .track{border-color:var(--accent)}
+.switch input:checked + .track::after{transform:translateX(18px);background:var(--accent)}
+.switch input:focus-visible + .track{outline:2px solid var(--accent);outline-offset:2px}
+
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+.hint code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+  background:var(--sunk);padding:1px 5px;border-radius:2px}
+.hidden{display:none !important}
+[hidden]{display:none !important}
+
+.colorrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.swatch{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.swatch input[type=color]{width:36px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:2px;background:none;cursor:pointer;flex:none}
+.swatch input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.swatch input[type=color]::-webkit-color-swatch{border:none;border-radius:1px}
+#bgColorWrap{display:flex;flex-direction:column;gap:12px}
+
+.recbox{display:flex;flex-direction:column;gap:8px}
+.recbox video{width:100%;border:1px solid var(--line);border-radius:2px;background:var(--sunk);display:block}
+.rec-live{color:var(--accent)}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn[disabled]:hover{border-color:var(--line)}
+
+footer{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:12.5px;
+  display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
+footer b{font-weight:500;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms !important}}
+
+/* ---------- thanh chuyển công cụ ---------- */
+.home{display:inline-block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;
+  margin-bottom:12px;border-bottom:1px solid transparent}
+.home:hover{color:var(--accent);border-color:var(--accent)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{background:transparent;border:1px solid var(--line);border-radius:2px;
+  padding:10px 18px;font-size:15px;transition:.15s;
+  font-family:"Newsreader",Georgia,serif;letter-spacing:.01em}
+.tabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.tabs button[aria-pressed="false"]:hover{border-color:var(--ink)}
+.tool{display:none}
+.tool.on{display:flex;flex-direction:column;gap:22px}
+
+/* ---------- riêng tab thị sai ---------- */
+#tool-song .stage{min-height:340px;display:grid;place-items:center;padding:22px;perspective:1400px}
+#tool-song .drop{inset:22px}
+#tool-song .readout{left:22px;bottom:22px}
+#tool-song .card3d{transform-style:preserve-3d;max-width:100%;line-height:0;
+  box-shadow:0 18px 40px -18px var(--shadow)}
+#tool-song canvas#view{display:block;max-width:100%;max-height:66vh;width:auto;border-radius:2px;
+  cursor:grab;touch-action:pan-y;background:var(--sunk)}
+#tool-song canvas#view:active{cursor:grabbing}
+#tool-song .stage[data-empty="1"] .card3d{display:none}
+#tool-song #waveCtl{display:flex;flex-direction:column;gap:14px}
+#tool-song #obsCtl{display:flex;flex-direction:column;gap:14px}
+
+/* ---------- màn hình hẹp ---------- */
+@media (max-width:640px){
+  .wrap{padding:18px 14px 40px;gap:16px}
+  #tool-song canvas#view{max-height:46vh}
+  #tool-song .stage{padding:14px;min-height:0}
+  #tool-song .drop, .drop{inset:12px}
+  .stage{min-height:0}
+  .readout, #tool-song .readout{left:12px;bottom:12px}
+  .tabs button{flex:1;padding:11px 10px}
+  .seg button{padding:11px 6px}
+}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <a class="home" id="homeLink" href="../">← Trang giới thiệu</a>
+    <h1>Xưởng <em>Ảnh 3D</em></h1>
+    <p class="lede" id="lede"></p>
+  </div>
+  <div class="stamp" id="stamp"></div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="song" aria-pressed="true">Thị sai &amp; sóng</button>
+  <button data-tab="ghep" aria-pressed="false">Ghép mảnh</button>
+</nav>
+
+<div class="tool on" id="tool-song">
+<div class="work">
+  <div class="stage" id="stage" data-empty="1">
+    <div class="card3d" id="card3d"><canvas id="view"></canvas></div>
+    <div class="drop">
+      <div>
+        <strong>Kéo ảnh vào khung này</strong>
+        <p>Ảnh macro có hậu cảnh mờ — như ảnh con bọ trên vỏ cây — cho kết quả đẹp nhất, vì độ nét tách chủ thể khỏi nền rất rõ.</p>
+      </div>
+      <div class="drop-row">
+        <button class="btn primary" id="pick">Chọn ảnh</button>
+        <button class="btn" id="paste">Dán từ clipboard</button>
+        <button class="btn" id="demo">Dùng ảnh mẫu</button>
+      </div>
+    </div>
+    <div class="readout"><span class="dot"></span><span id="meta">—</span></div>
+    <input type="file" id="file" accept="image/*" class="hidden">
+  </div>
+
+  <div class="rail">
+    <div class="panel">
+      <h2>Chế độ hiển thị</h2>
+      <div class="seg" id="modes">
+        <button data-mode="parallax" aria-pressed="true">Thị sai</button>
+        <button data-mode="card" aria-pressed="false">Thẻ nghiêng</button>
+        <button data-mode="anaglyph" aria-pressed="false">Kính đỏ–lam</button>
+        <button data-mode="depth" aria-pressed="false">Bản đồ sâu</button>
+      </div>
+      <p class="hint" id="modeHint" style="margin-top:12px"></p>
+    </div>
+
+    <div class="panel">
+      <h2>Sóng</h2>
+      <div class="stack">
+        <div class="seg" id="waveTypes">
+          <button data-wave="0" aria-pressed="true">Tắt</button>
+          <button data-wave="1" aria-pressed="false">Sóng ngang</button>
+          <button data-wave="2" aria-pressed="false">Gợn nước</button>
+          <button data-wave="3" aria-pressed="false">Lụa bay</button>
+        </div>
+        <div id="waveCtl" hidden>
+          <label class="ctl"><span class="ctl-head"><span>Biên độ</span><output id="o-waveAmp"></output></span>
+            <input type="range" id="waveAmp" min="0" max="100" value="30"></label>
+          <label class="ctl"><span class="ctl-head"><span>Số lượn sóng</span><output id="o-waveK"></output></span>
+            <input type="range" id="waveK" min="0" max="100" value="40"></label>
+          <label class="ctl"><span class="ctl-head"><span>Tốc độ</span><output id="o-waveSpeed"></output></span>
+            <input type="range" id="waveSpeed" min="0" max="100" value="45"></label>
+          <label class="switch"><span>Vật ở gần sóng mạnh hơn</span>
+            <input type="checkbox" id="waveDepth" checked><span class="track"></span></label>
+          <p class="hint">Biên độ lớn sẽ đẩy mép ảnh ra ngoài khung — kéo <b>Cắt viền</b> lên
+            để giấu, hoặc để vậy cho ảnh trôi bồng bềnh trên nền.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Đố hình</h2>
+      <div class="stack">
+        <div class="seg" id="obsTypes">
+          <button data-obs="0" aria-pressed="true">Tắt</button>
+          <button data-obs="1" aria-pressed="false">Sóng xé</button>
+          <button data-obs="2" aria-pressed="false">Kẻ sọc</button>
+          <button data-obs="3" aria-pressed="false">Ô lưới xáo</button>
+          <button data-obs="4" aria-pressed="false" style="grid-column:1/-1">Pixel hoá</button>
+        </div>
+        <div id="obsCtl" hidden>
+          <label class="ctl"><span class="ctl-head"><span>Độ che</span><output id="o-obsAmt"></output></span>
+            <input type="range" id="obsAmt" min="0" max="100" value="70"></label>
+          <label class="ctl"><span class="ctl-head"><span>Mật độ</span><output id="o-obsN"></output></span>
+            <input type="range" id="obsN" min="0" max="100" value="35"></label>
+          <div>
+            <div class="ctl-head" style="margin-bottom:6px"><span>Đã lộ</span></div>
+            <div class="meter"><i id="obsFill"></i></div>
+          </div>
+          <div class="row">
+            <button class="btn" id="obsHide">Che lại</button>
+            <button class="btn primary" id="obsReveal">Lộ dần</button>
+          </div>
+          <label class="ctl"><span class="ctl-head"><span>Giữ kín</span><output id="o-revealHold"></output></span>
+            <input type="range" id="revealHold" min="0" max="150" value="20"></label>
+          <label class="ctl"><span class="ctl-head"><span>Lộ trong</span><output id="o-revealDur"></output></span>
+            <input type="range" id="revealDur" min="5" max="150" value="30"></label>
+          <label class="switch"><span>Tự lộ khi bắt đầu quay</span>
+            <input type="checkbox" id="autoReveal" checked><span class="track"></span></label>
+          <p class="hint" id="obsHint"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Chiều sâu</h2>
+      <div class="stack">
+        <label class="ctl"><span class="ctl-head"><span>Độ nổi</span><output id="o-strength"></output></span>
+          <input type="range" id="strength" min="0" max="100" value="46"></label>
+        <label class="ctl"><span class="ctl-head"><span>Mặt phẳng đứng yên</span><output id="o-focus"></output></span>
+          <input type="range" id="focus" min="0" max="100" value="55"></label>
+        <label class="ctl"><span class="ctl-head"><span>Nguồn sâu · nét ↔ sáng</span><output id="o-mix"></output></span>
+          <input type="range" id="mix" min="0" max="100" value="18"></label>
+        <label class="ctl"><span class="ctl-head"><span>Làm mượt bản đồ</span><output id="o-smooth"></output></span>
+          <input type="range" id="smooth" min="0" max="100" value="40"></label>
+        <label class="ctl"><span class="ctl-head"><span>Cắt viền</span><output id="o-zoom"></output></span>
+          <input type="range" id="zoom" min="0" max="100" value="26"></label>
+        <label class="switch"><span>Đảo gần ↔ xa</span>
+          <input type="checkbox" id="invert"><span class="track"></span></label>
+      </div>
+    </div>
+
+    <div class="panel" id="anaPanel" hidden>
+      <h2>Lệch hai mắt</h2>
+      <label class="ctl"><span class="ctl-head"><span>Khoảng cách mắt</span><output id="o-sep"></output></span>
+        <input type="range" id="sep" min="0" max="100" value="34"></label>
+      <p class="hint" style="margin-top:10px">Cần kính 3D đỏ–lam. Đặt <b>mặt phẳng đứng yên</b> ngay trên chủ thể để mắt đỡ mỏi.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Nền &amp; khung</h2>
+      <div class="stack">
+        <div class="seg" id="bgModes">
+          <button data-bgmode="color" aria-pressed="true">Màu giao diện</button>
+          <button data-bgmode="solid" aria-pressed="false">Màu tự chọn</button>
+          <button data-bgmode="self" aria-pressed="false">Chính ảnh, làm mờ</button>
+          <button data-bgmode="file" aria-pressed="false">Ảnh nền riêng…</button>
+        </div>
+        <p class="hint" id="bgName">Nền hiện ở phần lề, khi khung hình khác tỉ lệ ảnh hoặc khi sóng đẩy ảnh lệch đi.</p>
+        <div id="bgColorWrap" hidden>
+          <div class="colorrow">
+            <label class="swatch"><input type="color" id="bgColor1" value="#1E1A15"><span>Màu trên</span></label>
+            <label class="swatch"><input type="color" id="bgColor2" value="#4A3A2C"><span>Màu dưới</span></label>
+          </div>
+          <label class="switch"><span>Chuyển sắc hai màu</span>
+            <input type="checkbox" id="bgGrad" checked><span class="track"></span></label>
+        </div>
+        <label class="ctl" hidden id="bgBlurWrap"><span class="ctl-head"><span>Làm mờ nền</span><output id="o-bgBlur"></output></span>
+          <input type="range" id="bgBlur" min="0" max="100" value="55"></label>
+        <label class="ctl" hidden id="bgDimWrap"><span class="ctl-head"><span>Làm tối nền</span><output id="o-bgDim"></output></span>
+          <input type="range" id="bgDim" min="0" max="100" value="35"></label>
+        <label class="switch" hidden id="bgDriftWrap"><span>Nền trôi theo con trỏ</span>
+          <input type="checkbox" id="bgDrift" checked><span class="track"></span></label>
+        <label class="switch"><span>Ảnh lấp đầy khung</span>
+          <input type="checkbox" id="fill"><span class="track"></span></label>
+      </div>
+      <input type="file" id="bgFile" accept="image/*" class="hidden">
+    </div>
+
+    <div class="panel">
+      <h2>Chuyển động</h2>
+      <div class="stack">
+        <label class="switch"><span>Theo con trỏ</span>
+          <input type="checkbox" id="follow" checked><span class="track"></span></label>
+        <label class="switch"><span>Tự đung đưa</span>
+          <input type="checkbox" id="sway" checked><span class="track"></span></label>
+        <label class="ctl"><span class="ctl-head"><span>Biên độ đung đưa</span><output id="o-swayAmt"></output></span>
+          <input type="range" id="swayAmt" min="0" max="100" value="55"></label>
+        <label class="ctl"><span class="ctl-head"><span>Tốc độ</span><output id="o-swaySpd"></output></span>
+          <input type="range" id="swaySpd" min="0" max="100" value="34"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Xuất video</h2>
+      <div class="stack">
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Chuyển động khi quay</span></div>
+          <div class="seg" id="recModes">
+            <button data-recmode="sweep" aria-pressed="true">Quét khép kín</button>
+            <button data-recmode="free" aria-pressed="false">Đúng như đang chạy</button>
+          </div>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Thời lượng</span><output id="o-recSecs"></output></span>
+          <input type="range" id="recSecs" min="20" max="300" value="60"></label>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Khung hình</span></div>
+          <div class="seg" id="recAspectGroup">
+            <button data-aspect="9:16" aria-pressed="false">9:16 · TikTok, Reels</button>
+            <button data-aspect="16:9" aria-pressed="false">16:9 · YouTube</button>
+            <button data-aspect="1:1" aria-pressed="false">1:1 · Facebook</button>
+            <button data-aspect="4:5" aria-pressed="false">4:5 · Instagram</button>
+            <button data-aspect="frame" aria-pressed="true" style="grid-column:1/-1">Như khung đang xem</button>
+          </div>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Độ nét</span></div>
+          <div class="seg" id="recResGroup">
+            <button data-res="720" aria-pressed="false">720p</button>
+            <button data-res="1080" aria-pressed="true">1080p</button>
+            <button data-res="1440" aria-pressed="false">1440p</button>
+            <button data-res="screen" aria-pressed="false">Như màn hình</button>
+          </div>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Khung hình · định dạng</span></div>
+          <div class="seg" id="recFpsGroup">
+            <button data-fps="30" aria-pressed="true">30 hình/giây</button>
+            <button data-fps="60" aria-pressed="false">60 hình/giây</button>
+          </div>
+          <div class="seg" id="recFmtGroup" style="margin-top:6px"></div>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Chất lượng</span><output id="o-recMbps"></output></span>
+          <input type="range" id="recMbps" min="2" max="40" value="14"></label>
+        <p class="hint" id="recSize"></p>
+        <button class="btn primary" id="recBtn">Bắt đầu quay</button>
+        <p class="hint" id="recStatus">Chế độ quét đưa góc nhìn đi một vòng rồi về đúng chỗ cũ, nên video lặp lại không thấy mối nối.</p>
+        <div class="recbox" id="recResult" hidden>
+          <video id="recVideo" controls loop playsinline></video>
+          <button class="btn" id="recSave">Lưu về máy</button>
+          <p class="hint">Trên web sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Khác</h2>
+      <div class="row">
+        <button class="btn" id="reset">Về mặc định</button>
+        <button class="btn" id="pick2">Đổi ảnh</button>
+      </div>
+      <p class="hint" style="margin-top:12px">Dán ảnh bằng <code>Ctrl+V</code> bất cứ lúc nào. Muốn giữ một khung hình: chuột phải lên ảnh rồi lưu.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Độ sâu được ước lượng từ <b>độ nét cục bộ</b> và độ sáng — gần đúng, không phải đo đạc thật.</span>
+  <span>Mọi xử lý chạy trong trình duyệt; ảnh không rời khỏi máy bạn.</span>
+</footer>
+</div>
+
+<div class="tool" id="tool-ghep">
+<div class="work">
+  <div class="stage" id="stage" data-empty="1">
+    <canvas id="board"></canvas>
+    <div class="drop">
+      <div>
+        <strong>Kéo ảnh vào khung này</strong>
+        <p>Ảnh nào cũng dùng được. Rê chuột để xoay góc nhìn, bấm vào khung để bung ra hoặc lắp lại.</p>
+      </div>
+      <div class="drop-row">
+        <button class="btn primary" id="pick">Chọn ảnh</button>
+        <button class="btn" id="paste">Dán từ clipboard</button>
+        <button class="btn" id="demo">Dùng ảnh mẫu</button>
+      </div>
+    </div>
+    <div class="readout"><span class="dot"></span><span id="meta">—</span></div>
+    <input type="file" id="file" accept="image/*" class="hidden">
+  </div>
+
+  <div class="rail">
+    <div class="panel">
+      <div class="phase"><b id="phaseName">Chờ ảnh</b><span id="phasePct">0%</span></div>
+      <div class="meter"><i id="meterFill"></i></div>
+      <div class="row">
+        <button class="btn primary" id="doAssemble">Lắp ráp</button>
+        <button class="btn" id="doExplode">Bung ra</button>
+        <button class="btn" id="doShuffle">Cắt lại</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Mảnh cắt</h2>
+      <div class="stack">
+        <label class="ctl"><span class="ctl-head"><span>Số cột</span><output id="o-cols"></output></span>
+          <input type="range" id="cols" min="3" max="16" value="7"></label>
+        <div class="seg" id="shapes">
+          <button data-shape="jigsaw" aria-pressed="true">Jigsaw</button>
+          <button data-shape="grid" aria-pressed="false">Ô vuông</button>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Độ dày mảnh</span><output id="o-thick"></output></span>
+          <input type="range" id="thick" min="0" max="100" value="34"></label>
+        <label class="ctl"><span class="ctl-head"><span>Đường cắt khi rời</span><output id="o-border"></output></span>
+          <input type="range" id="border" min="0" max="100" value="45"></label>
+        <label class="switch"><span>Lật thấy mặt sau</span>
+          <input type="checkbox" id="backface" checked><span class="track"></span></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Nền &amp; bố cục</h2>
+      <div class="stack">
+        <div class="seg" id="bgModes">
+          <button data-bgmode="color" aria-pressed="true">Màu giao diện</button>
+          <button data-bgmode="solid" aria-pressed="false">Màu tự chọn</button>
+          <button data-bgmode="self" aria-pressed="false">Chính ảnh, làm mờ</button>
+          <button data-bgmode="file" aria-pressed="false">Ảnh nền riêng…</button>
+        </div>
+        <p class="hint" id="bgName">Đang dùng màu nền của giao diện.</p>
+        <div id="bgColorWrap" hidden>
+          <div class="colorrow">
+            <label class="swatch"><input type="color" id="bgColor1" value="#1E1A15"><span>Màu trên</span></label>
+            <label class="swatch"><input type="color" id="bgColor2" value="#4A3A2C"><span>Màu dưới</span></label>
+          </div>
+          <label class="switch"><span>Chuyển sắc hai màu</span>
+            <input type="checkbox" id="bgGrad" checked><span class="track"></span></label>
+        </div>
+        <label class="ctl" hidden id="bgBlurWrap"><span class="ctl-head"><span>Làm mờ nền</span><output id="o-bgBlur"></output></span>
+          <input type="range" id="bgBlur" min="0" max="100" value="55"></label>
+        <label class="ctl" hidden id="bgDimWrap"><span class="ctl-head"><span>Làm tối nền</span><output id="o-bgDim"></output></span>
+          <input type="range" id="bgDim" min="0" max="100" value="35"></label>
+        <label class="switch" hidden id="bgDriftWrap"><span>Nền trôi theo góc nhìn</span>
+          <input type="checkbox" id="bgDrift" checked><span class="track"></span></label>
+        <label class="ctl"><span class="ctl-head"><span>Cỡ cảnh</span><output id="o-scene"></output></span>
+          <input type="range" id="scene" min="50" max="170" value="100"></label>
+      </div>
+      <input type="file" id="bgFile" accept="image/*" class="hidden">
+    </div>
+
+    <div class="panel">
+      <h2>Khi rời rạc</h2>
+      <div class="stack">
+        <label class="ctl"><span class="ctl-head"><span>Tầm văng</span><output id="o-scatter"></output></span>
+          <input type="range" id="scatter" min="10" max="100" value="58"></label>
+        <label class="ctl"><span class="ctl-head"><span>Chiều sâu</span><output id="o-depth"></output></span>
+          <input type="range" id="depth" min="0" max="100" value="52"></label>
+        <label class="ctl"><span class="ctl-head"><span>Lộn nhào</span><output id="o-spin"></output></span>
+          <input type="range" id="spin" min="0" max="100" value="46"></label>
+        <label class="ctl"><span class="ctl-head"><span>Tốc độ trôi</span><output id="o-drift"></output></span>
+          <input type="range" id="drift" min="0" max="100" value="40"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Khi lắp ráp</h2>
+      <div class="stack">
+        <label class="ctl"><span class="ctl-head"><span>Thời lượng</span><output id="o-dur"></output></span>
+          <input type="range" id="dur" min="5" max="60" value="22"></label>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Thứ tự về chỗ</span></div>
+          <div class="seg" id="orders">
+            <button data-order="wave" aria-pressed="true">Sóng từ tâm</button>
+            <button data-order="row" aria-pressed="false">Lần lượt</button>
+            <button data-order="random" aria-pressed="false">Ngẫu nhiên</button>
+            <button data-order="all" aria-pressed="false">Đồng loạt</button>
+          </div>
+        </div>
+        <label class="switch"><span>Tự lặp vô hạn</span>
+          <input type="checkbox" id="loop" checked><span class="track"></span></label>
+        <label class="ctl"><span class="ctl-head"><span>Giữ mỗi trạng thái</span><output id="o-hold"></output></span>
+          <input type="range" id="hold" min="0" max="80" value="18"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Xuất video</h2>
+      <div class="stack">
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Nội dung quay</span></div>
+          <div class="seg" id="recModes">
+            <button data-recmode="cycle" aria-pressed="true">Một vòng đầy đủ</button>
+            <button data-recmode="free" aria-pressed="false">Quay tự do</button>
+          </div>
+        </div>
+        <label class="ctl" id="recSecsWrap" hidden><span class="ctl-head"><span>Thời lượng</span><output id="o-recSecs"></output></span>
+          <input type="range" id="recSecs" min="20" max="300" value="80"></label>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Khung hình</span></div>
+          <div class="seg" id="recAspectGroup">
+            <button data-aspect="9:16" aria-pressed="false">9:16 · TikTok, Reels</button>
+            <button data-aspect="16:9" aria-pressed="false">16:9 · YouTube</button>
+            <button data-aspect="1:1" aria-pressed="false">1:1 · Facebook</button>
+            <button data-aspect="4:5" aria-pressed="false">4:5 · Instagram</button>
+            <button data-aspect="frame" aria-pressed="true" style="grid-column:1/-1">Như khung đang xem</button>
+          </div>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Độ nét</span></div>
+          <div class="seg" id="recResGroup">
+            <button data-res="720" aria-pressed="false">720p</button>
+            <button data-res="1080" aria-pressed="true">1080p</button>
+            <button data-res="1440" aria-pressed="false">1440p</button>
+            <button data-res="screen" aria-pressed="false">Như màn hình</button>
+          </div>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Khung hình · định dạng</span></div>
+          <div class="seg" id="recFpsGroup">
+            <button data-fps="30" aria-pressed="true">30 hình/giây</button>
+            <button data-fps="60" aria-pressed="false">60 hình/giây</button>
+          </div>
+          <div class="seg" id="recFmtGroup" style="margin-top:6px"></div>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Chất lượng</span><output id="o-recMbps"></output></span>
+          <input type="range" id="recMbps" min="2" max="40" value="14"></label>
+        <p class="hint" id="recSize"></p>
+        <button class="btn primary" id="recBtn">Bắt đầu quay</button>
+        <p class="hint" id="recStatus">Quay đúng những gì đang chạy trên khung, kể cả góc nhìn bạn đang giữ.</p>
+        <div class="recbox" id="recResult" hidden>
+          <video id="recVideo" controls loop playsinline></video>
+          <button class="btn" id="recSave">Lưu về máy</button>
+          <p class="hint">Trên web sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Khác</h2>
+      <div class="row">
+        <button class="btn" id="reset">Về mặc định</button>
+        <button class="btn" id="pick2">Đổi ảnh</button>
+      </div>
+      <p class="hint" style="margin-top:12px">Dán ảnh bằng <code>Ctrl+V</code>. Phím <code>Space</code> bung ra / lắp lại.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Mộng lồi lõm của hai mảnh kề nhau dùng <b>chung một đường cắt</b>, nên khi lắp xong ảnh khít lại không hở.</span>
+  <span>Ảnh xử lý ngay trong trình duyệt, không gửi đi đâu cả.</span>
+</footer>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var LEDE = {"song": "Suy bản đồ độ sâu từ độ nét của ảnh rồi cho ảnh nghiêng ngả theo con trỏ như một khối 3D — kèm ba kiểu sóng làm mặt ảnh gợn lên.", "ghep": "Ảnh được cắt thành những mảnh jigsaw có mộng lồi lõm khớp nhau. Chúng bung ra, lộn nhào trong không gian, rồi tự tìm về đúng ô của mình cho tới khi ảnh liền lại như cũ."};
+var STAMP = {"song": "webgl · độ sâu · sóng", "ghep": "canvas · 3d giả lập · mộng jigsaw"};
+var tabs = Array.prototype.slice.call(document.querySelectorAll("#tabs button"));
+
+function show(name){
+  // đang quay video thì giữ nguyên tab, đổi giữa chừng là hỏng clip
+  if(document.querySelector(".tool.on .rec-live")) return;
+  tabs.forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.tab === name)); });
+  ["song","ghep"].forEach(function(n){
+    document.getElementById("tool-" + n).classList.toggle("on", n === name);
+  });
+  document.getElementById("lede").textContent = LEDE[name];
+  document.getElementById("stamp").textContent = STAMP[name];
+  dispatchEvent(new Event("resize"));
+}
+// nhúng trong khung (bản artifect trên claude.ai) thì không có trang giới thiệu để quay về
+if(window.top !== window.self){
+  var hl = document.getElementById("homeLink");
+  if(hl) hl.hidden = true;
+}
+tabs.forEach(function(b){ b.onclick = function(){ show(b.dataset.tab); }; });
+show(location.hash.indexOf("ghep") > -1 ? "ghep" : "song");
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+var root = document.getElementById("tool-song");
+function $(id){ return root.querySelector("#" + id); }
+function live(){ return root.classList.contains("on"); }
+
+
+var canvas = $("view");
+var gl = canvas.getContext("webgl", {antialias:false, alpha:false, preserveDrawingBuffer:true});
+var stage = $("stage");
+var card = $("card3d");
+var metaEl = $("meta");
+
+if(!gl){
+  stage.innerHTML = '<p style="padding:40px;text-align:center;color:var(--muted)">Trình duyệt này không bật WebGL nên không dựng được hiệu ứng 3D.</p>';
+  return;
+}
+
+var VS = [
+"attribute vec2 aPos;",
+"varying vec2 vUv;",
+"void main(){ vUv = aPos*0.5+0.5; gl_Position = vec4(aPos,0.0,1.0); }"
+].join("\n");
+
+var FS = [
+"precision highp float;",
+"varying vec2 vUv;",
+"uniform sampler2D uImg;",
+"uniform sampler2D uDepth;",
+"uniform vec2  uShift;",
+"uniform float uFocus;",
+"uniform float uZoom;",
+"uniform float uInvert;",
+"uniform float uMode;",
+"uniform float uSep;",
+"uniform vec3  uNear;",
+"uniform vec3  uFar;",
+"uniform vec2  uFrame;",
+"uniform vec3  uBgA;",
+"uniform vec3  uBgB;",
+"uniform float uWave;",
+"uniform float uWaveAmp;",
+"uniform float uWaveK;",
+"uniform float uWavePhase;",
+"uniform float uWaveDepth;",
+"uniform float uObs;",
+"uniform float uObsAmt;",
+"uniform float uObsN;",
+"uniform sampler2D uBgTex;",
+"uniform float uBgOn;",
+"uniform float uBgDim;",
+"uniform vec2  uBgScale;",
+"uniform vec2  uBgOff;",
+"float depthAt(vec2 p){",
+"  float d = texture2D(uDepth, clamp(p, 0.0, 1.0)).r;",
+"  return mix(d, 1.0 - d, uInvert);",
+"}",
+"vec3 shifted(vec2 p, vec2 sh){",
+"  vec2 uv = p;",
+"  for(int i=0;i<4;i++){",
+"    float d = depthAt(uv);",
+"    uv = p + sh * (d - uFocus);",
+"  }",
+"  return texture2D(uImg, clamp(uv, 0.0015, 0.9985)).rgb;",
+"}",
+"vec3 bgAt(vec2 uv){",
+"  vec3 c = mix(uBgB, uBgA, uv.y);",
+"  if(uBgOn > 0.5){",
+"    vec2 b = (uv - 0.5) * uBgScale + uBgOff + 0.5;",
+"    c = texture2D(uBgTex, clamp(b, 0.0, 1.0)).rgb * (1.0 - uBgDim);",
+"  }",
+"  return c;",
+"}",
+"float hash21(vec2 v){",
+"  return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);",
+"}",
+"vec2 obscure(vec2 p){",
+"  if(uObsAmt <= 0.002) return p;",
+"  float n = uObsN;",
+"  if(uObs > 3.5){",                                   // pixel hoá
+"    vec2 q = (floor(p*n) + 0.5)/n;",
+"    return mix(p, q, uObsAmt);",
+"  } else if(uObs > 2.5){",                            // ô lưới xáo
+"    vec2 cell = floor(p*n);",
+"    vec2 off = vec2(hash21(cell) - 0.5, hash21(cell + 7.3) - 0.5);",
+"    return clamp(p + off*uObsAmt*0.7, 0.0, 1.0);",
+"  } else if(uObs > 1.5){",                            // kẻ sọc
+"    float row = floor(p.y*n);",
+"    float sh = (hash21(vec2(row, 3.7)) - 0.5) * uObsAmt",
+"             + sin(row*2.399 + uWavePhase*0.35) * uObsAmt * 0.35;",
+"    return clamp(vec2(p.x + sh, p.y), 0.0, 1.0);",
+"  }",
+"  vec2 o = vec2(sin(p.y*n*6.283 - uWavePhase) , cos(p.x*n*6.283 + uWavePhase*0.8));",
+"  return clamp(p + o*uObsAmt*0.09, 0.0, 1.0);",       // sóng xé
+"}",
+"vec2 waveOff(vec2 p, float d){",
+"  vec2 o = vec2(0.0);",
+"  float n = max(uWaveK, 1.0);",                                    // lụa bay
+"  float a = uWaveAmp / pow(n, 0.8);",
+"  if(uWave > 2.5){",
+"    o.y = sin(p.x*n*6.283 - uWavePhase) * a",
+"        + sin((p.x + p.y)*n*4.2 - uWavePhase*1.6) * a * 0.45;",
+"    o.x = cos(p.y*n*4.2 + uWavePhase*0.8) * a * 0.5;",
+"  } else if(uWave > 1.5){",                             // gợn nước
+"    vec2 c = p - 0.5;",
+"    float r = length(c) + 1e-4;",
+"    o = (c/r) * sin(r*n*12.566 - uWavePhase*2.0) * a * exp(-r*1.0);",
+"  } else {",                                            // sóng ngang
+"    o.y = sin(p.x*n*6.283 - uWavePhase) * a;",
+"    o.x = sin(p.y*n*4.0 - uWavePhase*0.7) * a * 0.35;",
+"  }",
+"  return o * mix(1.0, 0.25 + d*1.2, uWaveDepth);",
+"}",
+"void main(){",
+"  vec2 q = (vUv - 0.5) * uFrame + 0.5;",
+"  if(q.x < 0.0 || q.x > 1.0 || q.y < 0.0 || q.y > 1.0){",
+"    gl_FragColor = vec4(bgAt(vUv), 1.0); return;",
+"  }",
+"  vec2 p = (q - 0.5) / uZoom + 0.5;",
+"  p = obscure(p);",
+"  if(uWave > 0.5){",
+"    p += waveOff(p, depthAt(clamp(p, 0.0, 1.0)));",
+"    if(p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0){",
+"      gl_FragColor = vec4(bgAt(vUv), 1.0); return;",
+"    }",
+"  }",
+"  if(uMode > 1.5){",
+"    float d = depthAt(p);",
+"    gl_FragColor = vec4(mix(uFar, uNear, d), 1.0);",
+"  } else if(uMode > 0.5){",
+"    vec3 L = shifted(p, uShift + vec2(uSep, 0.0));",
+"    vec3 R = shifted(p, uShift - vec2(uSep, 0.0));",
+"    gl_FragColor = vec4(L.r, R.g, R.b, 1.0);",
+"  } else {",
+"    gl_FragColor = vec4(shifted(p, uShift), 1.0);",
+"  }",
+"}"
+].join("\n");
+
+function compile(type, src){
+  var s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+var prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+var buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+var aPos = gl.getAttribLocation(prog, "aPos");
+gl.enableVertexAttribArray(aPos);
+gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+var U = {};
+["uImg","uDepth","uShift","uFocus","uZoom","uInvert","uMode","uSep","uNear","uFar","uFrame",
+ "uBgA","uBgB","uBgTex","uBgOn","uBgDim","uBgScale","uBgOff",
+ "uWave","uWaveAmp","uWaveK","uWavePhase","uWaveDepth",
+ "uObs","uObsAmt","uObsN"]
+  .forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
+
+function makeTex(unit){
+  var t = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0 + unit);
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  return t;
+}
+var texImg = makeTex(0), texDepth = makeTex(1), texBg = makeTex(2);
+gl.uniform1i(U.uImg, 0);
+gl.uniform1i(U.uDepth, 1);
+gl.uniform1i(U.uBgTex, 2);
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+function boxBlur(src, w, h, r){
+  if(r < 1) return src.slice(0);
+  var n = 2*r + 1, tmp = new Float32Array(w*h), out = new Float32Array(w*h);
+  var x, y, sum, row;
+  for(y=0; y<h; y++){
+    row = y*w; sum = 0;
+    for(x=-r; x<=r; x++) sum += src[row + Math.min(w-1, Math.max(0, x))];
+    for(x=0; x<w; x++){
+      tmp[row+x] = sum / n;
+      sum += src[row + Math.min(w-1, x+r+1)] - src[row + Math.min(w-1, Math.max(0, x-r))];
+    }
+  }
+  for(x=0; x<w; x++){
+    sum = 0;
+    for(y=-r; y<=r; y++) sum += tmp[Math.min(h-1, Math.max(0, y))*w + x];
+    for(y=0; y<h; y++){
+      out[y*w+x] = sum / n;
+      sum += tmp[Math.min(h-1, y+r+1)*w + x] - tmp[Math.min(h-1, Math.max(0, y-r))*w + x];
+    }
+  }
+  return out;
+}
+function stretch(a){
+  var s = Array.prototype.slice.call(a).sort(function(p,q){ return p-q; });
+  var lo = s[Math.floor(s.length*0.02)], hi = s[Math.floor(s.length*0.98)];
+  var span = Math.max(1e-5, hi - lo);
+  var out = new Float32Array(a.length);
+  for(var i=0;i<a.length;i++) out[i] = Math.min(1, Math.max(0, (a[i]-lo)/span));
+  return out;
+}
+
+var work = document.createElement("canvas");
+var wctx = work.getContext("2d", {willReadFrequently:true});
+var lumCache = null, dw = 0, dh = 0;
+
+function analyse(img){
+  var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+  var W = Math.min(440, iw);
+  var H = Math.max(1, Math.round(ih * W / iw));
+  dw = W; dh = H;
+  work.width = W; work.height = H;
+  wctx.drawImage(img, 0, 0, W, H);
+  var px = wctx.getImageData(0, 0, W, H).data;
+  var lum = new Float32Array(W*H);
+  for(var i=0, j=0; i<lum.length; i++, j+=4)
+    lum[i] = (0.2126*px[j] + 0.7152*px[j+1] + 0.0722*px[j+2]) / 255;
+  lumCache = lum;
+}
+
+var depthCanvas = document.createElement("canvas");
+var dctx = depthCanvas.getContext("2d");
+
+function buildDepth(){
+  if(!lumCache) return;
+  var W = dw, H = dh, lum = lumCache, i;
+  var base = Math.max(2, Math.round(W/64));
+
+  var low = boxBlur(lum, W, H, base);
+  var resp = new Float32Array(W*H);
+  for(i=0;i<resp.length;i++) resp[i] = Math.abs(lum[i] - low[i]);
+  var sharp = boxBlur(resp, W, H, Math.max(3, Math.round(W/26)));
+  sharp = stretch(boxBlur(sharp, W, H, Math.max(2, Math.round(W/44))));
+  for(i=0;i<sharp.length;i++) sharp[i] = Math.pow(sharp[i], 0.75);
+
+  var bright = stretch(boxBlur(lum, W, H, Math.max(3, Math.round(W/16))));
+
+  var m = state.mix / 100;
+  var d = new Float32Array(W*H);
+  for(i=0;i<d.length;i++) d[i] = sharp[i]*(1-m) + bright[i]*m;
+
+  var r = Math.max(1, Math.round(state.smooth/100 * W/12));
+  var sm = boxBlur(boxBlur(d, W, H, r), W, H, Math.max(1, Math.round(r*0.6)));
+
+  depthCanvas.width = W; depthCanvas.height = H;
+  var out = dctx.createImageData(W, H);
+  for(i=0; i<sm.length; i++){
+    var v = Math.round(Math.min(1, Math.max(0, sm[i])) * 255), j = i*4;
+    out.data[j] = out.data[j+1] = out.data[j+2] = v;
+    out.data[j+3] = 255;
+  }
+  dctx.putImageData(out, 0, 0);
+
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, texDepth);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, depthCanvas);
+}
+
+var DEFAULTS = {strength:46, focus:55, mix:18, smooth:40, zoom:26, sep:34,
+                swayAmt:55, swaySpd:34, invert:false, follow:true, sway:true, mode:"parallax",
+                recMode:"sweep", recSecs:60, recRes:"1080", recFps:30, recMbps:14,
+                recAspect:"frame", fill:false,
+                bgMode:"color", bgBlur:55, bgDim:35, bgDrift:true,
+                bgColor1:"#1E1A15", bgColor2:"#4A3A2C", bgGrad:true,
+                waveType:0, waveAmp:30, waveK:40, waveSpeed:45, waveDepth:true,
+                obsType:0, obsAmt:70, obsN:35, revealHold:20, revealDur:30, autoReveal:true};
+var reveal = 0, revealRun = false, revealStart = 0;
+var rec = {active:false, w:0, h:0, mr:null, chunks:[], startT:0, dur:6, url:"", ext:"webm",
+           savedAspect:"", blob:null};
+var state = {};
+Object.keys(DEFAULTS).forEach(function(k){ state[k] = DEFAULTS[k]; });
+var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(reduce) state.sway = false;
+
+var ptr = {x:0, y:0}, smoothPtr = {x:0, y:0};
+var hasImage = false, needDepth = false, srcW = 0, srcH = 0;
+var bgSrc = null, bgCanvas = null, bgW = 0, bgH = 0, bgReady = false;
+
+// Nướng sẵn một bản nền đã làm mờ rồi nạp lên thẻ texture thứ ba.
+function bakeBg(){
+  var src = state.bgMode === "self" ? (hasImage ? work : null)
+          : (state.bgMode === "file" ? bgSrc : null);
+  if(!src){ bgReady = false; return; }
+  var sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+  if(!sw || !sh){ bgReady = false; return; }
+  var long = 900, k = Math.min(1, long/Math.max(sw, sh));
+  var w = Math.max(2, Math.round(sw*k)), h = Math.max(2, Math.round(sh*k));
+  if(!bgCanvas) bgCanvas = document.createElement("canvas");
+  bgCanvas.width = w; bgCanvas.height = h;
+  var c = bgCanvas.getContext("2d");
+  var blur = state.bgBlur/100 * 36 * (w/900);
+  c.filter = blur > 0.3 ? "blur(" + blur.toFixed(2) + "px)" : "none";
+  var over = 1 + state.bgBlur/100 * 0.16;
+  c.drawImage(src, -(w*over - w)/2, -(h*over - h)/2, w*over, h*over);
+  c.filter = "none";
+  bgW = w; bgH = h;
+  gl.activeTexture(gl.TEXTURE2);
+  gl.bindTexture(gl.TEXTURE_2D, texBg);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgCanvas);
+  bgReady = true;
+}
+
+// WebGL1 chỉ dựng được mipmap khi hai cạnh là luỹ thừa của 2. Không có mipmap thì
+// toạ độ lấy mẫu biến thiên nhanh (sóng dày, ảnh thu nhỏ) sinh vân răng cưa, nhìn ra
+// thành những vệt kẻ ngang mặt ảnh.
+function potCopy(img, w, h){
+  function pot(v){ var n = 2; while(n < v && n < 2048) n *= 2; return Math.min(2048, n); }
+  var cv = document.createElement("canvas");
+  cv.width = pot(w); cv.height = pot(h);
+  var c = cv.getContext("2d");
+  c.imageSmoothingEnabled = true;
+  c.imageSmoothingQuality = "high";
+  c.drawImage(img, 0, 0, cv.width, cv.height);
+  return cv;
+}
+
+function loadImage(img, label){
+  var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texImg);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, potCopy(img, w, h));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  srcW = w; srcH = h;
+  analyse(img);
+  buildDepth();
+  hasImage = true;
+  stage.dataset.empty = "0";
+  metaEl.textContent = label + " · " + w + "×" + h + " · bản đồ sâu " + dw + "×" + dh;
+  applyFrame();
+  if(state.bgMode === "self") bakeBg();
+}
+
+function fromFile(file){
+  if(!file || file.type.indexOf("image/") !== 0) return;
+  var url = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function(){ loadImage(img, file.name || "ảnh dán"); URL.revokeObjectURL(url); };
+  img.onerror = function(){ metaEl.textContent = "không đọc được tệp ảnh"; URL.revokeObjectURL(url); };
+  img.src = url;
+}
+
+["bgColor1","bgColor2"].forEach(function(id){
+  var el = $(id);
+  el.addEventListener("input", function(){ state[id] = el.value; });
+});
+$("bgGrad").addEventListener("change", function(){
+  state.bgGrad = this.checked;
+});
+
+var bgInput = $("bgFile");
+var bgName = $("bgName");
+
+bgInput.onchange = function(){
+  var file = bgInput.files[0];
+  if(!file || file.type.indexOf("image/") !== 0) return;
+  var url = URL.createObjectURL(file);
+  var im = new Image();
+  im.onload = function(){
+    bgSrc = im;
+    setBgMode("file");
+    bgName.textContent = "Ảnh nền: " + (file.name || "đã chọn");
+    URL.revokeObjectURL(url);
+  };
+  im.onerror = function(){ bgName.textContent = "Không đọc được ảnh nền."; URL.revokeObjectURL(url); };
+  im.src = url;
+};
+
+var BG_HINT = {
+  color: "Nền theo màu giao diện, đổi theo chế độ sáng/tối của máy.",
+  solid: "Màu nền tự chọn — video sẽ dùng đúng màu này, không theo sáng/tối của máy.",
+  self: "Nền là chính tấm ảnh này, phóng to và làm mờ.",
+  file: "Đang dùng ảnh nền riêng."
+};
+
+function setBgMode(m){
+  if(m === "file" && !bgSrc){ bgInput.click(); return; }
+  state.bgMode = m;
+  Array.prototype.slice.call(root.querySelectorAll("#bgModes button")).forEach(function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.bgmode === m));
+  });
+  var pic = m === "self" || m === "file";
+  $("bgBlurWrap").hidden = !pic;
+  $("bgDimWrap").hidden = !pic;
+  $("bgDriftWrap").hidden = !pic;
+  $("bgColorWrap").hidden = m !== "solid";
+  if(m !== "file" || bgSrc) bgName.textContent = BG_HINT[m];
+  bakeBg();
+}
+
+function sampleImage(){
+  var W = 1100, H = 620;
+  var c = document.createElement("canvas"); c.width = W; c.height = H;
+  var x = c.getContext("2d");
+
+  function rnd(i){ var s = Math.sin(i*127.1)*43758.5453; return s - Math.floor(s); }
+  function noise(px, py){
+    var xi = Math.floor(px), yi = Math.floor(py), fx = px-xi, fy = py-yi;
+    var u = fx*fx*(3-2*fx), v = fy*fy*(3-2*fy);
+    var a = rnd(xi + yi*57), b = rnd(xi+1 + yi*57);
+    var cc = rnd(xi + (yi+1)*57), d = rnd(xi+1 + (yi+1)*57);
+    return (a*(1-u) + b*u)*(1-v) + (cc*(1-u) + d*u)*v;
+  }
+  var bark = x.createImageData(W, H);
+  for(var py=0; py<H; py++){
+    for(var px=0; px<W; px++){
+      var f = 0, amp = 0.5, fr = 0.014;
+      for(var o=0;o<5;o++){ f += noise(px*fr, py*fr*0.55)*amp; amp *= 0.5; fr *= 2.1; }
+      var ridge = Math.abs(Math.sin((py*0.02 + f*3.4)*2.6));
+      var t = Math.min(1, Math.max(0, ridge*0.65 + f*0.6));
+      var i = (py*W + px)*4;
+      bark.data[i]   = 132 + t*96;
+      bark.data[i+1] = 118 + t*92;
+      bark.data[i+2] = 96  + t*82;
+      bark.data[i+3] = 255;
+    }
+  }
+  var bg = document.createElement("canvas"); bg.width = W; bg.height = H;
+  bg.getContext("2d").putImageData(bark, 0, 0);
+
+  x.filter = "blur(7px)";
+  x.drawImage(bg, 0, 0);
+  x.filter = "none";
+
+  x.save();
+  x.translate(W*0.6, H*0.56); x.rotate(-0.5);
+  x.fillStyle = "#c9b183";
+  x.beginPath(); x.ellipse(0, 0, 34, 96, 0, 0, Math.PI*2); x.fill();
+  x.strokeStyle = "rgba(80,62,40,.55)"; x.lineWidth = 1.1;
+  for(var k=-30; k<=30; k+=3.2){
+    var hgt = Math.sqrt(Math.max(0, 1-(k*k)/1156))*94;
+    x.beginPath(); x.moveTo(k, -hgt); x.lineTo(k, hgt); x.stroke();
+  }
+  x.fillStyle = "#a98f61";
+  x.beginPath(); x.ellipse(0, -104, 20, 26, 0, 0, Math.PI*2); x.fill();
+  x.fillStyle = "#1b140c";
+  x.beginPath(); x.ellipse(-11, -116, 6.5, 6.5, 0, 0, Math.PI*2); x.fill();
+  x.strokeStyle = "#6b5636"; x.lineWidth = 3.4; x.lineCap = "round";
+  [[-16,-128,-64,-176],[10,-130,54,-172]].forEach(function(a){
+    x.beginPath(); x.moveTo(a[0], a[1]); x.quadraticCurveTo(a[0]*1.8, a[1]-30, a[2], a[3]); x.stroke();
+  });
+  x.lineWidth = 5;
+  [[-30,-40,-78,-16],[-32,10,-84,42],[30,-34,80,-14],[32,16,86,50]].forEach(function(a){
+    x.beginPath(); x.moveTo(a[0], a[1]); x.quadraticCurveTo((a[0]+a[2])/2, a[1]+16, a[2], a[3]); x.stroke();
+  });
+  x.restore();
+
+  var img = new Image();
+  img.onload = function(){ loadImage(img, "vỏ cây (mẫu)"); };
+  img.src = c.toDataURL("image/png");
+}
+
+function resize(){
+  if(!hasImage) return;
+  var w, h;
+  if(rec.w){ w = rec.w; h = rec.h; }
+  else {
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    // kích thước chẵn: codec H.264 đòi hỏi vậy
+    w = Math.max(2, 2*Math.round(canvas.clientWidth * dpr/2));
+    h = Math.max(2, 2*Math.round(canvas.clientHeight * dpr/2));
+  }
+  if(canvas.width !== w || canvas.height !== h){
+    canvas.width = w; canvas.height = h;
+    gl.viewport(0, 0, w, h);
+  }
+}
+new ResizeObserver(resize).observe(canvas);
+addEventListener("resize", resize);
+
+function hexRgb(hex){
+  var m = /^#([0-9a-fA-F]{6})$/.exec(String(hex).trim());
+  if(!m) return [0.1, 0.09, 0.08];
+  var n = parseInt(m[1], 16);
+  return [((n>>16)&255)/255, ((n>>8)&255)/255, (n&255)/255];
+}
+
+function themeColor(name){
+  var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  var m = /^#([0-9a-fA-F]{6})$/.exec(v);
+  if(!m) return [0.5, 0.5, 0.5];
+  var n = parseInt(m[1], 16);
+  return [((n>>16)&255)/255, ((n>>8)&255)/255, (n&255)/255];
+}
+
+var t0 = null, clock = 0;
+function frame(t){
+  requestAnimationFrame(frame);
+  if(!live()) return;
+  if(t0 === null) t0 = t;
+  var time = (t - t0) / 1000;
+  clock = time;
+
+  if(needDepth){ needDepth = false; buildDepth(); }
+  if(!hasImage) return;
+  resize();
+
+  var tx = state.follow ? ptr.x : 0;
+  var ty = state.follow ? ptr.y : 0;
+  if(state.sway){
+    var a = state.swayAmt/100 * 0.85, s = 0.25 + state.swaySpd/100 * 1.4;
+    tx += Math.sin(time*s) * a;
+    ty += Math.sin(time*s*0.63 + 1.1) * a * 0.55;
+  }
+  if(rec.active){
+    if(rec.mode === "sweep"){
+      // quỹ đạo số 8: về đúng vị trí và đúng vận tốc cũ sau một vòng
+      var u = (time - rec.startT) / rec.dur;
+      tx = Math.sin(u*Math.PI*2);
+      ty = Math.sin(u*Math.PI*4) * 0.42;
+    }
+    if(time - rec.startT >= rec.dur) stopRec();
+  }
+  tx = Math.max(-1.6, Math.min(1.6, tx));
+  ty = Math.max(-1.6, Math.min(1.6, ty));
+  smoothPtr.x += (tx - smoothPtr.x) * 0.09;
+  smoothPtr.y += (ty - smoothPtr.y) * 0.09;
+
+  var cardMode = state.mode === "card";
+  var amp = state.strength/100 * 0.085 * (cardMode ? 0.45 : 1);
+  var mode = state.mode === "anaglyph" ? 1 : (state.mode === "depth" ? 2 : 0);
+
+  gl.uniform2f(U.uShift, -smoothPtr.x * amp, smoothPtr.y * amp * 0.62);
+  gl.uniform1f(U.uFocus, state.focus/100);
+  gl.uniform1f(U.uZoom, 1 + state.zoom/100 * 0.16);
+  gl.uniform1f(U.uInvert, state.invert ? 1 : 0);
+  gl.uniform1f(U.uMode, mode);
+  gl.uniform1f(U.uSep, state.mode === "anaglyph" ? state.sep/100 * 0.05 : 0);
+  // thang xám cố định: lấy màu nền giao diện thì ở chế độ tối cả hai đều gần đen,
+  // nhìn không ra bản đồ sâu nữa
+  gl.uniform3fv(U.uNear, [0.95, 0.92, 0.86]);
+  gl.uniform3fv(U.uFar,  [0.09, 0.07, 0.06]);
+  var solid = state.bgMode === "solid";
+  var cTop = solid ? hexRgb(state.bgColor1) : themeColor("--stage");
+  var cBot = solid ? hexRgb(state.bgGrad ? state.bgColor2 : state.bgColor1) : themeColor("--stage");
+  gl.uniform3fv(U.uBgA, cTop);
+  gl.uniform3fv(U.uBgB, cBot);
+
+  var wspd = state.waveSpeed/100 * 3.2;
+  var phase;
+  if(rec.active && rec.mode === "sweep" && rec.dur > 0){
+    // khớp số chu kỳ chẵn vào đúng thời lượng clip để video lặp không thấy mối
+    var u = (time - rec.startT)/rec.dur;
+    phase = u * Math.max(1, Math.round(wspd*rec.dur/(2*Math.PI))) * 2*Math.PI;
+  } else {
+    phase = time * wspd;
+  }
+  gl.uniform1f(U.uWavePhase, phase);
+
+  gl.uniform1f(U.uWave, state.waveType);
+  if(state.waveType > 0){
+    gl.uniform1f(U.uWaveAmp, state.waveAmp/100 * 0.055);
+    gl.uniform1f(U.uWaveK, 1 + state.waveK/100 * 7);
+    gl.uniform1f(U.uWaveDepth, state.waveDepth ? 1 : 0);
+  }
+
+  // che ảnh: mức che tắt dần theo độ lộ
+  if(revealRun){
+    var rt = time - revealStart - state.revealHold/10;
+    reveal = rt <= 0 ? 0 : Math.min(1, rt/Math.max(0.1, state.revealDur/10));
+    if(reveal >= 1) revealRun = false;
+  }
+  var shown = reveal*reveal*(3 - 2*reveal);      // vào ra mềm hơn tuyến tính
+  gl.uniform1f(U.uObs, state.obsType);
+  gl.uniform1f(U.uObsAmt, state.obsType > 0 ? state.obsAmt/100 * (1 - shown) : 0);
+  gl.uniform1f(U.uObsN, 4 + state.obsN/100 * 56);
+  if(obsFill) obsFill.style.width = Math.round(shown*100) + "%";
+
+  var ca = canvas.width/Math.max(1, canvas.height), ia = srcW/Math.max(1, srcH);
+  if(state.fill){    // lấp đầy khung: cắt bớt ảnh, không chừa lề
+    if(ca > ia) gl.uniform2f(U.uFrame, 1, ia/ca);
+    else        gl.uniform2f(U.uFrame, ca/ia, 1);
+  } else {           // vừa khung: giữ trọn ảnh, phần thừa là nền
+    if(ca > ia) gl.uniform2f(U.uFrame, ca/ia, 1);
+    else        gl.uniform2f(U.uFrame, 1, ia/ca);
+  }
+
+  if(bgReady && (state.bgMode === "self" || state.bgMode === "file")){
+    var ba = bgW/Math.max(1, bgH), pad = 1.10;
+    if(ca > ba) gl.uniform2f(U.uBgScale, 1/pad, (ba/ca)/pad);
+    else        gl.uniform2f(U.uBgScale, (ca/ba)/pad, 1/pad);
+    gl.uniform2f(U.uBgOff, state.bgDrift ? smoothPtr.x*0.022 : 0,
+                           state.bgDrift ? smoothPtr.y*0.022 : 0);
+    gl.uniform1f(U.uBgOn, 1);
+    gl.uniform1f(U.uBgDim, state.bgDim/100*0.88);
+  } else {
+    gl.uniform1f(U.uBgOn, 0);
+  }
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  card.style.transform = cardMode
+    ? "rotateY(" + (smoothPtr.x*9).toFixed(2) + "deg) rotateX(" + (-smoothPtr.y*7).toFixed(2) + "deg)"
+    : "none";
+}
+requestAnimationFrame(frame);
+
+function track(e){
+  var r = stage.getBoundingClientRect();
+  ptr.x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+  ptr.y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+}
+stage.addEventListener("pointermove", track);
+stage.addEventListener("pointerleave", function(){ ptr.x = 0; ptr.y = 0; });
+
+var fileInput = $("file");
+$("pick").onclick = function(){ fileInput.click(); };
+$("pick2").onclick = function(){ fileInput.click(); };
+fileInput.onchange = function(){ fromFile(fileInput.files[0]); };
+$("demo").onclick = sampleImage;
+
+$("paste").onclick = function(){
+  if(!navigator.clipboard || !navigator.clipboard.read){
+    metaEl.textContent = "trình duyệt không cho đọc clipboard — hãy nhấn ctrl+v";
+    return;
+  }
+  navigator.clipboard.read().then(function(items){
+    for(var i=0;i<items.length;i++){
+      var type = items[i].types.filter(function(t){ return t.indexOf("image/") === 0; })[0];
+      if(type){
+        return items[i].getType(type).then(function(blob){
+          fromFile(new File([blob], "ảnh dán", {type: blob.type}));
+        });
+      }
+    }
+    metaEl.textContent = "clipboard không có ảnh — thử ctrl+v";
+  }).catch(function(){
+    metaEl.textContent = "trình duyệt chặn đọc clipboard — hãy nhấn ctrl+v";
+  });
+};
+addEventListener("paste", function(e){
+  if(!live()) return;
+  var items = e.clipboardData ? e.clipboardData.items : null;
+  if(!items) return;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type.indexOf("image/") === 0){ fromFile(items[i].getAsFile()); return; }
+  }
+});
+["dragenter","dragover"].forEach(function(ev){
+  stage.addEventListener(ev, function(e){ e.preventDefault(); stage.classList.add("drag"); });
+});
+["dragleave","drop"].forEach(function(ev){
+  stage.addEventListener(ev, function(e){ e.preventDefault(); stage.classList.remove("drag"); });
+});
+stage.addEventListener("drop", function(e){
+  if(e.dataTransfer && e.dataTransfer.files) fromFile(e.dataTransfer.files[0]);
+});
+
+/* ---------- quay video ---------- */
+var recBtn = $("recBtn");
+var recStatus = $("recStatus");
+var recResult = $("recResult");
+var recVideo = $("recVideo");
+
+var CANDIDATES = [
+  {mime:"video/mp4;codecs=avc1.42E01E", ext:"mp4",  label:"MP4"},
+  {mime:"video/mp4",                    ext:"mp4",  label:"MP4"},
+  {mime:"video/webm;codecs=vp9",        ext:"webm", label:"WebM · VP9"},
+  {mime:"video/webm;codecs=vp8",        ext:"webm", label:"WebM · VP8"},
+  {mime:"video/webm",                   ext:"webm", label:"WebM"}
+];
+var formats = [];
+(function initFormats(){
+  var box = $("recFmtGroup");
+  var seen = {};
+  if(window.MediaRecorder && MediaRecorder.isTypeSupported){
+    CANDIDATES.forEach(function(c){
+      if(seen[c.ext] || !MediaRecorder.isTypeSupported(c.mime)) return;
+      seen[c.ext] = 1; formats.push(c);
+    });
+  }
+  if(!formats.length || !canvas.captureStream){
+    box.innerHTML = "";
+    recBtn.disabled = true;
+    recStatus.textContent = "Trình duyệt này không quay được canvas — trên máy tính hãy dùng Chrome hoặc Edge, trên iPhone cần iOS đời mới.";
+    return;
+  }
+  state.recFmt = 0;
+  formats.forEach(function(f, i){
+    var b = document.createElement("button");
+    b.textContent = f.label;
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.onclick = function(){
+      state.recFmt = i;
+      Array.prototype.slice.call(box.children).forEach(function(o, j){
+        o.setAttribute("aria-pressed", String(j === i));
+      });
+      updateRecSize();
+    };
+    box.appendChild(b);
+  });
+  if(formats.length === 1) box.style.gridTemplateColumns = "1fr";
+})();
+
+var FRAME_AR = {"9:16":"9 / 16", "1:1":"1 / 1", "4:5":"4 / 5", "16:9":"16 / 9"};
+
+function applyFrame(){
+  if(!srcW) return;
+  var r = FRAME_AR[state.recAspect] || (srcW + " / " + srcH);
+  canvas.style.aspectRatio = r;
+  card.style.aspectRatio = r;
+  resize();
+  updateRecSize();
+}
+
+// Màn lộ cần chừng này giây: giữ kín + lộ dần + một nhịp thở cuối clip.
+function clipNeed(){
+  if(!(state.obsType > 0 && state.autoReveal)) return 0;
+  return (state.revealHold + state.revealDur)/10 + 1.2;
+}
+
+function recFrameSize(){
+  var res = state.recRes === "screen"
+    ? Math.round((canvas.clientHeight || 360) * Math.min(2, window.devicePixelRatio || 1))
+    : +state.recRes;
+  var ar = state.recAspect, w, h;
+  if(ar === "9:16"){ w = res; h = res*16/9; }
+  else if(ar === "1:1"){ w = res; h = res; }
+  else if(ar === "4:5"){ w = res; h = res*5/4; }
+  else if(ar === "16:9"){ h = res; w = res*16/9; }
+  else { h = res; w = res * ((srcW || 16) / (srcH || 9)); }
+  var k = Math.min(1, 3840/Math.max(w, h));
+  return {w: Math.max(2, 2*Math.round(w*k/2)), h: Math.max(2, 2*Math.round(h*k/2))};
+}
+
+function updateRecSize(){
+  var el = $("recSize");
+  if(!el) return;
+  var sz = recFrameSize(), f = formats[state.recFmt || 0];
+  el.textContent = sz.w + " × " + sz.h + " · " + (f ? f.label : "chưa có định dạng") +
+                   " · " + state.recFps + " hình/giây";
+}
+addEventListener("resize", updateRecSize);
+
+function restoreFrame(){
+  rec.w = 0; rec.h = 0;
+  applyFrame();
+}
+
+function startRec(){
+  if(rec.active || !hasImage || !formats.length) return;
+  var f = formats[state.recFmt || 0];
+
+  var sz = recFrameSize();
+  rec.active = true;
+  rec.w = sz.w; rec.h = sz.h;
+  canvas.style.aspectRatio = rec.w + " / " + rec.h;
+  rec.chunks = [];
+  rec.ext = f.ext;
+  rec.mode = state.recMode;
+  rec.dur = Math.max(state.recSecs/10, clipNeed());
+  rec.startT = clock;
+  if(rec.mode === "sweep"){ smoothPtr.x = 0; smoothPtr.y = 0; }
+  if(state.obsType > 0 && state.autoReveal) revealNow();
+
+  if(rec.url){ URL.revokeObjectURL(rec.url); rec.url = ""; }
+  recResult.hidden = true;
+  recVideo.removeAttribute("src");
+
+  resize();                              // đổi kích thước khung vẽ trước khi bắt luồng
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  var stream = canvas.captureStream(state.recFps);
+  try{
+    rec.mr = new MediaRecorder(stream, {mimeType:f.mime, videoBitsPerSecond: state.recMbps*1000000});
+  }catch(err){
+    rec.active = false;
+    restoreFrame();
+    recStatus.textContent = "Không khởi động được bộ quay: " + err.message;
+    return;
+  }
+  rec.mr.ondataavailable = function(e){ if(e.data && e.data.size) rec.chunks.push(e.data); };
+  rec.mr.onstop = finishRec;
+  rec.mr.start();
+
+  recBtn.textContent = "Dừng quay";
+  recBtn.classList.remove("primary");
+  recStatus.innerHTML = '<span class="rec-live">● đang quay</span> — ' +
+    canvas.width + "×" + canvas.height + " · " + state.recFps + " hình/giây · " +
+    rec.dur.toFixed(1) + " giây";
+}
+
+function stopRec(){
+  if(!rec.active) return;
+  rec.active = false;
+  if(rec.mr && rec.mr.state !== "inactive") rec.mr.stop();
+  recBtn.textContent = "Bắt đầu quay";
+  recBtn.classList.add("primary");
+  recStatus.textContent = "Đang đóng gói video…";
+}
+
+function finishRec(){
+  restoreFrame();
+  var blob = new Blob(rec.chunks, {type: rec.chunks.length ? rec.chunks[0].type : "video/webm"});
+  rec.chunks = [];
+  if(!blob.size){ recStatus.textContent = "Không thu được khung hình nào. Thử lại với 30 hình/giây."; return; }
+  rec.blob = blob;
+  rec.url = URL.createObjectURL(blob);
+  recVideo.src = rec.url;
+  recResult.hidden = false;
+  recStatus.textContent = "Xong · " + (blob.size/1048576).toFixed(1) + " MB · ." + rec.ext;
+  saveRec();
+}
+
+// Trong khung an toàn của claude.ai phải xin phép qua claude.use("downloads");
+// mở file ở máy thì dùng thẻ <a download> như bình thường.
+function saveViaAnchor(name){
+  var a = document.createElement("a");
+  a.href = rec.url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+var SAVE_ERR = {
+  declined: "Bạn đã từ chối lưu.",
+  too_large: "Video quá 16 MB — hạ độ phân giải, chất lượng hoặc thời lượng rồi quay lại.",
+  rate_limited: "Đang có hộp thoại lưu khác mở — thử lại sau vài giây.",
+  rejected_extension: "Định dạng này không lưu được ở đây — chọn MP4 hoặc WebM."
+};
+
+function saveRec(){
+  if(!rec.url || !rec.blob) return;
+  var name = "thi-sai." + rec.ext;
+  if(!(window.claude && typeof claude.use === "function")){ saveViaAnchor(name); return; }
+  claude.use("downloads").then(function(d){
+    if(!d){ saveViaAnchor(name); return; }
+    return d.save({filename:name, data:rec.blob}).then(function(){
+      recStatus.textContent = "Đã lưu " + name + " · " + (rec.blob.size/1048576).toFixed(1) + " MB";
+    }, function(err){
+      recStatus.textContent = SAVE_ERR[err && err.code] ||
+        "Không lưu được. Chuột phải lên video để lưu thủ công.";
+    });
+  }, function(){ saveViaAnchor(name); });
+}
+
+recBtn.onclick = function(){ if(rec.active) stopRec(); else startRec(); };
+$("recSave").onclick = saveRec;
+
+/* ---------- điều khiển ---------- */
+var FMT = {
+  strength: function(v){ return v + "%"; },
+  focus:    function(v){ return (v/100).toFixed(2); },
+  zoom:     function(v){ return v + "%"; },
+  sep:      function(v){ return v + "%"; },
+  swayAmt:  function(v){ return v + "%"; },
+  swaySpd:  function(v){ return v + "%"; },
+  mix:      function(v){ return v === 0 ? "chỉ độ nét" : v + "% sáng"; },
+  smooth:   function(v){ return v === 0 ? "thô" : v + "%"; },
+  bgBlur:   function(v){ return v === 0 ? "nét căng" : v + "%"; },
+  waveAmp:  function(v){ return v === 0 ? "phẳng lặng" : v + "%"; },
+  obsAmt:   function(v){ return v + "%"; },
+  obsN:     function(v){ return Math.round(4 + v/100*56) + " ô"; },
+  revealHold: function(v){ return (v/10).toFixed(1) + " giây"; },
+  revealDur:  function(v){ return (v/10).toFixed(1) + " giây"; },
+  waveK:    function(v){ return (1 + v/100*7).toFixed(1) + " lượn"; },
+  waveSpeed:function(v){ return v === 0 ? "đứng yên" : v + "%"; },
+  bgDim:    function(v){ return v === 0 ? "để nguyên" : v + "%"; },
+  recSecs:  function(v){
+    var need = clipNeed();
+    return (v/10).toFixed(1) + " giây" + (need > v/10 ? " → " + need.toFixed(1) : "");
+  },
+  recMbps:  function(v){ return v + " Mbps"; }
+};
+var RECOMPUTE = {mix:1, smooth:1};
+var SLIDERS = ["strength","focus","mix","smooth","zoom","sep","swayAmt","swaySpd",
+               "bgBlur","bgDim","waveAmp","waveK","waveSpeed",
+               "obsAmt","obsN","revealHold","revealDur","recSecs","recMbps"];
+var TOGGLES = ["invert","follow","sway","bgDrift","fill","waveDepth","autoReveal"];
+var REBAKE = {bgBlur:1};
+
+function sync(id){
+  var el = $(id);
+  if(el.type === "checkbox"){ el.checked = state[id]; return; }
+  el.value = state[id];
+  var out = $("o-" + id);
+  if(out) out.textContent = (FMT[id] || String)(state[id]);
+}
+SLIDERS.forEach(function(id){
+  var el = $(id);
+  el.addEventListener("input", function(){
+    state[id] = +el.value;
+    sync(id);
+    if(RECOMPUTE[id]) needDepth = true;
+  });
+  el.addEventListener("change", function(){ if(REBAKE[id]) bakeBg(); });
+  sync(id);
+});
+TOGGLES.forEach(function(id){
+  var el = $(id);
+  el.addEventListener("change", function(){ state[id] = el.checked; });
+  sync(id);
+});
+
+var HINTS = {
+  parallax: "Rê chuột trên ảnh để đổi góc nhìn — vật ở gần dịch nhiều hơn nền.",
+  card: "Cả khung ảnh nghiêng theo con trỏ, kèm thị sai nhẹ bên trong.",
+  anaglyph: "Ảnh nổi cho kính đỏ–lam: mắt trái đỏ, mắt phải lam.",
+  depth: "Trắng là gần, đen là xa. Chỉnh cho biên chủ thể sạch rồi quay lại chế độ thị sai."
+};
+var modeBtns = Array.prototype.slice.call(root.querySelectorAll("#modes button"));
+var anaPanel = $("anaPanel");
+function setMode(m){
+  state.mode = m;
+  modeBtns.forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.mode === m)); });
+  $("modeHint").textContent = HINTS[m];
+  anaPanel.hidden = m !== "anaglyph";
+  card.style.transition = (m === "card" && !reduce) ? "transform .12s ease-out" : "none";
+}
+modeBtns.forEach(function(b){ b.onclick = function(){ setMode(b.dataset.mode); }; });
+setMode(state.mode);
+
+function segGroup(sel, attr, key, after){
+  var btns = Array.prototype.slice.call(root.querySelectorAll(sel + " button"));
+  btns.forEach(function(b){
+    b.onclick = function(){
+      var v = b.dataset[attr];
+      state[key] = isNaN(+v) ? v : +v;
+      btns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      if(after) after();
+    };
+  });
+}
+segGroup("#recModes", "recmode", "recMode");
+segGroup("#recResGroup", "res", "recRes", updateRecSize);
+segGroup("#recFpsGroup", "fps", "recFps", updateRecSize);
+segGroup("#recAspectGroup", "aspect", "recAspect", applyFrame);
+segGroup("#waveTypes", "wave", "waveType", function(){
+  $("waveCtl").hidden = state.waveType === 0;
+});
+segGroup("#obsTypes", "obs", "obsType", function(){
+  $("obsCtl").hidden = state.obsType === 0;
+  if(state.obsType > 0) hideNow(); else reveal = 1;
+  updateObsHint();
+  updateRecSize();
+});
+
+var obsFill = $("obsFill");
+
+function hideNow(){ reveal = 0; revealRun = false; }
+function revealNow(){ reveal = 0; revealRun = true; revealStart = clock; }
+$("obsHide").onclick = hideNow;
+$("obsReveal").onclick = revealNow;
+
+function updateObsHint(){
+  $("obsHint").textContent = state.autoReveal
+    ? "Bấm quay là ảnh tự che rồi lộ dần; clip tự kéo dài đủ " +
+      ((state.revealHold + state.revealDur)/10 + 1.2).toFixed(1) + " giây để chứa hết màn lộ."
+    : "Tự lộ đang tắt: bấm Lộ dần khi bạn muốn, kể cả giữa lúc đang quay.";
+  sync("recSecs");
+}
+["revealHold","revealDur"].forEach(function(id){
+  $(id).addEventListener("input", updateObsHint);
+});
+$("autoReveal").addEventListener("change", updateObsHint);
+updateObsHint();
+Array.prototype.slice.call(root.querySelectorAll("#bgModes button")).forEach(function(b){
+  b.onclick = function(){ setBgMode(b.dataset.bgmode); };
+});
+
+$("reset").onclick = function(){
+  Object.keys(DEFAULTS).forEach(function(k){ state[k] = DEFAULTS[k]; });
+  if(reduce) state.sway = false;
+  SLIDERS.concat(TOGGLES).forEach(sync);
+  [["#recModes","recmode","recMode"], ["#recResGroup","res","recRes"], ["#recFpsGroup","fps","recFps"],
+   ["#recAspectGroup","aspect","recAspect"]]
+    .forEach(function(g){
+      Array.prototype.slice.call(root.querySelectorAll(g[0] + " button")).forEach(function(b){
+        b.setAttribute("aria-pressed", String(b.dataset[g[1]] === String(DEFAULTS[g[2]])));
+      });
+    });
+  setMode(DEFAULTS.mode);
+  $("bgColor1").value = DEFAULTS.bgColor1;
+  $("bgColor2").value = DEFAULTS.bgColor2;
+  $("bgGrad").checked = DEFAULTS.bgGrad;
+  setBgMode(DEFAULTS.bgMode);
+  Array.prototype.slice.call(root.querySelectorAll("#waveTypes button")).forEach(function(b){
+    b.setAttribute("aria-pressed", String(+b.dataset.wave === DEFAULTS.waveType));
+  });
+  $("waveCtl").hidden = DEFAULTS.waveType === 0;
+  root.querySelectorAll("#obsTypes button").forEach(function(b){
+    b.setAttribute("aria-pressed", String(+b.dataset.obs === DEFAULTS.obsType));
+  });
+  $("obsCtl").hidden = DEFAULTS.obsType === 0;
+  hideNow();
+  updateObsHint();
+  applyFrame();
+  updateRecSize();
+  needDepth = true;
+};
+
+updateRecSize();
+
+// mở kèm #demo là chạy luôn ảnh mẫu, tiện gửi link cho người khác xem
+if(location.hash.indexOf("demo") > -1) sampleImage();
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+var root = document.getElementById("tool-ghep");
+function $(id){ return root.querySelector("#" + id); }
+function live(){ return root.classList.contains("on"); }
+
+
+var stage = $("stage");
+var board = $("board");
+var ctx = board.getContext("2d");
+var metaEl = $("meta");
+
+var bgSrc = null, bgCanvas = null, needBg = false;
+
+// Nướng sẵn một bản nền đã làm mờ; làm mờ mỗi khung hình thì quá nặng.
+function bakeBg(){
+  var src = state.bgMode === "self" ? img : (state.bgMode === "file" ? bgSrc : null);
+  if(!src){ bgCanvas = null; return; }
+  var sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+  if(!sw || !sh){ bgCanvas = null; return; }
+  var long = 1100, k = Math.min(1, long/Math.max(sw, sh));
+  var w = Math.max(2, Math.round(sw*k)), h = Math.max(2, Math.round(sh*k));
+  if(!bgCanvas) bgCanvas = document.createElement("canvas");
+  bgCanvas.width = w; bgCanvas.height = h;
+  var c = bgCanvas.getContext("2d");
+  var blur = state.bgBlur/100 * 42 * (w/1100);
+  c.filter = blur > 0.3 ? "blur(" + blur.toFixed(2) + "px)" : "none";
+  // vẽ tràn ra ngoài một chút để mép không bị nhòe thành viền trong suốt
+  var over = 1 + state.bgBlur/100 * 0.16;
+  c.drawImage(src, -(w*over - w)/2, -(h*over - h)/2, w*over, h*over);
+  c.filter = "none";
+}
+
+var DEFAULTS = {cols:7, thick:34, scatter:58, depth:52, spin:46, drift:40,
+                dur:22, hold:18, shape:"jigsaw", order:"wave", loop:true, backface:true,
+                border:45, recMode:"cycle", recSecs:80, recRes:"1080", recFps:30,
+                recMbps:14, recAspect:"frame",
+                bgMode:"color", bgBlur:55, bgDim:35, bgDrift:true, scene:100,
+                bgColor1:"#1E1A15", bgColor2:"#4A3A2C", bgGrad:true};
+var state = {};
+Object.keys(DEFAULTS).forEach(function(k){ state[k] = DEFAULTS[k]; });
+var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+var img = null, iw = 0, ih = 0;
+var pieces = [], cols = 0, rows = 0;
+var phase = "empty";        // empty | assembled | scattered | assembling | exploding
+var phaseT = 0, phaseDur = 0, holdUntil = 0, progress = 0;
+var yaw = 0, pitch = 0, tYaw = 0, tPitch = 0;
+var rng = mulberry(1);
+var rec = {active:false, w:0, h:0, mr:null, chunks:[], step:"", t:0, url:"", ext:"webm",
+           savedLoop:true, savedAspect:"", blob:null};
+
+function mulberry(seed){
+  var a = seed >>> 0;
+  return function(){
+    a += 0x6D2B79F5;
+    var t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function ease(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2; }
+function clamp(v, a, b){ return v < a ? a : (v > b ? b : v); }
+
+/* ---------- đường cắt jigsaw ---------- */
+// Mỗi cạnh là một chuỗi bezier tuyệt đối; hai mảnh kề nhau dùng chung mảng này,
+// mảnh bên kia chỉ việc đi ngược để đường cắt trùng khít.
+var KNOB = [
+  [[0.15,0],[0.25,0],[0.36,0]],
+  [[0.46,0.03],[0.28,0.12],[0.34,0.19]],
+  [[0.40,0.30],[0.60,0.30],[0.66,0.19]],
+  [[0.72,0.12],[0.54,0.03],[0.64,0]],
+  [[0.75,0],[0.88,0],[1,0]]
+];
+
+function makeEdge(x0, y0, x1, y1, dir, straight){
+  var dx = x1-x0, dy = y1-y0, len = Math.hypot(dx, dy);
+  var ux = dx/len, uy = dy/len;
+  var nx = -uy*dir, ny = ux*dir;
+  var segs = [], i, j;
+  if(straight){
+    segs.push({c1:{x:x0+dx/3, y:y0+dy/3}, c2:{x:x0+dx*2/3, y:y0+dy*2/3}, p:{x:x1, y:y1}});
+    return {p0:{x:x0, y:y0}, segs:segs};
+  }
+  var scale = 0.86 + rng()*0.34;      // to nhỏ của mộng
+  var slide = (rng()-0.5)*0.10;       // xê dịch dọc cạnh
+  function P(a, b){
+    var aa = a;
+    if(a > 0.12 && a < 0.92) aa = a + slide;
+    return {x: x0 + ux*len*aa + nx*len*b*scale,
+            y: y0 + uy*len*aa + ny*len*b*scale};
+  }
+  for(i=0; i<KNOB.length; i++){
+    var s = KNOB[i];
+    segs.push({c1:P(s[0][0], s[0][1]), c2:P(s[1][0], s[1][1]), p:P(s[2][0], s[2][1])});
+  }
+  return {p0:{x:x0, y:y0}, segs:segs};
+}
+
+function traceEdge(c, edge, reverse, first){
+  var segs = edge.segs, i;
+  if(!reverse){
+    if(first) c.moveTo(edge.p0.x, edge.p0.y);
+    for(i=0; i<segs.length; i++) c.bezierCurveTo(segs[i].c1.x, segs[i].c1.y, segs[i].c2.x, segs[i].c2.y, segs[i].p.x, segs[i].p.y);
+  } else {
+    var last = segs[segs.length-1].p;
+    if(first) c.moveTo(last.x, last.y);
+    for(i=segs.length-1; i>=0; i--){
+      var target = i === 0 ? edge.p0 : segs[i-1].p;
+      c.bezierCurveTo(segs[i].c2.x, segs[i].c2.y, segs[i].c1.x, segs[i].c1.y, target.x, target.y);
+    }
+  }
+}
+
+function tracePiece(c, p){
+  c.beginPath();
+  traceEdge(c, p.edges[0], p.rev[0], true);
+  traceEdge(c, p.edges[1], p.rev[1], false);
+  traceEdge(c, p.edges[2], p.rev[2], false);
+  traceEdge(c, p.edges[3], p.rev[3], false);
+  c.closePath();
+}
+
+/* ---------- dựng bộ mảnh ---------- */
+function buildPieces(){
+  if(!img) return;
+  rng = mulberry(Math.floor(Math.random()*1e9));
+  cols = state.cols;
+  rows = Math.max(2, Math.round(cols * ih / iw));
+  while(cols*rows > 240 && rows > 2){ cols--; rows = Math.max(2, Math.round(cols*ih/iw)); }
+
+  var cw = iw/cols, ch = ih/rows;
+  var straight = state.shape === "grid";
+  var hE = [], vE = [], r, c;
+
+  // cạnh ngang: hE[r][c] nằm giữa hàng r-1 và r
+  for(r=0; r<=rows; r++){
+    hE[r] = [];
+    for(c=0; c<cols; c++){
+      var flat = straight || r === 0 || r === rows;
+      hE[r][c] = makeEdge(c*cw, r*ch, (c+1)*cw, r*ch, rng() < 0.5 ? 1 : -1, flat);
+    }
+  }
+  // cạnh dọc: vE[r][c] nằm giữa cột c-1 và c
+  for(r=0; r<rows; r++){
+    vE[r] = [];
+    for(c=0; c<=cols; c++){
+      var flat2 = straight || c === 0 || c === cols;
+      vE[r][c] = makeEdge(c*cw, r*ch, c*cw, (r+1)*ch, rng() < 0.5 ? 1 : -1, flat2);
+    }
+  }
+
+  pieces = [];
+  for(r=0; r<rows; r++){
+    for(c=0; c<cols; c++){
+      var p = {
+        col:c, row:r,
+        edges:[hE[r][c], vE[r][c+1], hE[r+1][c], vE[r][c]],
+        rev:[false, false, true, true],
+        homeX: (c+0.5)*cw - iw/2,
+        homeY: (r+0.5)*ch - ih/2
+      };
+      renderPiece(p, cw, ch);
+      pieces.push(p);
+    }
+  }
+  layoutScatter(true);
+  setPhase("assembled");
+  pieces.forEach(function(q){ q.x = q.homeX; q.y = q.homeY; q.z = 0; q.rot = 0; q.tx = 0; q.ty = 0; q.homeK = 1; });
+  holdUntil = performance.now()/1000 + state.hold/10;
+  metaEl.textContent = cols + "×" + rows + " = " + pieces.length + " mảnh · ảnh " + iw + "×" + ih;
+}
+
+function renderPiece(p, cw, ch){
+  // hộp bao: ô cắt nới thêm chỗ cho mộng lồi
+  var pad = Math.ceil(Math.max(cw, ch) * 0.34) + 3;
+  var bx = p.col*cw - pad, by = p.row*ch - pad;
+  var bw = Math.ceil(cw + pad*2), bh = Math.ceil(ch + pad*2);
+
+  var cv = document.createElement("canvas");
+  cv.width = bw; cv.height = bh;
+  var c = cv.getContext("2d");
+  c.translate(-bx, -by);
+
+  // mặt ảnh, không kèm đường cắt nào
+  c.save();
+  tracePiece(c, p);
+  c.clip();
+  c.drawImage(img, 0, 0, iw, ih);
+  c.restore();
+
+  // nong mép ra hơn một điểm ảnh bằng chính nội dung ảnh: hai mảnh kề nhau
+  // chồng mép lên nhau bằng đúng những pixel giống hệt, nên ráp xong không hở mạch
+  var pat = c.createPattern(img, "no-repeat");
+  if(pat){
+    c.save();
+    c.strokeStyle = pat;
+    c.lineWidth = 2.2;
+    c.lineJoin = "round";
+    tracePiece(c, p);
+    c.stroke();
+    c.restore();
+  }
+
+  // đường cắt vẽ riêng thành một lớp, chỉ hiện khi mảnh chưa về chỗ
+  var ev = document.createElement("canvas");
+  ev.width = bw; ev.height = bh;
+  var e = ev.getContext("2d");
+  e.translate(-bx, -by);
+  e.save();
+  tracePiece(e, p);
+  e.clip();
+  var bev = Math.max(0.8, Math.min(cw, ch) * 0.015);
+  e.lineWidth = bev*2;
+  e.strokeStyle = "rgba(255,248,235,.5)";
+  e.save(); e.translate(-bev*0.7, -bev*0.7); tracePiece(e, p); e.stroke(); e.restore();
+  e.strokeStyle = "rgba(40,28,16,.42)";
+  e.save(); e.translate(bev*0.7, bev*0.7); tracePiece(e, p); e.stroke(); e.restore();
+  e.restore();
+  e.lineWidth = 1;
+  e.strokeStyle = "rgba(30,22,14,.45)";
+  tracePiece(e, p);
+  e.stroke();
+
+  // bóng khối để xếp thành bề dày
+  var sv = document.createElement("canvas");
+  sv.width = bw; sv.height = bh;
+  var s = sv.getContext("2d");
+  s.translate(-bx, -by);
+  s.fillStyle = "#2a1e12";
+  tracePiece(s, p);
+  s.fill();
+
+  // mặt sau: bìa các-tông
+  var bvv = document.createElement("canvas");
+  bvv.width = bw; bvv.height = bh;
+  var b = bvv.getContext("2d");
+  b.translate(-bx, -by);
+  b.fillStyle = "#b8a077";
+  tracePiece(b, p);
+  b.fill();
+  b.save(); tracePiece(b, p); b.clip();
+  b.fillStyle = "rgba(120,96,60,.30)";
+  for(var i=0;i<26;i++){
+    b.fillRect(bx + Math.random()*bw, by + Math.random()*bh, 1 + Math.random()*7, 1);
+  }
+  b.restore();
+  b.lineWidth = 1; b.strokeStyle = "rgba(60,44,26,.45)";
+  tracePiece(b, p); b.stroke();
+
+  p.face = cv; p.edge = ev; p.back = bvv; p.silh = sv;
+  p.ox = p.col*cw + cw/2 - bx;   // tâm ô trong toạ độ canvas mảnh
+  p.oy = p.row*ch + ch/2 - by;
+}
+
+/* ---------- tán xạ ---------- */
+function layoutScatter(initial){
+  var sc = state.scatter/100, dp = state.depth/100, sp = state.spin/100;
+  pieces.forEach(function(p){
+    p.sx = (Math.random()-0.5) * iw * (0.35 + sc*1.5);
+    p.sy = (Math.random()-0.5) * ih * (0.35 + sc*1.5);
+    p.sz = (Math.random()-0.5) * iw * dp * 1.1;
+    p.srot = (Math.random()-0.5) * Math.PI * 2 * sp;
+    p.stx = (Math.random()-0.5) * Math.PI * 2 * sp;
+    p.sty = (Math.random()-0.5) * Math.PI * 2 * sp;
+    p.vx = (Math.random()-0.5) * iw * 0.10;
+    p.vy = (Math.random()-0.5) * ih * 0.10;
+    p.vz = (Math.random()-0.5) * iw * 0.07;
+    p.vr = (Math.random()-0.5) * 1.1;
+    p.vtx = (Math.random()-0.5) * 1.0;
+    p.vty = (Math.random()-0.5) * 1.0;
+    if(initial){ p.x = p.sx; p.y = p.sy; p.z = p.sz; p.rot = p.srot; p.tx = p.stx; p.ty = p.sty; p.homeK = 0; }
+  });
+}
+
+function delayFor(p, i){
+  var maxD = 0.55;
+  if(state.order === "all") return 0;
+  if(state.order === "random") return (p.rndOrder !== undefined ? p.rndOrder : (p.rndOrder = Math.random())) * maxD;
+  if(state.order === "row") return (i / Math.max(1, pieces.length-1)) * maxD;
+  var dx = p.homeX/(iw/2), dy = p.homeY/(ih/2);
+  return clamp(Math.hypot(dx, dy)/1.42, 0, 1) * maxD;
+}
+
+function capture(){
+  pieces.forEach(function(p){
+    p.fx = p.x; p.fy = p.y; p.fz = p.z; p.frot = p.rot; p.ftx = p.tx; p.fty = p.ty;
+  });
+}
+
+var PHASE_NAME = {empty:"Chờ ảnh", assembled:"Nguyên vẹn", scattered:"Rời rạc",
+                  assembling:"Đang lắp ráp", exploding:"Đang bung ra"};
+function setPhase(ph){
+  phase = ph;
+  $("phaseName").textContent = PHASE_NAME[ph];
+}
+function startAssemble(){
+  if(!pieces.length) return;
+  capture();
+  phaseDur = reduce ? 0.6 : state.dur/10;
+  phaseT = 0;
+  setPhase("assembling");
+}
+function startExplode(){
+  if(!pieces.length) return;
+  capture();
+  layoutScatter(false);
+  phaseDur = reduce ? 0.5 : Math.max(0.6, state.dur/10 * 0.45);
+  phaseT = 0;
+  setPhase("exploding");
+}
+function toggle(){
+  if(phase === "assembled" || phase === "assembling") startExplode();
+  else if(phase === "scattered" || phase === "exploding") startAssemble();
+}
+
+/* ---------- vòng vẽ ---------- */
+var last = null;
+function frame(t){
+  requestAnimationFrame(frame);
+  if(!live()) return;
+  var now = t/1000;
+  var dt = last === null ? 0 : Math.min(0.05, now - last);
+  last = now;
+  if(!pieces.length){ return; }
+  if(rec.active) recStep(now);
+
+  yaw += (tYaw - yaw) * 0.08;
+  pitch += (tPitch - pitch) * 0.08;
+
+  if(phase === "assembling" || phase === "exploding"){
+    phaseT += dt;
+    var gp = clamp(phaseT/phaseDur, 0, 1);
+    var done = 0;
+    pieces.forEach(function(p, i){
+      var d = delayFor(p, i);
+      var k = clamp((gp - d) / Math.max(0.001, 1 - d), 0, 1);
+      var e = ease(k);
+      var toX, toY, toZ, toR, toTx, toTy;
+      if(phase === "assembling"){ toX = p.homeX; toY = p.homeY; toZ = 0; toR = 0; toTx = 0; toTy = 0; }
+      else { toX = p.sx; toY = p.sy; toZ = p.sz; toR = p.srot; toTx = p.stx; toTy = p.sty; }
+      p.x = p.fx + (toX - p.fx)*e;
+      p.y = p.fy + (toY - p.fy)*e;
+      p.z = p.fz + (toZ - p.fz)*e;
+      // nhấc lên một chút giữa đường cho có quỹ đạo
+      p.z += Math.sin(e*Math.PI) * iw * 0.06 * (phase === "assembling" ? 1 : 0.4);
+      p.rot = p.frot + (toR - p.frot)*e;
+      p.tx = p.ftx + (toTx - p.ftx)*e;
+      p.ty = p.fty + (toTy - p.fty)*e;
+      p.homeK = phase === "assembling" ? e : 1 - e;
+      if(k >= 1) done++;
+    });
+    progress = done/pieces.length;
+    if(gp >= 1){
+      if(phase === "assembling"){ setPhase("assembled"); progress = 1; }
+      else { setPhase("scattered"); progress = 0; }
+      holdUntil = now + state.hold/10;
+    }
+  } else if(phase === "scattered"){
+    var lim = {x: iw*(0.35 + state.scatter/100*1.6)/2, y: ih*(0.35 + state.scatter/100*1.6)/2,
+               z: Math.max(1, iw*state.depth/100*0.7)};
+    var k2 = state.drift/100;
+    pieces.forEach(function(p){
+      p.x += p.vx*k2*dt; p.y += p.vy*k2*dt; p.z += p.vz*k2*dt;
+      p.rot += p.vr*k2*dt; p.tx += p.vtx*k2*dt; p.ty += p.vty*k2*dt;
+      p.homeK = 0;
+      if(p.x < -lim.x || p.x > lim.x) p.vx *= -1;
+      if(p.y < -lim.y || p.y > lim.y) p.vy *= -1;
+      if(p.z < -lim.z || p.z > lim.z) p.vz *= -1;
+    });
+    progress = 0;
+    if(state.loop && now > holdUntil) startAssemble();
+  } else if(phase === "assembled"){
+    progress = 1;
+    if(state.loop && now > holdUntil) startExplode();
+  }
+
+  $("meterFill").style.width = Math.round(progress*100) + "%";
+  $("phasePct").textContent = Math.round(progress*100) + "%";
+  draw();
+}
+
+function themeColor(name){
+  var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || "#111";
+}
+
+function draw(){
+  var W, H;
+  if(rec.w){ W = rec.w; H = rec.h; }
+  else {
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    // kích thước chẵn: codec H.264 đòi hỏi vậy
+    W = 2*Math.round(board.clientWidth*dpr/2);
+    H = 2*Math.round(board.clientHeight*dpr/2);
+  }
+  if(W < 2 || H < 2) return;
+  if(board.width !== W || board.height !== H){ board.width = W; board.height = H; }
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  if(state.bgMode === "solid"){
+    if(state.bgGrad){
+      var g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, state.bgColor1);
+      g.addColorStop(1, state.bgColor2);
+      ctx.fillStyle = g;
+    } else {
+      ctx.fillStyle = state.bgColor1;
+    }
+  } else {
+    ctx.fillStyle = themeColor("--stage");
+  }
+  ctx.fillRect(0, 0, W, H);
+
+  if(bgCanvas && (state.bgMode === "self" || state.bgMode === "file")){
+    var bw = bgCanvas.width, bh = bgCanvas.height;
+    var bs = Math.max(W/bw, H/bh) * 1.10;          // lấp đầy khung, chừa mép cho nền trôi
+    var dw = bw*bs, dh = bh*bs;
+    var ox = state.bgDrift ? -yaw*W*0.06 : 0;
+    var oy = state.bgDrift ? pitch*H*0.06 : 0;
+    ctx.drawImage(bgCanvas, (W - dw)/2 + ox, (H - dh)/2 + oy, dw, dh);
+    if(state.bgDim > 0){
+      ctx.fillStyle = "rgba(0,0,0," + (state.bgDim/100*0.88).toFixed(3) + ")";
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  var fit = Math.min(W/(iw*1.30), H/(ih*1.22)) * (state.scene/100);
+  var cx = W/2, cy = H/2;
+  var f = iw*1.9;
+  var cyaw = Math.cos(yaw), syaw = Math.sin(yaw);
+  var cpit = Math.cos(pitch), spit = Math.sin(pitch);
+  var layers = Math.round(state.thick/100 * 7);
+  var tk = Math.max(1, H/700);
+  var seam = state.border/100 * 1.15;
+
+  var view = pieces.map(function(p){
+    var vx = p.x*cyaw + p.z*syaw;
+    var vz0 = -p.x*syaw + p.z*cyaw;
+    var vy = p.y*cpit - vz0*spit;
+    var vz = p.y*spit + vz0*cpit;
+    var s = f/Math.max(f*0.35, f - vz);
+    return {p:p, X: cx + vx*s*fit, Y: cy + vy*s*fit, S: s*fit, Z: vz};
+  });
+  view.sort(function(a, b){ return a.Z - b.Z; });
+
+  for(var i=0; i<view.length; i++){
+    var v = view[i], p = v.p;
+    // 0 = đã nằm đúng ô; mọi dấu vết của việc bị cắt rời đều tắt theo giá trị này
+    var loose = 1 - (p.homeK === undefined ? 0 : p.homeK);
+    var ax = Math.cos(p.ty), ay = Math.cos(p.tx);   // co ngắn khi mảnh nghiêng
+    var co = Math.cos(p.rot), si = Math.sin(p.rot);
+    var a = v.S*ax, d = v.S*ay;
+    var faceUp = (ax*ay) >= 0 || !state.backface;
+    var fog = clamp(0.55 + (v.Z/(iw*0.9) + 0.5)*0.9, 0.35, 1);
+    var base = 1 - (1 - fog)*loose;
+
+    if(layers > 0 && loose > 0.02){
+      ctx.globalAlpha = base * 0.9 * loose;
+      for(var k = layers; k > 0; k--){
+        ctx.setTransform(co*a, si*a, -si*d, co*d, v.X + k*0.9*tk, v.Y + k*1.1*tk);
+        ctx.drawImage(p.silh, -p.ox, -p.oy);
+      }
+    }
+
+    ctx.setTransform(co*a, si*a, -si*d, co*d, v.X, v.Y);
+    ctx.globalAlpha = base;
+    ctx.drawImage(faceUp ? p.face : p.back, -p.ox, -p.oy);
+
+    if(faceUp && seam > 0.01){
+      var ea = clamp(loose/0.25, 0, 1) * seam;   // tắt hẳn ở đoạn cuối chặng về chỗ
+      if(ea > 0.01){
+        ctx.globalAlpha = base * Math.min(1, ea);
+        ctx.drawImage(p.edge, -p.ox, -p.oy);
+      }
+    }
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+}
+requestAnimationFrame(frame);
+
+/* ---------- nạp ảnh ---------- */
+function loadImage(im, label){
+  var MAX = 1600;
+  var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+  if(Math.max(w, h) > MAX){
+    var k = MAX/Math.max(w, h);
+    var cv = document.createElement("canvas");
+    cv.width = Math.round(w*k); cv.height = Math.round(h*k);
+    cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+    img = cv; iw = cv.width; ih = cv.height;
+  } else { img = im; iw = w; ih = h; }
+
+  stage.dataset.empty = "0";
+  applyFrame();
+  buildPieces();
+  if(state.bgMode === "self") bakeBg();
+  metaEl.textContent = label + " · " + cols + "×" + rows + " = " + pieces.length + " mảnh";
+  updateRecSize();
+}
+
+function fromFile(file){
+  if(!file || file.type.indexOf("image/") !== 0) return;
+  var url = URL.createObjectURL(file);
+  var im = new Image();
+  im.onload = function(){ loadImage(im, file.name || "ảnh dán"); URL.revokeObjectURL(url); };
+  im.onerror = function(){ metaEl.textContent = "không đọc được tệp ảnh"; URL.revokeObjectURL(url); };
+  im.src = url;
+}
+
+["bgColor1","bgColor2"].forEach(function(id){
+  var el = $(id);
+  el.addEventListener("input", function(){ state[id] = el.value; });
+});
+$("bgGrad").addEventListener("change", function(){
+  state.bgGrad = this.checked;
+});
+
+var bgInput = $("bgFile");
+var bgName = $("bgName");
+
+bgInput.onchange = function(){
+  var file = bgInput.files[0];
+  if(!file || file.type.indexOf("image/") !== 0) return;
+  var url = URL.createObjectURL(file);
+  var im = new Image();
+  im.onload = function(){
+    bgSrc = im;
+    setBgMode("file");
+    bakeBg();
+    bgName.textContent = "Ảnh nền: " + (file.name || "đã chọn");
+    URL.revokeObjectURL(url);
+  };
+  im.onerror = function(){ bgName.textContent = "Không đọc được ảnh nền."; URL.revokeObjectURL(url); };
+  im.src = url;
+};
+
+var BG_HINT = {
+  color: "Đang dùng màu nền của giao diện.",
+  solid: "Màu nền tự chọn — video sẽ dùng đúng màu này, không theo sáng/tối của máy.",
+  self: "Nền là chính tấm ảnh này, phóng to và làm mờ.",
+  file: "Đang dùng ảnh nền riêng."
+};
+
+function setBgMode(m){
+  if(m === "file" && !bgSrc){ bgInput.click(); return; }
+  state.bgMode = m;
+  Array.prototype.slice.call(root.querySelectorAll("#bgModes button")).forEach(function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.bgmode === m));
+  });
+  var pic = m === "self" || m === "file";
+  $("bgBlurWrap").hidden = !pic;
+  $("bgDimWrap").hidden = !pic;
+  $("bgDriftWrap").hidden = !pic;
+  $("bgColorWrap").hidden = m !== "solid";
+  if(m !== "file" || bgSrc) bgName.textContent = BG_HINT[m];
+  bakeBg();
+}
+
+function sampleImage(){
+  var W = 1100, H = 620;
+  var c = document.createElement("canvas"); c.width = W; c.height = H;
+  var x = c.getContext("2d");
+  function rnd(i){ var s = Math.sin(i*127.1)*43758.5453; return s - Math.floor(s); }
+  function noise(px, py){
+    var xi = Math.floor(px), yi = Math.floor(py), fx = px-xi, fy = py-yi;
+    var u = fx*fx*(3-2*fx), v = fy*fy*(3-2*fy);
+    var a = rnd(xi + yi*57), b = rnd(xi+1 + yi*57);
+    var cc = rnd(xi + (yi+1)*57), d = rnd(xi+1 + (yi+1)*57);
+    return (a*(1-u) + b*u)*(1-v) + (cc*(1-u) + d*u)*v;
+  }
+  var im = x.createImageData(W, H);
+  for(var py=0; py<H; py++){
+    for(var px=0; px<W; px++){
+      var f = 0, amp = 0.5, fr = 0.014;
+      for(var o=0;o<5;o++){ f += noise(px*fr, py*fr*0.55)*amp; amp *= 0.5; fr *= 2.1; }
+      var ridge = Math.abs(Math.sin((py*0.02 + f*3.4)*2.6));
+      var t = clamp(ridge*0.65 + f*0.6, 0, 1);
+      var i = (py*W + px)*4;
+      im.data[i] = 132 + t*96; im.data[i+1] = 118 + t*92; im.data[i+2] = 96 + t*82; im.data[i+3] = 255;
+    }
+  }
+  x.putImageData(im, 0, 0);
+  x.save();
+  x.translate(W*0.6, H*0.56); x.rotate(-0.5);
+  x.fillStyle = "#c9b183";
+  x.beginPath(); x.ellipse(0, 0, 34, 96, 0, 0, Math.PI*2); x.fill();
+  x.strokeStyle = "rgba(80,62,40,.55)"; x.lineWidth = 1.1;
+  for(var k=-30; k<=30; k+=3.2){
+    var hgt = Math.sqrt(Math.max(0, 1-(k*k)/1156))*94;
+    x.beginPath(); x.moveTo(k, -hgt); x.lineTo(k, hgt); x.stroke();
+  }
+  x.fillStyle = "#a98f61";
+  x.beginPath(); x.ellipse(0, -104, 20, 26, 0, 0, Math.PI*2); x.fill();
+  x.fillStyle = "#1b140c";
+  x.beginPath(); x.ellipse(-11, -116, 6.5, 6.5, 0, 0, Math.PI*2); x.fill();
+  x.strokeStyle = "#6b5636"; x.lineWidth = 3.4; x.lineCap = "round";
+  [[-16,-128,-64,-176],[10,-130,54,-172],[-30,-40,-78,-16],[-32,10,-84,42],[30,-34,80,-14],[32,16,86,50]]
+    .forEach(function(a, idx){
+      x.lineWidth = idx < 2 ? 3.4 : 5;
+      x.beginPath(); x.moveTo(a[0], a[1]);
+      x.quadraticCurveTo((a[0]+a[2])/2, a[1] + (idx<2 ? -30 : 16), a[2], a[3]); x.stroke();
+    });
+  x.restore();
+  var out = new Image();
+  out.onload = function(){ loadImage(out, "vỏ cây (mẫu)"); };
+  out.src = c.toDataURL("image/png");
+}
+
+/* ---------- tương tác ---------- */
+stage.addEventListener("pointermove", function(e){
+  var r = stage.getBoundingClientRect();
+  tYaw = ((e.clientX - r.left)/r.width - 0.5) * 0.9;
+  tPitch = ((e.clientY - r.top)/r.height - 0.5) * -0.6;
+});
+stage.addEventListener("pointerleave", function(){ tYaw = 0; tPitch = 0; });
+board.addEventListener("click", toggle);
+addEventListener("keydown", function(e){
+  if(!live()) return;
+  if(e.code === "Space" && pieces.length){ e.preventDefault(); toggle(); }
+});
+
+var fileInput = $("file");
+$("pick").onclick = function(){ fileInput.click(); };
+$("pick2").onclick = function(){ fileInput.click(); };
+fileInput.onchange = function(){ fromFile(fileInput.files[0]); };
+$("demo").onclick = sampleImage;
+
+$("paste").onclick = function(){
+  if(!navigator.clipboard || !navigator.clipboard.read){
+    metaEl.textContent = "trình duyệt không cho đọc clipboard — hãy nhấn ctrl+v"; return;
+  }
+  navigator.clipboard.read().then(function(items){
+    for(var i=0;i<items.length;i++){
+      var type = items[i].types.filter(function(t){ return t.indexOf("image/") === 0; })[0];
+      if(type) return items[i].getType(type).then(function(blob){
+        fromFile(new File([blob], "ảnh dán", {type: blob.type}));
+      });
+    }
+    metaEl.textContent = "clipboard không có ảnh — thử ctrl+v";
+  }).catch(function(){ metaEl.textContent = "trình duyệt chặn clipboard — hãy nhấn ctrl+v"; });
+};
+addEventListener("paste", function(e){
+  if(!live()) return;
+  var items = e.clipboardData ? e.clipboardData.items : null;
+  if(!items) return;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type.indexOf("image/") === 0){ fromFile(items[i].getAsFile()); return; }
+  }
+});
+["dragenter","dragover"].forEach(function(ev){
+  stage.addEventListener(ev, function(e){ e.preventDefault(); stage.classList.add("drag"); });
+});
+["dragleave","drop"].forEach(function(ev){
+  stage.addEventListener(ev, function(e){ e.preventDefault(); stage.classList.remove("drag"); });
+});
+stage.addEventListener("drop", function(e){
+  if(e.dataTransfer && e.dataTransfer.files) fromFile(e.dataTransfer.files[0]);
+});
+
+/* ---------- quay video ---------- */
+var recBtn = $("recBtn");
+var recStatus = $("recStatus");
+var recResult = $("recResult");
+var recVideo = $("recVideo");
+
+var CANDIDATES = [
+  {mime:"video/mp4;codecs=avc1.42E01E", ext:"mp4",  label:"MP4"},
+  {mime:"video/mp4",                    ext:"mp4",  label:"MP4"},
+  {mime:"video/webm;codecs=vp9",        ext:"webm", label:"WebM · VP9"},
+  {mime:"video/webm;codecs=vp8",        ext:"webm", label:"WebM · VP8"},
+  {mime:"video/webm",                   ext:"webm", label:"WebM"}
+];
+var formats = [];
+(function initFormats(){
+  var box = $("recFmtGroup");
+  var seen = {};
+  if(window.MediaRecorder && MediaRecorder.isTypeSupported){
+    CANDIDATES.forEach(function(c){
+      if(seen[c.ext] || !MediaRecorder.isTypeSupported(c.mime)) return;
+      seen[c.ext] = 1; formats.push(c);
+    });
+  }
+  if(!formats.length || !board.captureStream){
+    box.innerHTML = "";
+    recBtn.disabled = true;
+    recStatus.textContent = "Trình duyệt này không quay được canvas — trên máy tính hãy dùng Chrome hoặc Edge, trên iPhone cần iOS đời mới.";
+    return;
+  }
+  state.recFmt = 0;
+  formats.forEach(function(f, i){
+    var b = document.createElement("button");
+    b.textContent = f.label;
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.onclick = function(){
+      state.recFmt = i;
+      Array.prototype.slice.call(box.children).forEach(function(o, j){
+        o.setAttribute("aria-pressed", String(j === i));
+      });
+      updateRecSize();
+    };
+    box.appendChild(b);
+  });
+  if(formats.length === 1) box.style.gridTemplateColumns = "1fr";
+})();
+
+function homeAll(){
+  pieces.forEach(function(p){ p.x = p.homeX; p.y = p.homeY; p.z = 0; p.rot = 0; p.tx = 0; p.ty = 0; p.homeK = 1; });
+  setPhase("assembled");
+  progress = 1;
+}
+
+var FRAME_AR = {"9:16":"9 / 16", "1:1":"1 / 1", "4:5":"4 / 5", "16:9":"16 / 9"};
+
+function applyFrame(){
+  if(!iw) return;
+  board.style.aspectRatio = FRAME_AR[state.recAspect] || ((iw*1.30) + " / " + (ih*1.22));
+  updateRecSize();
+}
+
+function recFrameSize(){
+  var res = state.recRes === "screen"
+    ? Math.round((board.clientHeight || 360) * Math.min(2, window.devicePixelRatio || 1))
+    : +state.recRes;
+  var ar = state.recAspect, w, h;
+  if(ar === "9:16"){ w = res; h = res*16/9; }
+  else if(ar === "1:1"){ w = res; h = res; }
+  else if(ar === "4:5"){ w = res; h = res*5/4; }
+  else if(ar === "16:9"){ h = res; w = res*16/9; }
+  else { h = res; w = res * ((board.clientWidth || 16) / (board.clientHeight || 9)); }
+  var k = Math.min(1, 3840/Math.max(w, h));
+  return {w: Math.max(2, 2*Math.round(w*k/2)), h: Math.max(2, 2*Math.round(h*k/2))};
+}
+
+function updateRecSize(){
+  var el = $("recSize");
+  if(!el) return;
+  var sz = recFrameSize(), f = formats[state.recFmt || 0];
+  el.textContent = sz.w + " × " + sz.h + " · " + (f ? f.label : "chưa có định dạng") +
+                   " · " + state.recFps + " hình/giây";
+}
+addEventListener("resize", updateRecSize);
+
+function startRec(){
+  if(rec.active || !pieces.length || !formats.length) return;
+  var f = formats[state.recFmt || 0];
+
+  var sz = recFrameSize();
+  rec.active = true;
+  rec.w = sz.w; rec.h = sz.h;
+  board.style.aspectRatio = rec.w + " / " + rec.h;
+  rec.chunks = [];
+  rec.ext = f.ext;
+  rec.savedLoop = state.loop;
+
+  if(rec.url){ URL.revokeObjectURL(rec.url); rec.url = ""; }
+  recResult.hidden = true;
+  recVideo.removeAttribute("src");
+
+  if(state.recMode === "cycle"){
+    state.loop = false;
+    homeAll();
+    rec.step = "lead"; rec.t = performance.now()/1000 + 0.5;
+  } else {
+    rec.step = "free"; rec.t = performance.now()/1000 + state.recSecs/10;
+  }
+
+  draw();   // đổi kích thước canvas trước khi bắt luồng
+
+  var stream = board.captureStream(state.recFps);
+  try{
+    rec.mr = new MediaRecorder(stream, {mimeType:f.mime, videoBitsPerSecond: state.recMbps*1000000});
+  }catch(err){
+    rec.active = false; state.loop = rec.savedLoop;
+    restoreFrame();
+    recStatus.textContent = "Không khởi động được bộ quay: " + err.message;
+    return;
+  }
+  rec.mr.ondataavailable = function(e){ if(e.data && e.data.size) rec.chunks.push(e.data); };
+  rec.mr.onstop = finishRec;
+  rec.mr.start();
+
+  recBtn.textContent = "Dừng quay";
+  recBtn.classList.remove("primary");
+  recStatus.innerHTML = '<span class="rec-live">● đang quay</span> — ' +
+    Math.round(board.width) + "×" + Math.round(board.height) + " · " + state.recFps + " hình/giây";
+}
+
+function stopRec(){
+  if(!rec.active) return;
+  rec.active = false;
+  rec.step = "";
+  state.loop = rec.savedLoop;
+  if(rec.mr && rec.mr.state !== "inactive") rec.mr.stop();
+  recBtn.textContent = "Bắt đầu quay";
+  recBtn.classList.add("primary");
+  recStatus.textContent = "Đang đóng gói video…";
+}
+
+function restoreFrame(){
+  rec.w = 0; rec.h = 0;
+  applyFrame();
+}
+
+function finishRec(){
+  restoreFrame();
+  var blob = new Blob(rec.chunks, {type: rec.chunks.length ? rec.chunks[0].type : "video/webm"});
+  rec.chunks = [];
+  if(!blob.size){ recStatus.textContent = "Không thu được khung hình nào. Thử lại với 30 hình/giây."; return; }
+  rec.blob = blob;
+  rec.url = URL.createObjectURL(blob);
+  recVideo.src = rec.url;
+  recResult.hidden = false;
+  recStatus.textContent = "Xong · " + (blob.size/1048576).toFixed(1) + " MB · ." + rec.ext;
+  saveRec();
+}
+
+// Trong khung an toàn của claude.ai phải xin phép qua claude.use("downloads");
+// mở file ở máy thì dùng thẻ <a download> như bình thường.
+function saveViaAnchor(name){
+  var a = document.createElement("a");
+  a.href = rec.url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+var SAVE_ERR = {
+  declined: "Bạn đã từ chối lưu.",
+  too_large: "Video quá 16 MB — hạ độ phân giải, chất lượng hoặc thời lượng rồi quay lại.",
+  rate_limited: "Đang có hộp thoại lưu khác mở — thử lại sau vài giây.",
+  rejected_extension: "Định dạng này không lưu được ở đây — chọn MP4 hoặc WebM."
+};
+
+function saveRec(){
+  if(!rec.url || !rec.blob) return;
+  var name = "ghep-manh." + rec.ext;
+  if(!(window.claude && typeof claude.use === "function")){ saveViaAnchor(name); return; }
+  claude.use("downloads").then(function(d){
+    if(!d){ saveViaAnchor(name); return; }
+    return d.save({filename:name, data:rec.blob}).then(function(){
+      recStatus.textContent = "Đã lưu " + name + " · " + (rec.blob.size/1048576).toFixed(1) + " MB";
+    }, function(err){
+      recStatus.textContent = SAVE_ERR[err && err.code] ||
+        "Không lưu được. Chuột phải lên video để lưu thủ công.";
+    });
+  }, function(){ saveViaAnchor(name); });
+}
+
+// máy trạng thái: dẫn đúng một vòng nguyên vẹn → bung → trôi → lắp lại
+function recStep(now){
+  if(rec.step === "free"){
+    if(now > rec.t) stopRec();
+  } else if(rec.step === "lead"){
+    if(now > rec.t){ startExplode(); rec.step = "exploding"; }
+  } else if(rec.step === "exploding"){
+    if(phase === "scattered"){ rec.step = "drift"; rec.t = now + Math.max(0.4, state.hold/10); }
+  } else if(rec.step === "drift"){
+    if(now > rec.t){ startAssemble(); rec.step = "assembling"; }
+  } else if(rec.step === "assembling"){
+    if(phase === "assembled"){ rec.step = "tail"; rec.t = now + 1.0; }
+  } else if(rec.step === "tail"){
+    if(now > rec.t) stopRec();
+  }
+}
+
+recBtn.onclick = function(){ if(rec.active) stopRec(); else startRec(); };
+$("recSave").onclick = saveRec;
+
+/* ---------- điều khiển ---------- */
+var FMT = {
+  cols: function(v){ return v + " cột"; },
+  thick: function(v){ return v === 0 ? "mỏng dính" : v + "%"; },
+  scatter: function(v){ return v + "%"; },
+  depth: function(v){ return v === 0 ? "phẳng" : v + "%"; },
+  spin: function(v){ return v === 0 ? "không lộn" : v + "%"; },
+  drift: function(v){ return v === 0 ? "đứng im" : v + "%"; },
+  dur: function(v){ return (v/10).toFixed(1) + " giây"; },
+  hold: function(v){ return (v/10).toFixed(1) + " giây"; },
+  border: function(v){ return v === 0 ? "không kẻ" : v + "%"; },
+  bgBlur: function(v){ return v === 0 ? "nét căng" : v + "%"; },
+  bgDim: function(v){ return v === 0 ? "để nguyên" : v + "%"; },
+  scene: function(v){ return v + "%"; },
+  recSecs: function(v){ return (v/10).toFixed(1) + " giây"; },
+  recMbps: function(v){ return v + " Mbps"; }
+};
+var SLIDERS = ["cols","thick","border","scatter","depth","spin","drift","dur","hold",
+               "bgBlur","bgDim","scene","recSecs","recMbps"];
+var TOGGLES = ["loop","backface","bgDrift"];
+var REBUILD = {cols:1};
+var REBAKE = {bgBlur:1};
+
+function sync(id){
+  var el = $(id);
+  if(el.type === "checkbox"){ el.checked = state[id]; return; }
+  el.value = state[id];
+  var out = $("o-" + id);
+  if(out) out.textContent = (FMT[id] || String)(state[id]);
+}
+SLIDERS.forEach(function(id){
+  var el = $(id);
+  el.addEventListener("input", function(){ state[id] = +el.value; sync(id); });
+  el.addEventListener("change", function(){
+    if(REBUILD[id]) buildPieces();
+    if(REBAKE[id]) bakeBg();
+  });
+  sync(id);
+});
+TOGGLES.forEach(function(id){
+  var el = $(id);
+  el.addEventListener("change", function(){ state[id] = el.checked; });
+  sync(id);
+});
+
+function segGroup(sel, attr, key, after){
+  var btns = Array.prototype.slice.call(root.querySelectorAll(sel + " button"));
+  btns.forEach(function(b){
+    b.onclick = function(){
+      var v = b.dataset[attr];
+      state[key] = isNaN(+v) ? v : +v;
+      btns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      if(after) after();
+    };
+  });
+}
+segGroup("#shapes", "shape", "shape", buildPieces);
+segGroup("#orders", "order", "order", null);
+segGroup("#recResGroup", "res", "recRes", updateRecSize);
+Array.prototype.slice.call(root.querySelectorAll("#bgModes button")).forEach(function(b){
+  b.onclick = function(){ setBgMode(b.dataset.bgmode); };
+});
+segGroup("#recFpsGroup", "fps", "recFps", updateRecSize);
+segGroup("#recAspectGroup", "aspect", "recAspect", applyFrame);
+segGroup("#recModes", "recmode", "recMode", function(){
+  $("recSecsWrap").hidden = state.recMode !== "free";
+});
+
+$("doAssemble").onclick = startAssemble;
+$("doExplode").onclick = startExplode;
+$("doShuffle").onclick = function(){
+  buildPieces();
+  startExplode();
+};
+$("reset").onclick = function(){
+  Object.keys(DEFAULTS).forEach(function(k){ state[k] = DEFAULTS[k]; });
+  SLIDERS.concat(TOGGLES).forEach(sync);
+  [["#shapes","shape","shape"], ["#orders","order","order"], ["#recModes","recmode","recMode"],
+   ["#recResGroup","res","recRes"], ["#recFpsGroup","fps","recFps"],
+   ["#recAspectGroup","aspect","recAspect"]].forEach(function(g){
+    Array.prototype.slice.call(root.querySelectorAll(g[0] + " button")).forEach(function(b){
+      b.setAttribute("aria-pressed", String(b.dataset[g[1]] === String(DEFAULTS[g[2]])));
+    });
+  });
+  $("recSecsWrap").hidden = DEFAULTS.recMode !== "free";
+  $("bgColor1").value = DEFAULTS.bgColor1;
+  $("bgColor2").value = DEFAULTS.bgColor2;
+  $("bgGrad").checked = DEFAULTS.bgGrad;
+  setBgMode(DEFAULTS.bgMode);
+  applyFrame();
+  updateRecSize();
+  buildPieces();
+};
+
+updateRecSize();
+
+// mở kèm #demo là chạy luôn ảnh mẫu, tiện gửi link cho người khác xem
+if(location.hash.indexOf("demo") > -1) sampleImage();
+})();
+</script>
