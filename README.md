@@ -16,6 +16,37 @@ python -m http.server 8000
 
 rồi mở http://localhost:8000
 
+## Đưa lên mạng (GitHub Pages)
+
+Thư mục này đã là một git repo có sẵn commit đầu tiên, chỉ còn thiếu chỗ để đẩy lên.
+
+1. Tạo một repo rỗng trên GitHub, ví dụ `xuong-anh-3d` — **không** tích thêm README hay
+   .gitignore, để nó trống hoàn toàn.
+2. Chạy hai lệnh (thay `TEN-GITHUB` bằng tên tài khoản của bạn):
+
+```
+git remote add origin https://github.com/TEN-GITHUB/xuong-anh-3d.git
+git push -u origin main
+```
+
+3. Vào repo trên GitHub → **Settings → Pages** → mục *Build and deployment*, chọn
+   Source = **Deploy from a branch**, Branch = **main**, thư mục **/ (root)** → Save.
+4. Chờ chừng một phút, link công khai sẽ là:
+   `https://TEN-GITHUB.github.io/xuong-anh-3d/`
+
+Sau này sửa gì thì `git add -A && git commit -m "..." && git push` là trang tự cập nhật.
+
+Vài điều đi kèm:
+
+- Thư mục `rieng-le/` bị `.gitignore` bỏ qua nên **không** lên mạng — trang công khai chỉ gồm
+  đúng `index.html`.
+- Có sẵn file rỗng `.nojekyll` để GitHub khỏi đem trang qua bộ dựng Jekyll.
+- Bản chạy trên host tĩnh **tải video thẳng về máy**, không qua hộp thoại xin phép và
+  không dính trần 16 MB như bản trong khung claude.ai.
+- Trang đã có thẻ `description` và `og:title` / `og:description` để khi bạn dán link vào
+  Facebook, Zalo hay Messenger thì hiện đúng tên và mô tả. Muốn có cả ảnh xem trước thì thêm
+  `og:image` trỏ tới một ảnh với địa chỉ đầy đủ — phải có link rồi mới điền được.
+
 ## Các file
 
 | File | Nội dung |
