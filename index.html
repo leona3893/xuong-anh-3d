@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <title>Xưởng Ảnh 3D</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Biến một tấm ảnh phẳng thành hiệu ứng 3D ngay trong trình duyệt: thị sai theo độ sâu, sóng, đố hình lộ dần, ghép mảnh jigsaw tự lắp — rồi quay thẳng ra video 9:16 cho TikTok, Reels, YouTube.">
+<meta name="description" content="Biến ảnh phẳng thành hiệu ứng 3D ngay trong trình duyệt: thị sai theo độ sâu, sóng, đố hình lộ dần, ghép mảnh jigsaw tự lắp — và ghép bộ ảnh infographic với giọng đọc thành video có tiếng, có phụ đề, đúng khung 9:16 cho TikTok, Reels, YouTube.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://leona3893.github.io/xuong-anh-3d/">
 <meta property="og:title" content="Xưởng Ảnh 3D">
-<meta property="og:description" content="Bốn hiệu ứng 3D cho ảnh của bạn, chạy hoàn toàn trong trình duyệt, quay thẳng ra video cho mạng xã hội.">
+<meta property="og:description" content="Hiệu ứng 3D cho ảnh, và bộ ảnh infographic ghép với giọng đọc thành video có phụ đề — chạy hoàn toàn trong trình duyệt.">
 <meta property="og:image" content="https://leona3893.github.io/xuong-anh-3d/anh/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +103,18 @@ h2{
 }
 .card p{margin:0;font-size:14.5px;color:var(--muted)}
 
+/* ---------- một tool, một ảnh dọc ---------- */
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:34px;align-items:start}
+@media (max-width:760px){.duo{grid-template-columns:minmax(0,1fr)}}
+.duo .pane{border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--stage)}
+.duo .pane img{width:100%;height:auto}
+.duo ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:18px}
+.duo li{border-top:1px solid var(--line);padding-top:14px}
+.duo li b{display:block;font-size:16px;font-weight:600;margin-bottom:5px}
+.duo li span{font-size:14.5px;color:var(--muted)}
+.duo li code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;
+  background:var(--sunk);padding:1px 5px;border-radius:2px}
+
 /* ---------- ba bước ---------- */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;counter-reset:s}
 .step{border-top:2px solid var(--accent);padding-top:16px}
@@ -160,8 +172,9 @@ footer a:hover{border-color:var(--accent);color:var(--ink)}
     <h1>Xưởng <em>Ảnh 3D</em></h1>
     <p class="pitch">
       Thả một tấm ảnh vào, nó dựng ra chiều sâu và cho ảnh chuyển động như một khối 3D —
-      nghiêng ngả theo con trỏ, gợn sóng, vỡ thành mảnh ghép rồi tự lắp lại. Chỉnh xong bấm quay,
-      ra thẳng video đúng khung 9:16 cho TikTok, Reels hay Shorts.
+      nghiêng ngả theo con trỏ, gợn sóng, vỡ thành mảnh ghép rồi tự lắp lại. Hoặc thả cả bộ ảnh
+      infographic kèm một file giọng đọc, để máy nghe lời rồi tự canh ảnh theo tiếng. Chỉnh xong bấm
+      quay, ra thẳng video đúng khung 9:16 cho TikTok, Reels hay Shorts.
     </p>
     <div class="cta">
       <a class="btn go" href="xuong/">Mở xưởng →</a>
@@ -217,6 +230,44 @@ footer a:hover{border-color:var(--accent);color:var(--ink)}
         </div>
       </article>
 
+    </div>
+  </section>
+
+  <section>
+    <h2>Bộ ảnh cộng một giọng đọc, ra video có tiếng</h2>
+    <p class="sub">Công cụ thứ ba trong xưởng. Thả cả bộ ảnh infographic vào, rồi hoặc đưa nó một
+      file giọng đọc để nó nghe và bóc chữ, hoặc dán lời vào để nó tự đọc thành tiếng. Đằng nào cũng
+      ra một file MP4 có tiếng và có phụ đề cháy sẵn trên hình, ảnh đổi đúng nhịp lời.</p>
+    <div class="duo">
+      <ul>
+        <li><b>Máy nghe được lời bạn đọc</b>
+          <span>Whisper chạy thẳng trong trình duyệt bằng WebAssembly. Có sẵn bản chuyên tiếng Việt.
+            Chỉ mô hình được tải về máy — giọng của bạn không gửi đi đâu cả.</span></li>
+        <li><b>Ảnh đổi đúng lúc người đọc ngừng lấy hơi</b>
+          <span>Mốc đổi ảnh được nắn về khoảng lặng gần nhất trong sóng âm, nên không cắt ngang chữ.
+            Chưa ưng thì kéo mốc trên thanh thời gian.</span></li>
+        <li><b>Muốn ảnh nào ra lúc nào thì gõ từ khoá</b>
+          <span>Gõ một cụm có trong lời đọc dưới mỗi tấm ảnh; nó nhảy tới đúng câu chứa cụm đó,
+            không cần dấu cũng khớp.</span></li>
+        <li><b>Phụ đề lấy thẳng từ lời đọc</b>
+          <span>Sửa được từng câu ngay trên trang. Phần lớn người xem để tắt tiếng, nên chữ mới là
+            thứ giữ họ lại.</span></li>
+        <li><b>Đã có sẵn video không lời thì nạp thẳng vào</b>
+          <span>Giữ nguyên đoạn phim và đặt giọng đọc lên trên, hoặc để xưởng dò chỗ phim đổi cảnh,
+            lấy mỗi cảnh một khung hình rồi căn lại theo lời.</span></li>
+        <li><b>Không muốn tự đọc thì để máy đọc</b>
+          <span>Dán lời thuyết minh vào, máy dựng ra giọng tiếng Việt ngay trong trình duyệt. Khi đó
+            nó biết trước từng câu dài bao nhiêu giây nên mốc đổi ảnh khớp tuyệt đối. Số và ký hiệu
+            tự đổi thành chữ: <code>68%</code> đọc là <i>sáu mươi tám phần trăm</i>.</span></li>
+        <li><b>Hoặc thu thẳng vào mic</b>
+          <span>Bấm một nút để đọc tại chỗ, hoặc kéo vào file <code>mp3</code>, <code>m4a</code>,
+            <code>wav</code> thu từ trước. Giọng người vẫn là hay nhất.</span></li>
+      </ul>
+      <div class="pane">
+        <img src="anh/thuyet-minh.jpg" width="973" height="1709"
+             alt="Khung xem dọc 9:16 đang hiện một tấm infographic, phía sau là chính tấm đó phóng to làm mờ; bên dưới là thanh sóng âm của giọng đọc với ba mốc màu cam đánh dấu chỗ đổi ảnh">
+        <p class="caption">ba tấm infographic, một giọng đọc 12 giây, ba mốc đổi ảnh</p>
+      </div>
     </div>
   </section>
 

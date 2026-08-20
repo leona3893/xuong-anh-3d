@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Xưởng Ảnh 3D</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -194,6 +195,72 @@ footer b{font-weight:500;color:var(--ink)}
   .tabs button{flex:1;padding:11px 10px}
   .seg button{padding:11px 6px}
 }
+/* ---------- riêng tab thuyết minh ---------- */
+#tool-noi .stage{min-height:340px;display:grid;place-items:center;padding:18px}
+#tool-noi canvas#nView{display:block;max-width:100%;max-height:60vh;width:auto;height:auto;
+  border-radius:2px;background:var(--sunk);cursor:pointer;
+  box-shadow:0 18px 40px -18px var(--shadow)}
+#tool-noi .stage[data-empty="1"] canvas#nView{display:none}
+#tool-noi .drop{inset:20px}
+
+/* rail của tab này dài hơn khung xem nhiều, nên ghim khung lại cho khỏi phải cuộn ngược */
+@media (min-width:941px){ #tool-noi .work > div:first-child{position:sticky;top:14px} }
+
+.tl{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px}
+.tl canvas{display:block;width:100%;height:100px;cursor:crosshair;touch-action:none;border-radius:2px}
+.tl-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.tl-row .hint{margin:0;flex:1;min-width:180px}
+
+.shots{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;margin-bottom:12px}
+.shot{display:grid;grid-template-columns:46px minmax(0,1fr) 26px;gap:9px;align-items:center;
+  border:1px solid var(--line);border-radius:2px;padding:7px;background:var(--ground)}
+.shot.now{border-color:var(--accent)}
+.shot img{width:46px;height:46px;object-fit:cover;border-radius:2px;display:block;background:var(--sunk)}
+.shot-body{min-width:0;display:flex;flex-direction:column;gap:5px}
+.shot-time{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;color:var(--muted);
+  font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;gap:8px}
+.shot-time em{font-style:normal;color:var(--accent)}
+.shot input[type=text]{width:100%;font:inherit;font-size:12.5px;background:var(--sunk);color:var(--ink);
+  border:1px solid var(--line);border-radius:2px;padding:4px 6px}
+.shot input[type=text]:focus{outline:none;border-color:var(--accent)}
+.shot-btns{display:flex;flex-direction:column;gap:3px}
+.shot-btns button{background:transparent;border:1px solid var(--line);border-radius:2px;
+  width:26px;height:19px;font-size:11px;line-height:1;padding:0;color:var(--muted)}
+.shot-btns button:hover{border-color:var(--ink);color:var(--ink)}
+
+.script{max-height:250px;overflow:auto;border:1px solid var(--line);border-radius:2px;
+  background:var(--sunk);padding:7px;display:flex;flex-direction:column;gap:1px}
+.script p{margin:0;font-size:13px;padding:4px 6px;border-radius:2px;cursor:pointer;line-height:1.45}
+.script p:hover{background:var(--surface)}
+.script p.now{background:var(--surface);color:var(--accent)}
+.script p b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;color:var(--muted);
+  margin-right:7px;font-weight:400;font-variant-numeric:tabular-nums}
+.script p.now b{color:var(--accent)}
+
+#tool-noi textarea{width:100%;font:inherit;font-size:13.5px;line-height:1.5;resize:vertical;
+  background:var(--sunk);color:var(--ink);border:1px solid var(--line);border-radius:2px;padding:9px 10px}
+#tool-noi textarea:focus{outline:none;border-color:var(--accent)}
+#tool-noi audio{width:100%;margin-top:10px;height:34px;display:block}
+.lv{display:inline-flex;align-items:center;gap:7px;font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.lv b{display:block;width:76px;height:6px;background:var(--sunk);border:1px solid var(--line);
+  border-radius:3px;overflow:hidden}
+.lv b i{display:block;height:100%;width:0;background:var(--accent);transition:width .06s linear}
+
+.canhbao{font-size:12.5px;line-height:1.5;color:var(--ink);background:var(--sunk);
+  border:1px solid var(--accent);border-radius:2px;padding:9px 11px;margin:0 0 12px}
+.canhbao b{color:var(--accent)}
+
+.saydoc{font-size:12.5px;color:var(--muted);background:var(--sunk);border:1px solid var(--line);
+  border-radius:2px;padding:8px 10px;max-height:180px;overflow:auto}
+.saydoc b{color:var(--ink);font-weight:500}
+.saydoc em{font-style:normal;color:var(--accent)}
+
+.dlbar{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
+.dlbar span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;color:var(--muted);
+  display:flex;justify-content:space-between;gap:10px}
+.dlbar span i{font-style:normal;font-variant-numeric:tabular-nums}
+
 </style>
 
 <div class="wrap">
@@ -209,6 +276,7 @@ footer b{font-weight:500;color:var(--ink)}
 <nav class="tabs" id="tabs">
   <button data-tab="song" aria-pressed="true">Thị sai &amp; sóng</button>
   <button data-tab="ghep" aria-pressed="false">Ghép mảnh</button>
+  <button data-tab="noi" aria-pressed="false">Thuyết minh</button>
 </nav>
 
 <div class="tool on" id="tool-song">
@@ -619,20 +687,306 @@ footer b{font-weight:500;color:var(--ink)}
   <span>Ảnh xử lý ngay trong trình duyệt, không gửi đi đâu cả.</span>
 </footer>
 </div>
+
+<div class="tool" id="tool-noi">
+<div class="work">
+  <div>
+    <div class="stage" id="nStage" data-empty="1">
+      <canvas id="nView"></canvas>
+      <div class="drop">
+        <div>
+          <strong>Kéo bộ ảnh infographic vào đây</strong>
+          <p>Chọn nhiều ảnh một lúc — mỗi ảnh là một cảnh. Rồi nạp giọng đọc: xưởng nghe file voice
+             ngay trong máy bạn, bóc ra chữ kèm mốc thời gian, và tự canh ảnh nào hiện lúc nào.</p>
+          <p style="margin-top:8px"><b>Trang không lưu gì cả</b> — nạp lại trang là mất hết ảnh,
+             video và tiếng, phải nạp lại từ đầu.</p>
+        </div>
+        <div class="drop-row">
+          <button class="btn primary" id="nPick">Chọn ảnh</button>
+          <button class="btn" id="nPickAudio">Nạp giọng đọc</button>
+        </div>
+      </div>
+      <div class="readout"><span class="dot"></span><span id="nMeta">—</span></div>
+      <input type="file" id="nFile" accept="image/*" multiple class="hidden">
+      <input type="file" id="nAudioFile" class="hidden"
+             accept="audio/*,video/*,.mp3,.m4a,.mp4,.aac,.wav,.ogg,.oga,.opus,.weba,.webm,.flac,.amr,.wma,.3gp,.mov">
+    </div>
+
+    <div class="tl" id="nTl" hidden>
+      <canvas id="nTlCanvas"></canvas>
+      <div class="tl-row">
+        <button class="btn" id="nPlay">Nghe thử</button>
+        <span class="lv" id="nLevel" hidden>mức tiếng<b><i id="nLevelFill"></i></b></span>
+        <button class="btn" id="nAlign">Khớp lại theo lời</button>
+        <button class="btn" id="nSpread">Chia đều</button>
+        <p class="hint" id="nTlHint">Kéo mốc màu cam để dời chỗ đổi ảnh; bấm chỗ khác trên thanh để tua.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rail">
+    <div class="panel">
+      <h2>Nguồn hình</h2>
+      <div class="stack">
+        <div class="seg" id="nSrcGroup">
+          <button data-src="anh" aria-pressed="true">Bộ ảnh</button>
+          <button data-src="video" aria-pressed="false">Video có sẵn</button>
+        </div>
+        <div class="row">
+          <button class="btn" id="nVidPick">Nạp video</button>
+          <button class="btn" id="nVidCut">Cắt thành bộ ảnh</button>
+          <button class="btn" id="nVidDrop">Bỏ video</button>
+        </div>
+        <p class="hint" id="nVidName">Chưa nạp video nào. Nạp một video không lời vào đây rồi chọn
+          cách dùng: <b>Video có sẵn</b> là giữ nguyên nó và đặt giọng đọc lên trên;
+          <b>Cắt thành bộ ảnh</b> là dò chỗ video đổi cảnh, lấy mỗi cảnh một khung hình để căn lại
+          theo lời.</p>
+        <div id="nVidOffWrap" hidden>
+          <label class="ctl"><span class="ctl-head"><span>Giọng đọc vào sau</span><output id="o-nVidOff"></output></span>
+            <input type="range" id="nVidOff" min="0" max="200" value="0"></label>
+        </div>
+        <div id="nVidCutWrap" hidden>
+          <label class="ctl"><span class="ctl-head"><span>Độ nhạy cắt cảnh</span><output id="o-nVidSens"></output></span>
+            <input type="range" id="nVidSens" min="1" max="100" value="45"></label>
+          <p class="hint" style="margin-top:8px">Cắt ra ít cảnh quá thì kéo lên; ra vụn quá thì kéo xuống.</p>
+        </div>
+      </div>
+      <input type="file" id="nVidFile" class="hidden"
+             accept="video/*,.mp4,.mov,.webm,.mkv,.m4v,.avi,.3gp">
+    </div>
+
+    <div class="panel">
+      <h2>Bộ ảnh</h2>
+      <div class="shots" id="nShots"></div>
+      <div class="row">
+        <button class="btn" id="nAddImg">Thêm ảnh</button>
+        <button class="btn" id="nClearImg">Xoá hết</button>
+      </div>
+      <p class="hint" style="margin-top:12px">Ô chữ dưới mỗi ảnh là <b>từ khoá</b>: gõ một cụm từ có
+        trong lời đọc, ảnh sẽ nhảy tới đúng câu chứa cụm đó. Bỏ trống thì để xưởng tự chia.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Giọng đọc</h2>
+      <p class="canhbao" id="nCodec" hidden></p>
+      <div class="stack">
+        <div class="row">
+          <button class="btn" id="nLoadAudio">Nạp file</button>
+          <button class="btn" id="nMic">Thu tại chỗ</button>
+          <button class="btn" id="nDropAudio">Bỏ</button>
+          <button class="btn" id="nScan" hidden>Dựng sóng âm</button>
+        </div>
+        <audio id="nAudioPlay" controls hidden preload="metadata"></audio>
+        <p class="hint" id="nAudioName">Chưa có giọng đọc. Nhận mp3, m4a, wav, ogg, opus —
+          và cả <b>file video</b> (mp4, mov): kéo vào thì xưởng tự rút lấy phần tiếng. Hoặc bấm
+          <b>Thu tại chỗ</b> để đọc thẳng vào mic.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Máy đọc hộ</h2>
+      <div class="stack">
+        <textarea id="nSayText" rows="7" placeholder="Dán lời thuyết minh vào đây. Mỗi câu sẽ thành một cảnh — xuống dòng để tách đoạn."></textarea>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Mô hình đọc</span></div>
+          <div class="seg" id="nSayQual">
+            <button data-q="fp32" aria-pressed="true">Nhanh · 109 MB</button>
+            <button data-q="q8" aria-pressed="false">Nhẹ · 37 MB</button>
+          </div>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Nghỉ giữa câu</span><output id="o-nSayGap"></output></span>
+          <input type="range" id="nSayGap" min="0" max="15" value="5"></label>
+        <label class="switch"><span>Đọc số và ký hiệu thành chữ</span>
+          <input type="checkbox" id="nSayNum" checked><span class="track"></span></label>
+        <div class="saydoc" id="nSayPrep" hidden></div>
+        <button class="btn primary" id="nSayGo">Đọc thành tiếng</button>
+        <div class="dlbar" id="nSayDl" hidden>
+          <span><i id="nSayDlName">—</i><i id="nSayDlPct">0%</i></span>
+          <div class="meter"><i id="nSayDlFill"></i></div>
+        </div>
+        <p class="hint" id="nSayStatus">Máy đọc thì <b>khỏi cần bóc chữ</b>: đã biết trước câu nào dài
+          bao nhiêu giây nên mốc đổi ảnh tính ra chính xác, không phải đoán. Giọng máy đều đều, nghe ra
+          ngay là máy — muốn có hồn thì tự đọc bằng nút <b>Thu tại chỗ</b> ở trên.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Nghe hiểu lời</h2>
+      <div class="stack">
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Mô hình</span></div>
+          <div class="seg" id="nModelGroup">
+            <button data-model="0" aria-pressed="true" style="grid-column:1/-1">Tiếng Việt · 174 MB</button>
+            <button data-model="1" aria-pressed="false">Nhiều tiếng · 73 MB</button>
+            <button data-model="2" aria-pressed="false">Nhiều tiếng, kỹ · 237 MB</button>
+          </div>
+          <p class="hint" id="nModelHint" style="margin-top:8px"></p>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Tiếng</span></div>
+          <div class="seg" id="nLangGroup">
+            <button data-lang="vi" aria-pressed="true">Tiếng Việt</button>
+            <button data-lang="en" aria-pressed="false">Tiếng Anh</button>
+          </div>
+        </div>
+        <label class="switch"><span>Tăng tốc bằng WebGPU</span>
+          <input type="checkbox" id="nGpu"><span class="track"></span></label>
+        <button class="btn primary" id="nHear">Nghe và bóc chữ</button>
+        <div class="dlbar" id="nDl" hidden>
+          <span><i id="nDlName">—</i><i id="nDlPct">0%</i></span>
+          <div class="meter"><i id="nDlFill"></i></div>
+        </div>
+        <p class="hint" id="nHearStatus">Mô hình tải một lần rồi nằm lại trong bộ nhớ đệm của trình
+          duyệt; lần sau bấm là chạy ngay. Giọng đọc không rời khỏi máy — chỉ mô hình được tải về.</p>
+        <div class="script" id="nScript" hidden></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Cách khớp ảnh</h2>
+      <div class="stack">
+        <label class="ctl"><span class="ctl-head"><span>Mỗi ảnh giữ ít nhất</span><output id="o-nMinHold"></output></span>
+          <input type="range" id="nMinHold" min="5" max="150" value="25"></label>
+        <label class="switch"><span>Nắn mốc vào chỗ ngắt hơi</span>
+          <input type="checkbox" id="nSnap" checked><span class="track"></span></label>
+        <p class="hint">Whisper cho mốc thời gian theo câu, nhưng đôi khi lệch vài phần mười giây.
+          Bật nắn thì mốc đổi ảnh trượt về khoảng lặng gần nhất — ảnh đổi đúng lúc người đọc ngừng
+          lấy hơi, không cắt ngang chữ.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Chuyển cảnh</h2>
+      <div class="stack">
+        <div class="seg" id="nTransGroup">
+          <button data-trans="fade" aria-pressed="true">Mờ dần</button>
+          <button data-trans="slide" aria-pressed="false">Trượt ngang</button>
+          <button data-trans="zoom" aria-pressed="false">Đẩy tới</button>
+          <button data-trans="cut" aria-pressed="false">Cắt thẳng</button>
+        </div>
+        <label class="ctl" id="nTransSecsWrap"><span class="ctl-head"><span>Thời gian chuyển</span><output id="o-nTransSecs"></output></span>
+          <input type="range" id="nTransSecs" min="1" max="20" value="6"></label>
+        <label class="switch"><span>Ảnh trôi và phóng nhẹ</span>
+          <input type="checkbox" id="nKen" checked><span class="track"></span></label>
+        <label class="ctl" id="nKenWrap"><span class="ctl-head"><span>Mức trôi</span><output id="o-nKenAmt"></output></span>
+          <input type="range" id="nKenAmt" min="2" max="100" value="30"></label>
+        <p class="hint">Infographic đứng yên nhìn như ảnh chụp màn hình. Cho ảnh phóng chậm và trôi
+          nhẹ thì khung hình có nhịp, người xem đỡ trôi mắt đi chỗ khác.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Phụ đề</h2>
+      <div class="stack">
+        <label class="switch"><span>Ghi lời đọc lên video</span>
+          <input type="checkbox" id="nSub" checked><span class="track"></span></label>
+        <div id="nSubCtl">
+          <div class="seg" id="nSubPosGroup" style="margin-bottom:12px">
+            <button data-subpos="bottom" aria-pressed="true">Dưới khung</button>
+            <button data-subpos="top" aria-pressed="false">Trên khung</button>
+          </div>
+          <label class="ctl"><span class="ctl-head"><span>Cỡ chữ</span><output id="o-nSubSize"></output></span>
+            <input type="range" id="nSubSize" min="20" max="80" value="40"></label>
+          <label class="switch" style="margin-top:12px"><span>Nền mờ sau chữ</span>
+            <input type="checkbox" id="nSubBand" checked><span class="track"></span></label>
+        </div>
+        <p class="hint">Phụ đề lấy thẳng từ bản bóc chữ, sửa được ở khung lời phía trên — sửa xong
+          là video đổi theo. Phần lớn người xem để chế độ tắt tiếng, nên chữ là thứ giữ họ lại.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Nền &amp; khung</h2>
+      <div class="stack">
+        <div class="seg" id="nBgModes">
+          <button data-bg="blur" aria-pressed="true">Chính ảnh, làm mờ</button>
+          <button data-bg="color" aria-pressed="false">Màu tự chọn</button>
+        </div>
+        <div id="nBgColorWrap" hidden>
+          <div class="colorrow">
+            <label class="swatch"><input type="color" id="nBgC1" value="#141110"><span>Màu trên</span></label>
+            <label class="swatch"><input type="color" id="nBgC2" value="#2E2620"><span>Màu dưới</span></label>
+          </div>
+          <label class="switch" style="margin-top:12px"><span>Chuyển sắc trên xuống dưới</span>
+            <input type="checkbox" id="nBgGrad" checked><span class="track"></span></label>
+        </div>
+        <div id="nBgBlurWrap">
+          <label class="ctl"><span class="ctl-head"><span>Làm mờ nền</span><output id="o-nBgBlur"></output></span>
+            <input type="range" id="nBgBlur" min="0" max="100" value="75"></label>
+          <label class="ctl" style="margin-top:12px"><span class="ctl-head"><span>Làm tối nền</span><output id="o-nBgDim"></output></span>
+            <input type="range" id="nBgDim" min="0" max="100" value="40"></label>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Khung hình</span></div>
+          <div class="seg" id="nAspectGroup">
+            <button data-aspect="9:16" aria-pressed="true">9:16 · TikTok, Reels</button>
+            <button data-aspect="16:9" aria-pressed="false">16:9 · YouTube</button>
+            <button data-aspect="1:1" aria-pressed="false">1:1 · Facebook</button>
+            <button data-aspect="4:5" aria-pressed="false">4:5 · Instagram</button>
+          </div>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Chừa lề quanh ảnh</span><output id="o-nPad"></output></span>
+          <input type="range" id="nPad" min="0" max="30" value="7"></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Xuất video</h2>
+      <div class="stack">
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Độ nét</span></div>
+          <div class="seg" id="nResGroup">
+            <button data-res="720" aria-pressed="false">720p</button>
+            <button data-res="1080" aria-pressed="true">1080p</button>
+            <button data-res="1440" aria-pressed="false">1440p</button>
+            <button data-res="2160" aria-pressed="false">2160p</button>
+          </div>
+        </div>
+        <div>
+          <div class="ctl-head" style="margin-bottom:6px"><span>Khung hình · định dạng</span></div>
+          <div class="seg" id="nFpsGroup">
+            <button data-fps="30" aria-pressed="true">30 hình/giây</button>
+            <button data-fps="60" aria-pressed="false">60 hình/giây</button>
+          </div>
+          <div class="seg" id="nFmtGroup" style="margin-top:6px"></div>
+        </div>
+        <label class="ctl"><span class="ctl-head"><span>Chất lượng</span><output id="o-nMbps"></output></span>
+          <input type="range" id="nMbps" min="2" max="40" value="12"></label>
+        <p class="hint" id="nRecSize"></p>
+        <button class="btn primary" id="nRecBtn">Bắt đầu quay</button>
+        <p class="hint" id="nRecStatus">Quay chạy đúng thời gian thật của giọng đọc: voice hai phút
+          thì ngồi chờ hai phút. Đừng chuyển sang tab khác của trình duyệt trong lúc quay — khung
+          hình sẽ bị bỏ rơi.</p>
+        <div class="recbox" id="nRecResult" hidden>
+          <video id="nRecVideo" controls loop playsinline></video>
+          <button class="btn" id="nRecSave">Lưu về máy</button>
+          <p class="hint">Trên web sẽ hiện hộp thoại xin phép lưu, mỗi file tối đa 16 MB. Mở file ở
+            máy thì tải thẳng, không giới hạn. Cách khác: chuột phải lên video rồi lưu.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Lời đọc được bóc bằng <b>Whisper chạy ngay trong trình duyệt</b> — chỉ mô hình tải về, giọng của bạn không gửi đi đâu.</span>
+  <span>Ảnh, tiếng và video đều nằm trong máy bạn từ đầu đến cuối.</span>
+</footer>
+</div>
 </div>
 
 <script>
 (function(){
 "use strict";
-var LEDE = {"song": "Suy bản đồ độ sâu từ độ nét của ảnh rồi cho ảnh nghiêng ngả theo con trỏ như một khối 3D — kèm ba kiểu sóng làm mặt ảnh gợn lên.", "ghep": "Ảnh được cắt thành những mảnh jigsaw có mộng lồi lõm khớp nhau. Chúng bung ra, lộn nhào trong không gian, rồi tự tìm về đúng ô của mình cho tới khi ảnh liền lại như cũ."};
-var STAMP = {"song": "webgl · độ sâu · sóng", "ghep": "canvas · 3d giả lập · mộng jigsaw"};
+var LEDE = {"song": "Suy bản đồ độ sâu từ độ nét của ảnh rồi cho ảnh nghiêng ngả theo con trỏ như một khối 3D — kèm ba kiểu sóng làm mặt ảnh gợn lên.", "ghep": "Ảnh được cắt thành những mảnh jigsaw có mộng lồi lõm khớp nhau. Chúng bung ra, lộn nhào trong không gian, rồi tự tìm về đúng ô của mình cho tới khi ảnh liền lại như cũ.", "noi": "Bộ ảnh infographic cộng một file giọng đọc. Xưởng nghe lời đọc ngay trong máy, bóc ra chữ kèm mốc thời gian, rồi tự canh ảnh nào hiện lúc nào — ra một video có tiếng, có phụ đề."};
+var STAMP = {"song": "webgl · độ sâu · sóng", "ghep": "canvas · 3d giả lập · mộng jigsaw", "noi": "whisper trong máy · dựng video có tiếng"};
 var tabs = Array.prototype.slice.call(document.querySelectorAll("#tabs button"));
 
 function show(name){
   // đang quay video thì giữ nguyên tab, đổi giữa chừng là hỏng clip
   if(document.querySelector(".tool.on .rec-live")) return;
   tabs.forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.tab === name)); });
-  ["song","ghep"].forEach(function(n){
+  ["song","ghep","noi"].forEach(function(n){
     document.getElementById("tool-" + n).classList.toggle("on", n === name);
   });
   document.getElementById("lede").textContent = LEDE[name];
@@ -645,7 +999,8 @@ if(window.top !== window.self){
   if(hl) hl.hidden = true;
 }
 tabs.forEach(function(b){ b.onclick = function(){ show(b.dataset.tab); }; });
-show(location.hash.indexOf("ghep") > -1 ? "ghep" : "song");
+show(location.hash.indexOf("noi") > -1 || location.hash.indexOf("thuyet") > -1 ? "noi"
+   : location.hash.indexOf("ghep") > -1 ? "ghep" : "song");
 })();
 </script>
 
@@ -1113,7 +1468,10 @@ function sampleImage(){
 }
 
 function resize(){
-  if(!hasImage) return;
+  // Tab đang ẩn thì clientWidth bằng 0, đo lúc đó là khung vẽ tụt xuống 2×4 điểm ảnh — mà canvas
+  // này để width:auto nên khung vẽ nhỏ lại kéo theo cả ô bố cục nhỏ theo, không tự phình lại được.
+  // ResizeObserver bắn đúng lúc chuyển tab, nên không chặn ở đây là đổi tab một vòng là hỏng hình.
+  if(!hasImage || !live()) return;
   var w, h;
   if(rec.w){ w = rec.w; h = rec.h; }
   else {
@@ -2672,5 +3030,1955 @@ updateRecSize();
 
 // mở kèm #demo là chạy luôn ảnh mẫu, tiện gửi link cho người khác xem
 if(location.hash.indexOf("demo") > -1) sampleImage();
+})();
+</script>
+
+<script>
+/* ============================================================
+   03 · Xưởng Thuyết Minh
+   Bộ ảnh + một file giọng đọc → video có tiếng, có phụ đề.
+   Lời đọc được bóc bằng Whisper chạy thẳng trong trình duyệt
+   (transformers.js + onnxruntime-web), nên tiếng không rời máy.
+   ============================================================ */
+(function(){
+"use strict";
+var root = document.getElementById("tool-noi");
+if(!root) return;
+function $(id){ return root.querySelector("#" + id); }
+function live(){ return root.classList.contains("on"); }
+
+/* ---------- hằng ---------- */
+var TJS = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js";
+// Đo trên cùng một đoạn tiếng Việt, tỉ lệ lỗi từ: PhoWhisper 13%, whisper-small 39%,
+// whisper-base 48%. Bản chuyên tiếng Việt vừa đúng gấp gần bốn lần vừa nhẹ hơn bản "kỹ",
+// nên nó phải là mặc định — để whisper-base làm mặc định là hỏng ngay từ đầu.
+var MODELS = [
+  "onnx-community/PhoWhisper-base-ONNX",
+  "onnx-community/whisper-base",
+  "onnx-community/whisper-small"
+];
+var MODEL_VIET_ONLY = 0;
+var ASPECTS = {"9:16":9/16, "16:9":16/9, "1:1":1, "4:5":4/5};
+var CANDIDATES = [
+  {mime:"video/mp4;codecs=avc1.42E01E,mp4a.40.2", ext:"mp4",  label:"MP4"},
+  {mime:"video/mp4",                              ext:"mp4",  label:"MP4"},
+  {mime:"video/webm;codecs=vp9,opus",             ext:"webm", label:"WebM · VP9"},
+  {mime:"video/webm;codecs=vp8,opus",             ext:"webm", label:"WebM · VP8"},
+  {mime:"video/webm",                             ext:"webm", label:"WebM"}
+];
+
+/* ---------- trạng thái ---------- */
+var S = {
+  shots: [],          // {url, img, name, start, key, small}
+  audio: null,        // {url, blob, name, dur}
+  buf: null,          // AudioBuffer đã giải mã
+  peaks: null,        // biên độ để vẽ sóng
+  pauses: [],         // {a, b, mid} — các khoảng lặng
+  segs: [],           // {start, end, text} — bản bóc chữ
+  src: "anh", vidOff: 0, vidSens: 45,
+  model: 0, lang: "vi", gpu: false,
+  sayQual: "fp32", sayGap: .5, sayNum: true,
+  minHold: 2.5, snap: true,
+  trans: "fade", transSecs: .6, ken: true, kenAmt: 30,
+  sub: true, subPos: "bottom", subSize: 40, subBand: true,
+  bgMode: "blur", bgC1: "#141110", bgC2: "#2E2620", bgGrad: true, bgBlur: 75, bgDim: 40,
+  aspect: "9:16", pad: 7, res: 1080, fps: 30, mbps: 12, fmt: 0
+};
+
+var canvas = $("nView"), ctx = canvas.getContext("2d");
+var tlc = $("nTlCanvas"), tctx = tlc.getContext("2d");
+var stage = $("nStage");
+var audioEl = new Audio();
+audioEl.preload = "auto";
+var mix = {actx:null, src:null, dest:null};
+var rec = {active:false, mr:null, chunks:[], url:"", blob:null, ext:"webm"};
+var drag = -1, playing = false, scrub = 0;
+var vid = {el:null, url:"", name:"", dur:0, w:0, h:0};
+function videoMode(){ return S.src === "video" && !!vid.el && vid.dur > 0; }
+
+/* ---------- tiện ---------- */
+function clamp(v,a,b){ return v<a?a:v>b?b:v; }
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                  .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function mmss(t){
+  if(!isFinite(t) || t<0) t = 0;
+  var m = Math.floor(t/60), s = Math.floor(t%60);
+  return m + ":" + (s<10?"0":"") + s;
+}
+// bỏ dấu để so từ khoá — "Đầu Tư" và "dau tu" phải khớp nhau
+function bare(s){
+  return String(s||"").toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/đ/g,"d").replace(/\s+/g," ").trim();
+}
+function totalDur(){
+  // chế độ video: clip dài bằng cái nào kết thúc muộn hơn — hình hay tiếng
+  if(videoMode()) return Math.max(vid.dur, S.vidOff + (S.audio ? S.audio.dur : 0)) || 4;
+  if(S.audio && S.audio.dur) return S.audio.dur;
+  return Math.max(4, S.shots.length * 4);
+}
+function shotEnd(i){
+  return i+1 < S.shots.length ? S.shots[i+1].start : totalDur();
+}
+function shotAt(t){
+  var i = 0;
+  for(var k=0;k<S.shots.length;k++) if(S.shots[k].start <= t) i = k;
+  return i;
+}
+function editingIn(id){
+  var a = document.activeElement;
+  return !!(a && a !== document.body && $(id) && $(id).contains(a));
+}
+
+/* ---------- bộ ảnh ---------- */
+function addFiles(list){
+  var files = Array.prototype.slice.call(list||[]).filter(function(f){
+    return f && /^image\//.test(f.type);
+  });
+  if(!files.length) return;
+  // xếp theo tên file, vì ảnh infographic hay đánh số 01, 02, 03…
+  files.sort(function(a,b){ return a.name.localeCompare(b.name, "vi", {numeric:true}); });
+  var batch = new Array(files.length), left = files.length;
+  files.forEach(function(f, k){
+    var url = URL.createObjectURL(f);
+    var img = new Image();
+    img.onload = function(){
+      batch[k] = {url:url, img:img, name:f.name, start:0, key:"", small:null};
+      if(--left === 0) afterImages(batch);
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); if(--left === 0) afterImages(batch); };
+    img.src = url;
+  });
+}
+function afterImages(batch){
+  batch.filter(Boolean).forEach(function(s){ S.shots.push(s); });   // nối vào cuối, giữ thứ tự đã sắp
+  if(S.segs.length) alignByScript(); else spread();
+  syncAll();
+}
+function clearImages(){
+  S.shots.forEach(function(s){ URL.revokeObjectURL(s.url); });
+  S.shots = [];
+  syncAll();
+}
+function moveShot(i, d){
+  var j = i + d;
+  if(j < 0 || j >= S.shots.length) return;
+  // đổi chỗ hai ảnh nhưng để nguyên hai mốc thời gian — mốc thuộc về vị trí, không thuộc về ảnh
+  var a = S.shots[i], b = S.shots[j], sa = a.start, sb = b.start;
+  S.shots[i] = b; S.shots[j] = a;
+  S.shots[i].start = sa; S.shots[j].start = sb;
+  syncAll();
+}
+function dropShot(i){
+  URL.revokeObjectURL(S.shots[i].url);
+  S.shots.splice(i,1);
+  if(S.shots.length) S.shots[0].start = 0;
+  syncAll();
+}
+
+/* ---------- chia mốc ---------- */
+function spread(){
+  var n = S.shots.length, d = totalDur();
+  for(var i=0;i<n;i++) S.shots[i].start = d * i / n;
+}
+// dời t về khoảng lặng gần nhất — ảnh đổi lúc người đọc ngừng lấy hơi
+function snapPause(t){
+  if(!S.snap || !S.pauses.length) return t;
+  var best = t, gap = 1.1;
+  for(var i=0;i<S.pauses.length;i++){
+    var m = S.pauses[i].mid, g = Math.abs(m - t);
+    if(g < gap){ gap = g; best = m; }
+  }
+  return best;
+}
+function alignByScript(){
+  var n = S.shots.length;
+  if(!n) return;
+  if(!S.segs.length){ spread(); return; }
+  var m = S.segs.length, i;
+
+  // 1 · ảnh nào có từ khoá thì ghim vào đúng câu chứa từ khoá đó
+  var fixed = {};
+  for(i=0;i<n;i++){
+    var k = bare(S.shots[i].key);
+    if(!k) continue;
+    for(var j=0;j<m;j++){
+      if(bare(S.segs[j].text).indexOf(k) > -1){ fixed[i] = j; break; }
+    }
+  }
+  // 2 · những ảnh còn lại chia đều số câu trong quãng giữa hai mốc đã ghim
+  var idx = new Array(n), prevI = -1, prevJ = -1;
+  var anchors = Object.keys(fixed).map(Number).sort(function(a,b){ return a-b; });
+  anchors.push(n);
+  anchors.forEach(function(ai){
+    var aj = ai < n ? fixed[ai] : m;
+    var span = ai - prevI;
+    for(var q=1;q<span;q++) idx[prevI+q] = Math.round(prevJ + (aj - prevJ) * q / span);
+    if(ai < n) idx[ai] = aj;
+    prevI = ai; prevJ = aj;
+  });
+
+  for(i=0;i<n;i++){
+    var jj = clamp(idx[i] == null ? Math.round(i*m/n) : idx[i], 0, m-1);
+    S.shots[i].start = i === 0 ? 0 : snapPause(S.segs[jj].start);
+  }
+  // 3 · không để hai ảnh chồng nhau hay lướt qua quá nhanh
+  var d = totalDur();
+  for(i=1;i<n;i++){
+    var lo = S.shots[i-1].start + S.minHold;
+    if(S.shots[i].start < lo) S.shots[i].start = lo;
+  }
+  for(i=n-1;i>=1;i--){
+    var hi = (i+1<n ? S.shots[i+1].start : d) - Math.min(S.minHold, .6);
+    if(S.shots[i].start > hi) S.shots[i].start = Math.max(S.shots[i-1].start + .3, hi);
+  }
+  S.shots[0].start = 0;
+}
+
+/* ---------- giọng đọc ---------- */
+// segs (nếu có) là bản lời đã biết trước — máy tự đọc thì khỏi phải bóc chữ lại
+function loadAudio(blob, name, segs, xong){
+  dropAudio(true);
+  S.audio = {url:URL.createObjectURL(blob), blob:blob, name:name||"giọng đọc", dur:0, segs:segs||null};
+  audioEl.src = S.audio.url;
+  var tp = $("nAudioPlay");
+  tp.src = S.audio.url; tp.hidden = false;      // trình phát của chính trình duyệt, không qua mã tôi
+  $("nScan").hidden = true;
+  $("nAudioName").textContent = "Đang đọc file…";
+  giaiMaThang(blob).then(function(buf){
+    nhanTieng(buf, blob, name, segs, xong);
+  }, function(err){
+    hongGiaiMa(err, blob, name, xong);
+  });
+}
+function giaiMaThang(blob){
+  return blob.arrayBuffer().then(function(ab){
+    var AC = window.AudioContext || window.webkitAudioContext;
+    var ac = new AC();
+    function dong(){ try{ ac.close(); }catch(e){} }
+    return ac.decodeAudioData(ab).then(function(buf){ dong(); return buf; },
+                                       function(err){ dong(); throw err; });
+  });
+}
+function nhanTieng(buf, blob, name, segs, xong, quaQuet){
+  S.buf = buf;
+  S.audio.dur = buf.duration;
+  S.peaks = buildPeaks(buf);
+  S.pauses = findPauses(buf);
+  if(segs && segs.length) S.segs = segs;
+  if(S.segs.length) alignByScript(); else spread();
+  var laVideo = /^video\//.test(blob.type) || /\.(mp4|mov|webm|3gp)$/i.test(name || "");
+  // Sóng âm vẽ ra đã chuẩn hoá theo đỉnh, nên một file im phăng phắc trông vẫn có sóng.
+  // Phải đo biên độ tuyệt đối mới biết trong file có tiếng thật hay không.
+  var d0 = buf.getChannelData(0), dinh = 0;
+  for(var q = 0; q < d0.length; q += 97){ var av = d0[q] < 0 ? -d0[q] : d0[q]; if(av > dinh) dinh = av; }
+  S.audio.dinh = dinh;
+  $("nScan").hidden = true;
+  $("nAudioName").innerHTML = "<b>" + esc(S.audio.name) + "</b> · " + mmss(buf.duration) +
+    " · tìm được " + S.pauses.length + " chỗ ngắt hơi." +
+    (laVideo ? "<br>Đây là file video — xưởng chỉ lấy phần tiếng, phần hình bỏ qua." : "") +
+    (quaQuet ? "<br>Sóng âm dựng bằng cách chạy qua file một lượt, nên hơi thô hơn bản giải mã thẳng." : "") +
+    (dinh < 0.005
+      ? "<br><b>File này gần như không có tiếng</b> (biên độ đỉnh " + dinh.toFixed(4) + "). " +
+        "Hoặc nó không có track tiếng, hoặc trình duyệt không giải mã nổi track ấy. Bấm nút phát ở " +
+        "trên để nghe thử trực tiếp — im luôn thì lỗi ở file, không phải ở xưởng."
+      : "");
+  syncAll();
+  if(xong) xong(null);
+}
+// Giải mã thẳng hỏng chưa chắc đã là hết đường: có những file trình duyệt phát được
+// nhưng decodeAudioData không nhận (mp4 phân mảnh, moov nằm cuối, codec lạ trong hộp mp4).
+// Nếu thẻ <audio> đọc ra được độ dài thì vẫn ghép và quay video được như thường.
+function hongGiaiMa(err, blob, name, xong){
+  var chiTiet = (err && (err.name || "") + (err.message ? ": " + err.message : "")) || "không rõ";
+  var co = blob ? (blob.size/1048576).toFixed(2) + " MB" : "?";
+  var kieu = (blob && blob.type) || "(trình duyệt không gắn nhãn)";
+  var xong1 = false;
+  function ket(phatDuoc){
+    if(xong1) return;
+    xong1 = true;
+    clearTimeout(hen);
+    audioEl.removeEventListener("loadedmetadata", oMeta);
+    audioEl.removeEventListener("error", oLoi);
+    if(phatDuoc){
+      S.audio.dur = audioEl.duration;
+      S.buf = null; S.peaks = null; S.pauses = [];
+      if(S.audio.segs && S.audio.segs.length) S.segs = S.audio.segs;
+      if(S.segs.length) alignByScript(); else spread();
+      $("nScan").hidden = false;
+      $("nAudioName").innerHTML = "<b>" + esc(name || "file này") + "</b> · " + mmss(audioEl.duration) +
+        " · <b>phát được nhưng chưa dựng được sóng âm</b> (" + esc(chiTiet) + ").<br>" +
+        "Ảnh vẫn chia đều và quay video vẫn có tiếng. Muốn có sóng âm, chỗ ngắt hơi và bóc chữ thì " +
+        "bấm <b>Dựng sóng âm</b> — nó chạy qua file một lượt, nhanh gấp đôi thời lượng.";
+      syncAll();
+      if(xong) xong(null);
+    }else{
+      if(S.audio && S.audio.url) URL.revokeObjectURL(S.audio.url);
+      S.audio = null; S.buf = null;
+      $("nScan").hidden = true;
+      $("nAudioName").innerHTML = "Không mở được <b>" + esc(name || "file này") + "</b> — " +
+        "trình duyệt không phát nổi mà cũng không giải mã được.<br>" +
+        "<code>" + esc(chiTiet) + "</code> · " + co + " · kiểu <code>" + esc(kieu) + "</code><br>" +
+        "Nếu file 0 MB thì nó chưa tải về xong (OneDrive, Google Drive hay để file trên mây). " +
+        "Còn lại thì đổi sang <b>mp3</b> hoặc <b>wav</b> rồi nạp lại.";
+      syncAll();
+      if(xong) xong(err);
+    }
+  }
+  function oMeta(){ ket(isFinite(audioEl.duration) && audioEl.duration > 0); }
+  function oLoi(){ ket(false); }
+  audioEl.addEventListener("loadedmetadata", oMeta);
+  audioEl.addEventListener("error", oLoi);
+  var hen = setTimeout(function(){ ket(isFinite(audioEl.duration) && audioEl.duration > 0); }, 8000);
+  if(audioEl.readyState >= 1) oMeta();
+}
+// Chạy file qua đồ thị Web Audio một lượt để hứng lấy mẫu. Chậm hơn giải mã thẳng nhưng
+// nhận được mọi thứ trình duyệt phát được. Tốc độ ×3 và preservesPitch=false nghĩa là
+// tín hiệu chỉ bị đổi tỉ lệ thời gian chứ không méo, nên vẫn bóc chữ được.
+var quetting = false;
+function quetSong(){
+  if(quetting || !S.audio) return;
+  quetting = true;
+  $("nScan").textContent = "Đang quét…";
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ac = new AC();
+  var el = new Audio();
+  el.src = S.audio.url;
+  el.preservesPitch = false;
+  el.mozPreservesPitch = false;
+  el.webkitPreservesPitch = false;
+  // ×2 chứ không phải ×3: ở ×3 tiếng gốc bị đẩy lên sát tần số Nyquist nên bộ lọc chống
+  // răng cưa cắt mất dải cao, tỉ lệ lỗi từ khi bóc chữ nhảy từ 13% lên 20%. ×2 thì không mất gì.
+  el.playbackRate = 2;
+  var src, sp;
+  try{
+    src = ac.createMediaElementSource(el);
+    sp = ac.createScriptProcessor(4096, 1, 1);
+  }catch(e){ thoi("không dựng được đồ thị âm thanh: " + e.message); return; }
+  var cam = ac.createGain();
+  cam.gain.value = 0;                       // hứng mẫu nhưng không dội ra loa
+  src.connect(sp); sp.connect(cam); cam.connect(ac.destination);
+  var mau = [], dem = 0;
+  sp.onaudioprocess = function(e){
+    var d = e.inputBuffer.getChannelData(0);
+    mau.push(new Float32Array(d)); dem += d.length;
+    if(S.audio.dur) $("nScan").textContent = "Đang quét… " +
+      Math.min(99, Math.round(el.currentTime / S.audio.dur * 100)) + "%";
+  };
+  function thoi(vi){
+    quetting = false;
+    $("nScan").textContent = "Dựng sóng âm";
+    try{ sp.onaudioprocess = null; src.disconnect(); sp.disconnect(); }catch(e){}
+    try{ ac.close(); }catch(e){}
+    if(vi) $("nAudioName").innerHTML += "<br>Quét hỏng: " + esc(vi);
+  }
+  el.onended = function(){
+    var all = new Float32Array(dem), at = 0;
+    for(var i=0;i<mau.length;i++){ all.set(mau[i], at); at += mau[i].length; }
+    // độ dài thật lấy từ chính thẻ audio, nên vài khung hình rơi rụng cũng không làm lệch mốc
+    var that = (isFinite(el.duration) && el.duration > 0) ? el.duration : dem/(ac.sampleRate/2);
+    var sr = Math.max(3000, Math.round(dem / that));
+    var buf;
+    try{
+      buf = ac.createBuffer(1, Math.max(1, dem), sr);
+      buf.copyToChannel ? buf.copyToChannel(all, 0) : buf.getChannelData(0).set(all);
+    }catch(e){ thoi("không dựng được đệm âm: " + e.message); return; }
+    quetting = false;
+    $("nScan").textContent = "Dựng sóng âm";
+    try{ sp.onaudioprocess = null; src.disconnect(); sp.disconnect(); }catch(e){}
+    nhanTieng(buf, S.audio.blob, S.audio.name, S.audio.segs, null, true);
+    try{ ac.close(); }catch(e){}
+  };
+  el.onerror = function(){ thoi("thẻ audio không phát được file"); };
+  el.play().catch(function(e){ thoi(e.message); });
+}
+function dropAudio(quiet){
+  try{ audioEl.pause(); }catch(e){}
+  playing = false;
+  if(S.audio && S.audio.url) URL.revokeObjectURL(S.audio.url);
+  S.audio = null; S.buf = null; S.peaks = null; S.pauses = []; scrub = 0;
+  audioEl.removeAttribute("src");
+  var tp0 = $("nAudioPlay");
+  if(tp0){ tp0.removeAttribute("src"); tp0.hidden = true; }
+  var nut = $("nScan"); if(nut) nut.hidden = true;
+  if(!quiet){
+    $("nAudioName").textContent = "Chưa có giọng đọc.";
+    spread();
+    syncAll();
+  }
+}
+function buildPeaks(buf){
+  var d = buf.getChannelData(0), N = 1400;
+  var out = new Float32Array(N), step = Math.floor(d.length / N) || 1, mx = 1e-6;
+  for(var i=0;i<N;i++){
+    var a = i*step, b = Math.min(d.length, a+step), p = 0;
+    for(var k=a;k<b;k++){ var v = d[k] < 0 ? -d[k] : d[k]; if(v>p) p = v; }
+    out[i] = p; if(p>mx) mx = p;
+  }
+  for(i=0;i<N;i++) out[i] /= mx;
+  return out;
+}
+// khoảng lặng = chuỗi khung 20 ms có năng lượng dưới ngưỡng, kéo dài quá 0.28 giây
+function findPauses(buf){
+  var d = buf.getChannelData(0), sr = buf.sampleRate;
+  var win = Math.max(1, Math.round(sr*.02)), n = Math.floor(d.length/win);
+  var e = new Float32Array(n), mx = 1e-6;
+  for(var i=0;i<n;i++){
+    var s = 0;
+    for(var k=i*win;k<(i+1)*win;k++) s += d[k]*d[k];
+    e[i] = Math.sqrt(s/win);
+    if(e[i] > mx) mx = e[i];
+  }
+  var thr = Math.max(mx*.07, 3e-3), out = [], run = -1;
+  for(i=0;i<=n;i++){
+    var quiet = i<n && e[i] < thr;
+    if(quiet && run < 0) run = i;
+    else if(!quiet && run >= 0){
+      var a = run*win/sr, b = i*win/sr;
+      if(b - a >= .28) out.push({a:a, b:b, mid:(a+b)/2});
+      run = -1;
+    }
+  }
+  return out;
+}
+function toMono16k(buf){
+  var OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  var len = Math.max(1600, Math.round(buf.duration * 16000));
+  var oc = new OAC(1, len, 16000);
+  var src = oc.createBufferSource();
+  src.buffer = buf; src.connect(oc.destination); src.start();
+  return oc.startRendering().then(function(r){ return r.getChannelData(0); });
+}
+
+/* thu tại chỗ */
+var micRec = null;
+function toggleMic(){
+  if(micRec){ micRec.stop(); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    $("nAudioName").textContent = "Trình duyệt này không cho thu mic.";
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}})
+  .then(function(st){
+    var mime = ["audio/webm;codecs=opus","audio/mp4","audio/webm"].filter(function(m){
+      return window.MediaRecorder && MediaRecorder.isTypeSupported(m);
+    })[0];
+    var mr = new MediaRecorder(st, mime ? {mimeType:mime} : undefined);
+    var parts = [];
+    mr.ondataavailable = function(e){ if(e.data && e.data.size) parts.push(e.data); };
+    mr.onstop = function(){
+      st.getTracks().forEach(function(t){ t.stop(); });
+      micRec = null;
+      $("nMic").textContent = "Thu tại chỗ";
+      $("nMic").classList.remove("primary");
+      var b = new Blob(parts, {type: parts.length ? parts[0].type : "audio/webm"});
+      if(b.size) loadAudio(b, "thu-tai-cho");
+    };
+    micRec = mr;
+    mr.start();
+    $("nMic").textContent = "Dừng thu";
+    $("nMic").classList.add("primary");
+    $("nAudioName").innerHTML = '<span class="rec-live">● đang thu</span> — đọc xong bấm Dừng thu.';
+  }, function(err){
+    $("nAudioName").textContent = "Không mở được mic: " + (err && err.message || err);
+  });
+}
+
+/* ---------- Whisper trong trình duyệt ---------- */
+var WORKER_SRC = [
+"import { pipeline, env } from " + JSON.stringify(TJS) + ";",
+"env.allowLocalModels = false;",
+"try{ if(typeof caches === 'undefined') env.useBrowserCache = false; }catch(e){}",
+"try{ env.backends.onnx.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency||2) : 1; }catch(e){}",
+"let pipe = null, key = '', say = null, sayKey = '';",
+"self.onmessage = async (e) => {",
+"  const d = e.data;",
+"  try{",
+"    if(d.job === 'tts'){",
+"      const sk = 'tts|' + d.dtype;",
+"      if(!say || sk !== sayKey){",
+"        if(say){ try{ await say.dispose(); }catch(_){} say = null; sayKey = ''; }",
+"        self.postMessage({type:'stage', text:'tai-doc'});",
+"        say = await pipeline('text-to-speech', 'Xenova/mms-tts-vie', {",
+"          dtype: d.dtype,",
+"          progress_callback: p => self.postMessage({type:'dl-doc', p})",
+"        });",
+"        sayKey = sk;",
+"      }",
+"      for(let i = 0; i < d.cau.length; i++){",
+"        const o = await say(d.cau[i]);",
+"        self.postMessage({type:'doc-cau', i, audio:o.audio, sr:o.sampling_rate}, [o.audio.buffer]);",
+"      }",
+"      self.postMessage({type:'doc-xong'});",
+"      return;",
+"    }",
+"    const k = d.model + '|' + d.device;",
+"    if(!pipe || k !== key){",
+"      if(pipe){ try{ await pipe.dispose(); }catch(_){} pipe = null; key = ''; }",
+"      self.postMessage({type:'stage', text:'tai'});",
+"      pipe = await pipeline('automatic-speech-recognition', d.model, {",
+"        device: d.device,",
+"        dtype: d.device === 'webgpu'",
+"          ? {encoder_model:'fp16', decoder_model_merged:'q4'}",
+"          : {encoder_model:'q8',   decoder_model_merged:'q8'},",
+"        progress_callback: p => self.postMessage({type:'dl', p})",
+"      });",
+"      key = k;",
+"    }",
+"    self.postMessage({type:'stage', text:'nghe'});",
+"    const base = {task:'transcribe', chunk_length_s:30, stride_length_s:5, return_timestamps:true,",
+"                  chunk_callback: () => self.postMessage({type:'chunk'})};",
+"    let out;",
+"    try{ out = await pipe(d.audio, Object.assign({language:d.lang}, base)); }",
+"    catch(_){ out = await pipe(d.audio, base); }",
+"    self.postMessage({type:'done', out:{text: out.text || '', chunks: out.chunks || []}});",
+"  }catch(err){ self.postMessage({type:'err', msg: String((err && err.message) || err)}); }",
+"};"
+].join("\n");
+
+var worker = null, hearing = false, dlFiles = {};
+
+// một luồng phụ dùng chung cho cả nghe lẫn đọc — nạp transformers.js một lần thôi
+var choHear = null;                 // việc đang gửi cho luồng phụ, để còn làm lại khi nó chết
+function ensureWorker(){
+  if(worker) return worker;
+  try{
+    var url = URL.createObjectURL(new Blob([WORKER_SRC], {type:"text/javascript"}));
+    worker = new Worker(url, {type:"module"});
+    worker.addEventListener("message", function(e){
+      var d = e.data;
+      if(d.type === "dl") onDl(d.p);
+      else if(d.type === "chunk") hearChunk();
+      else if(d.type === "stage" && d.text !== "tai-doc")
+        hearPha(d.text === "nghe" ? "Đang nghe và bóc chữ" : "Đang tải mô hình về máy");
+      else if(d.type === "done") hearDone(d.out);
+      else if(d.type === "err" && hearing) hearErr(d.msg);
+    });
+    // Luồng phụ chết (nạp mô-đun hỏng, hết bộ nhớ, bị chặn) mà nuốt lỗi đi thì
+    // nút kẹt ở "Đang nghe…" mãi mãi và bấm tiếp không ăn thua. Phải kêu lên và làm lại.
+    worker.onerror = function(ev){
+      var vi = (ev && ev.message) || "luồng phụ chết không rõ lý do";
+      try{ worker.terminate(); }catch(e){}
+      worker = null;
+      if(saying){
+        saying = false;
+        $("nSayGo").textContent = "Đọc thành tiếng";
+        $("nSayStatus").innerHTML = "Luồng phụ hỏng: " + esc(vi);
+      }
+      if(hearing && choHear){
+        var lam = choHear; choHear = null;
+        hearPha("Luồng phụ hỏng, chuyển sang chạy thẳng trên trang");
+        mainThreadHear(lam);
+      }else if(hearing){
+        hearErr(vi);
+      }
+    };
+  }catch(err){ worker = null; }
+  return worker;
+}
+
+function hearStatus(html){ $("nHearStatus").innerHTML = html; }
+
+// Bóc chữ mất khoảng gấp rưỡi thời lượng và suốt lúc đó màn hình không nhúc nhích.
+// Không có đồng hồ đếm thì không phân biệt nổi "đang chạy" với "chết rồi".
+var hearT0 = 0, hearTick = 0, hearPhaseTxt = "", hearDone1 = 0, hearDoan = 1;
+function hearPha(txt){ hearPhaseTxt = txt; hearNhip(); }
+function hearNhip(){
+  if(!hearing) return;
+  var giay = Math.round((Date.now() - hearT0)/1000);
+  var them = hearDone1 ? " · xong " + hearDone1 + "/" + hearDoan + " đoạn" : "";
+  hearStatus(hearPhaseTxt + them + " · đã chạy " + mmss(giay) +
+    (giay > 30 ? "<br>Bấm lại nút trên để dừng giữa chừng." : ""));
+}
+function hearChunk(){ hearDone1++; hearNhip(); }
+function hearTho(){
+  clearInterval(hearTick);
+  hearTick = setInterval(hearNhip, 1000);
+}
+function stopHear(){
+  if(worker){ try{ worker.terminate(); }catch(e){} worker = null; }
+  hearing = false; choHear = null;
+  clearInterval(hearTick);
+  $("nHear").textContent = "Nghe và bóc chữ";
+  $("nDl").hidden = true;
+  hearStatus("Đã dừng giữa chừng. Bấm lại để chạy từ đầu.");
+}
+function onDl(p){
+  if(!p) return;
+  if(p.status === "progress" && p.file){
+    dlFiles[p.file] = {loaded:p.loaded||0, total:p.total||0};
+    var L = 0, T = 0;
+    Object.keys(dlFiles).forEach(function(f){ L += dlFiles[f].loaded; T += dlFiles[f].total; });
+    var pct = T ? Math.round(L/T*100) : 0;
+    $("nDl").hidden = false;
+    $("nDlName").textContent = p.file.split("/").pop();
+    $("nDlPct").textContent = pct + "% · " + (L/1048576).toFixed(0) + "/" + (T/1048576).toFixed(0) + " MB";
+    $("nDlFill").style.width = pct + "%";
+  }else if(p.status === "ready"){
+    $("nDl").hidden = true;
+  }
+}
+function hearDone(out){
+  hearing = false; choHear = null;
+  clearInterval(hearTick);
+  $("nHear").textContent = "Nghe lại từ đầu";
+  $("nDl").hidden = true;
+  var d = totalDur(), segs = [];
+  (out.chunks||[]).forEach(function(c){
+    var t = c.timestamp || [], txt = String(c.text||"").trim();
+    if(!txt) return;
+    var a = typeof t[0] === "number" ? t[0] : null;
+    var b = typeof t[1] === "number" ? t[1] : null;
+    if(a === null) a = segs.length ? segs[segs.length-1].end : 0;
+    segs.push({start: clamp(a,0,d), end: b === null ? d : clamp(b,0,d), text: txt});
+  });
+  for(var i=0;i<segs.length;i++){
+    if(segs[i].end <= segs[i].start) segs[i].end = i+1 < segs.length ? segs[i+1].start : d;
+  }
+  segs = xeTheoNgatHoi(segs);
+  S.segs = segs;
+  if(!segs.length){
+    hearStatus("Nghe xong mà không ra chữ nào — thử mô hình khác, hoặc xem lại file tiếng có lời không.");
+    return;
+  }
+  alignByScript();
+  hearStatus("Bóc được <b>" + segs.length + " câu</b>. Mốc đổi ảnh đã tự đặt theo lời — kéo trên " +
+             "thanh thời gian để chỉnh, hoặc gõ từ khoá cho từng ảnh rồi bấm <b>Khớp lại theo lời</b>.");
+  syncAll();
+}
+function xeTheoNgatHoi(segs){
+  var ra = [];
+  segs.forEach(function(g){
+    var dai = g.end - g.start;
+    var chu = String(g.text).trim().split(/\s+/).filter(Boolean);
+    if(dai < 2.5 || chu.length < 6){ ra.push(g); return; }
+
+    var trong = S.pauses.filter(function(p){ return p.mid > g.start + .5 && p.mid < g.end - .5; })
+                        .sort(function(a,b){ return a.mid - b.mid; });
+    var cau = tachCau(g.text);
+    var muon = Math.max(1, Math.round(chu.length / 11));       // chừng 11 chữ một dòng phụ đề
+
+    // Chỉ tin dấu chấm câu khi nó rải đều thật. Bản tinh chỉnh tiếng Việt hay trả về bốn chục chữ
+    // liền một mạch với đúng một dấu chấm cuối — tin nó là ra hai mảnh dài lê thê.
+    if(cau.length >= 2 && cau.length <= 40 && cau.length >= muon*0.7){
+      var lay = trong.slice().sort(function(a,b){ return (b.b - b.a) - (a.b - a.a); })
+                     .slice(0, cau.length - 1).map(function(p){ return p.mid; })
+                     .sort(function(a,b){ return a - b; });
+      if(lay.length < cau.length - 1){
+        var tong = 0, i;
+        for(i=0;i<cau.length;i++) tong += cau[i].length;
+        lay = []; var at1 = 0;
+        for(i=0;i<cau.length-1;i++){ at1 += cau[i].length; lay.push(g.start + dai*at1/tong); }
+      }
+      var bien1 = [g.start].concat(lay, [g.end]);
+      for(var k=0;k<cau.length;k++) ra.push({start:bien1[k], end:bien1[k+1], text:cau[k]});
+      return;
+    }
+
+    // Bản tinh chỉnh cho tiếng Việt gần như không chấm câu — cả đoạn dài chỉ một dấu chấm cuối.
+    // Tách theo dấu câu là hụt. Nên lấy chính quãng lặng trong sóng âm làm ranh giới,
+    // rồi rải chữ vào từng mảnh theo tỉ lệ thời gian.
+    if(!trong.length){ ra.push(g); return; }
+    if(trong.length + 1 > muon){
+      trong = trong.slice().sort(function(a,b){ return (b.b - b.a) - (a.b - a.a); })
+                   .slice(0, Math.max(1, muon - 1)).sort(function(a,b){ return a.mid - b.mid; });
+    }
+    var bien = [g.start].concat(trong.map(function(p){ return p.mid; }), [g.end]);
+    var at = 0;
+    for(var j=0;j<bien.length-1;j++){
+      var so = (j === bien.length-2) ? chu.length - at
+             : Math.max(1, Math.round(chu.length * (bien[j+1]-bien[j]) / dai));
+      so = Math.min(so, chu.length - at);
+      if(so <= 0) continue;
+      ra.push({start:bien[j], end:bien[j+1], text: chu.slice(at, at+so).join(" ")});
+      at += so;
+    }
+    if(at < chu.length && ra.length) ra[ra.length-1].text += " " + chu.slice(at).join(" ");
+  });
+  return ra;
+}
+function hearErr(msg){
+  hearing = false; choHear = null;
+  clearInterval(hearTick);
+  $("nHear").textContent = "Nghe và bóc chữ";
+  $("nDl").hidden = true;
+  hearStatus("Hỏng ở khâu nghe: <code>" + esc(msg) + "</code><br>" +
+    "Mở thẳng file từ thư mục thì khâu này không chạy được — vào qua localhost hoặc bản trên mạng. " +
+    "Còn nếu là lỗi hết bộ nhớ thì chọn mô hình <b>Nhanh</b> thay vì <b>Kỹ</b>.");
+}
+function startHear(){
+  if(hearing){ stopHear(); return; }
+  if(!S.buf){
+    hearStatus(S.audio
+      ? "Có tiếng nhưng chưa có sóng âm — bấm <b>Dựng sóng âm</b> ở bảng Giọng đọc trước đã."
+      : "Chưa có giọng đọc để nghe. Nạp file tiếng hoặc thu tại chỗ trước.");
+    return;
+  }
+  hearing = true;
+  dlFiles = {};
+  hearT0 = Date.now(); hearDone1 = 0;
+  hearDoan = Math.max(1, Math.ceil(S.buf.duration / 25));   // chia đoạn 30 giây, gối nhau 5
+  $("nHear").textContent = "Dừng";
+  hearTho();
+  hearPha("Đang chuẩn bị tiếng");
+  var device = (S.gpu && navigator.gpu) ? "webgpu" : "wasm";
+  toMono16k(S.buf).then(function(pcm){
+    if(!hearing) return;
+    var msg = {model: MODELS[S.model], device: device, lang: S.lang, audio: pcm};
+    choHear = {model: msg.model, device: msg.device, lang: msg.lang, audio: null};
+    if(ensureWorker()){
+      choHear.audio = pcm.slice(0);        // giữ một bản để còn làm lại nếu luồng phụ chết
+      worker.postMessage(msg, [pcm.buffer]);
+    }else{
+      hearPha("Không dựng được luồng phụ, chạy thẳng trên trang");
+      msg.audio = pcm;
+      mainThreadHear(msg);
+    }
+  }, function(err){ hearErr(String(err && err.message || err)); });
+}
+// không dựng được worker thì chạy thẳng trên luồng chính — giật, nhưng vẫn ra kết quả
+var mainPipe = null, mainKey = "";
+function mainThreadHear(msg){
+  hearStatus("Chạy thẳng trên luồng chính (không dựng được worker) — trang sẽ đứng hình một lúc.");
+  import(TJS).then(function(T){
+    var k = msg.model + "|" + msg.device;
+    return (mainPipe && k === mainKey) ? Promise.resolve(mainPipe) :
+      T.pipeline("automatic-speech-recognition", msg.model, {
+        device: msg.device,
+        dtype: msg.device === "webgpu"
+          ? {encoder_model:"fp16", decoder_model_merged:"q4"}
+          : {encoder_model:"q8",   decoder_model_merged:"q8"},
+        progress_callback: onDl
+      }).then(function(pp){ mainPipe = pp; mainKey = k; return pp; });
+  }).then(function(pipe){
+    var base = {task:"transcribe", chunk_length_s:30, stride_length_s:5, return_timestamps:true};
+    return pipe(msg.audio, Object.assign({language:msg.lang}, base))
+      .catch(function(){ return pipe(msg.audio, base); });
+  }).then(function(out){
+    if(!hearing) return;
+    hearDone({text: out.text||"", chunks: out.chunks||[]});
+  }).catch(function(err){ hearErr(String(err && err.message || err)); });
+}
+
+/* ---------- video có sẵn ---------- */
+function loadVideo(file){
+  dropVideo(true);
+  var el = document.createElement("video");
+  el.preload = "auto";
+  el.muted = true;                       // tiếng của video bỏ hẳn, chỉ lấy hình
+  el.playsInline = true;
+  el.src = URL.createObjectURL(file);
+  vid.url = el.src; vid.name = file.name;
+  $("nVidName").textContent = "Đang mở video…";
+  el.addEventListener("loadedmetadata", function(){
+    if(!isFinite(el.duration) || el.duration <= 0){
+      $("nVidName").textContent = "Mở được file nhưng không đọc ra độ dài — thử đổi sang mp4 rồi nạp lại.";
+      return;
+    }
+    vid.el = el; vid.dur = el.duration;
+    vid.w = el.videoWidth || 16; vid.h = el.videoHeight || 9;
+    $("nVidName").innerHTML = "<b>" + esc(vid.name) + "</b> · " + mmss(vid.dur) +
+      " · " + vid.w + "×" + vid.h + ". Tiếng gốc của video bị bỏ, chỉ lấy hình.";
+    if(S.src !== "video") setSrc("video");
+    scrub = 0;
+    syncAll();
+  });
+  el.addEventListener("error", function(){
+    $("nVidName").textContent = "Không mở được video này — trình duyệt phát được mp4, webm, mov. " +
+      "Định dạng khác thì đổi sang mp4 rồi nạp lại.";
+  });
+}
+function dropVideo(quiet){
+  if(vid.el){ try{ vid.el.pause(); }catch(e){} }
+  if(vid.url) URL.revokeObjectURL(vid.url);
+  vid = {el:null, url:"", name:"", dur:0, w:0, h:0};
+  if(!quiet){
+    $("nVidName").textContent = "Chưa nạp video nào.";
+    setSrc("anh");
+    syncAll();
+  }
+}
+function setSrc(v){
+  S.src = v;
+  var box = $("nSrcGroup");
+  Array.prototype.forEach.call(box.children, function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.src === v));
+  });
+}
+// giữ hai thẻ media bám theo đồng hồ chung; lệch quá 0,3 giây mới nắn, khỏi giật
+function keepMedia(){
+  var t = scrub;
+  if(vid.el){
+    if(t <= vid.dur){
+      if(vid.el.paused && (playing || rec.active)) vid.el.play().catch(function(){});
+      if(Math.abs(vid.el.currentTime - t) > .3){ try{ vid.el.currentTime = t; }catch(e){} }
+    }else if(!vid.el.paused) vid.el.pause();
+  }
+  if(S.audio){
+    var at = t - S.vidOff;
+    if(at >= -0.02 && at <= S.audio.dur){
+      if(audioEl.paused && (playing || rec.active)) audioEl.play().catch(function(){});
+      if(Math.abs(audioEl.currentTime - Math.max(0, at)) > .3){
+        try{ audioEl.currentTime = Math.max(0, at); }catch(e){}
+      }
+    }else if(!audioEl.paused) audioEl.pause();
+  }
+}
+
+/* ---------- cắt video thành bộ ảnh ----------
+   Video infographic hầu như là ảnh tĩnh nối nhau, nên cắt ra từng cảnh rồi đưa vào
+   đúng bộ máy ghép ảnh sẵn có thì được toàn bộ phần khớp lời, phụ đề, kéo mốc. */
+var catting = false;
+function catCanh(){
+  if(catting || !vid.el || !vid.dur) return;
+  catting = true;
+  $("nVidCut").textContent = "Đang dò…";
+  var v = document.createElement("video");
+  v.src = vid.url; v.muted = true; v.playsInline = true; v.preload = "auto";
+
+  var nho = document.createElement("canvas"), gn = nho.getContext("2d", {willReadFrequently:true});
+  nho.width = 64; nho.height = 36;
+  var buoc = Math.min(.5, Math.max(.15, vid.dur/400));
+  var truoc = null, mocs = [], t = 0;
+
+  function toi(){
+    if(t > vid.dur - .05) return chonMoc();
+    $("nVidCut").textContent = "Đang dò… " + Math.round(t/vid.dur*100) + "%";
+    seekTo(v, t, function(){
+      gn.drawImage(v, 0, 0, 64, 36);
+      var d = gn.getImageData(0, 0, 64, 36).data;
+      if(truoc){
+        var s = 0;
+        for(var i=0;i<d.length;i+=4) s += Math.abs(d[i]-truoc[i]) + Math.abs(d[i+1]-truoc[i+1]) + Math.abs(d[i+2]-truoc[i+2]);
+        mocs.push({t:t, d: s / (64*36*3*255)});
+      }
+      truoc = d.slice(0);
+      t += buoc;
+      toi();
+    });
+  }
+  // Ngưỡng phải bám theo cú đổi cảnh mạnh nhất của chính video này. Ảnh infographic
+  // dùng chung một nền kem thì hai cảnh khác hẳn nhau vẫn chỉ lệch vài phần trăm —
+  // đặt ngưỡng cứng là hụt sạch, mà đặt thấp thì nhiễu nén cũng thành cảnh.
+  function chonMoc(){
+    var maxD = 0;
+    mocs.forEach(function(m){ if(m.d > maxD) maxD = m.d; });
+    var he = 0.70 - (S.vidSens/100)*0.55;         // nhạy 1 → 0.69 lần, nhạy 100 → 0.15 lần
+    var thr = Math.max(0.010, maxD * he);
+    cats = [0];
+    mocs.forEach(function(m){
+      if(m.d > thr && m.t - cats[cats.length-1] > .8) cats.push(m.t);
+    });
+    xong();
+  }
+  var cats = [0];
+  function xong(){
+    if(cats.length > 80) cats = cats.slice(0, 80);
+    var canh = cats.map(function(a, i){
+      return {a:a, b: i+1 < cats.length ? cats[i+1] : vid.dur};
+    }).filter(function(c){ return c.b - c.a > .35; });
+    if(!canh.length){ thoi("không dò ra cảnh nào"); return; }
+    var lay = document.createElement("canvas"), gl = lay.getContext("2d");
+    var k = Math.min(1, 1600 / Math.max(vid.w, vid.h));
+    lay.width = Math.max(2, Math.round(vid.w*k)); lay.height = Math.max(2, Math.round(vid.h*k));
+    var ra = [], i = 0;
+    (function tiep(){
+      if(i >= canh.length) return nap(ra);
+      $("nVidCut").textContent = "Đang lấy hình… " + (i+1) + "/" + canh.length;
+      var c = canh[i];
+      seekTo(v, Math.min(c.b - .1, c.a + Math.min(.45, (c.b-c.a)*.4)), function(){
+        gl.drawImage(v, 0, 0, lay.width, lay.height);
+        lay.toBlob(function(bl){
+          if(bl) ra.push(new File([bl], "canh-" + (i<9?"0":"") + (i+1) + ".jpg", {type:"image/jpeg"}));
+          i++; tiep();
+        }, "image/jpeg", .92);
+      });
+    })();
+  }
+  function nap(files){
+    catting = false;
+    $("nVidCut").textContent = "Cắt thành bộ ảnh";
+    if(!files.length){ $("nVidName").innerHTML += "<br>Không lấy được hình nào."; return; }
+    clearImages();
+    addFiles(files);
+    setSrc("anh");
+    $("nVidName").innerHTML = "<b>" + esc(vid.name) + "</b> · độ nhạy " + S.vidSens +
+      "% → cắt ra <b>" + files.length + " cảnh</b>. Giờ nó là một bộ ảnh bình thường: khớp lời, " +
+      "kéo mốc, đổi chuyển cảnh như thường. Ra <b>ít</b> cảnh quá thì kéo độ nhạy <b>lên</b> rồi " +
+      "bấm cắt lại; ra <b>vụn</b> quá thì kéo <b>xuống</b>.";
+    syncAll();
+  }
+  function thoi(vi){
+    catting = false;
+    $("nVidCut").textContent = "Cắt thành bộ ảnh";
+    $("nVidName").innerHTML += "<br>Cắt hỏng: " + esc(vi);
+  }
+  v.addEventListener("loadedmetadata", function(){ toi(); });
+  v.addEventListener("error", function(){ thoi("không mở lại được video"); });
+}
+function seekTo(v, t, xong){
+  var goi = false;
+  function ok(){ if(goi) return; goi = true; v.removeEventListener("seeked", ok); xong(); }
+  v.addEventListener("seeked", ok);
+  try{ v.currentTime = Math.max(0, Math.min(t, (v.duration||0) - .02)); }
+  catch(e){ ok(); return; }
+  setTimeout(ok, 900);                    // máy chậm hay video lạ thì đừng treo cả vòng
+}
+
+/* ---------- máy đọc hộ ----------
+   Bảng chữ cái của mms-tts-vie chỉ có 95 ký tự: chữ cái tiếng Việt, dấu nháy và gạch nối.
+   Không có chữ số, không có dấu chấm phẩy. Thứ gì không nằm trong đó thì bộ tách từ vứt đi
+   lặng lẽ — viết "68%" là máy đọc thành khoảng trống. Nên phải đổi ra chữ trước khi đưa vào. */
+var SO = ["không","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"];
+function doc3(v, dayDu){
+  var tram = Math.floor(v/100), chuc = Math.floor(v/10)%10, dv = v%10, r = [];
+  if(tram > 0 || dayDu) r.push(SO[tram], "trăm");
+  if(chuc > 1) r.push(SO[chuc], "mươi");
+  else if(chuc === 1) r.push("mười");
+  else if(dv > 0 && (tram > 0 || dayDu)) r.push("lẻ");
+  if(dv > 0){
+    if(dv === 1 && chuc > 1) r.push("mốt");
+    else if(dv === 5 && chuc >= 1) r.push("lăm");
+    else if(dv === 4 && chuc > 1) r.push("tư");
+    else r.push(SO[dv]);
+  }
+  return r.join(" ");
+}
+function docSo(v){
+  v = Math.floor(Math.abs(v));
+  if(!isFinite(v)) return "";
+  if(v === 0) return "không";
+  var don = ["", "nghìn", "triệu", "tỷ"], nhom = [], out = [];
+  while(v > 0 && nhom.length < 4){ nhom.push(v % 1000); v = Math.floor(v/1000); }
+  for(var i = nhom.length-1; i >= 0; i--){
+    if(nhom[i] === 0) continue;
+    out.push(doc3(nhom[i], i < nhom.length-1));
+    if(don[i]) out.push(don[i]);
+  }
+  return out.join(" ");
+}
+function doiSoRaChu(t){
+  return String(t)
+    .replace(/(\d)[.\u00a0](?=\d{3}(\D|$))/g, "$1")                       // 1.000 → 1000
+    .replace(/(\d+)\s*[:\/]\s*(\d+)/g, function(_,a,b){ return docSo(+a) + " trên " + docSo(+b); })
+    .replace(/(\d+),(\d+)/g, function(_,a,b){
+      return docSo(+a) + " phẩy " + b.split("").map(function(d){ return SO[+d]; }).join(" ");
+    })
+    .replace(/(\d+)\s*%/g, function(_,a){ return docSo(+a) + " phần trăm"; })
+    .replace(/\d+/g, function(m){ return docSo(+m); })
+    .replace(/&/g, " và ").replace(/\+/g, " cộng ").replace(/=/g, " bằng ")
+    .replace(/\s+/g, " ").trim();
+}
+// Máy đọc theo đúng luật chính tả tiếng Việt, chữ nào không phải một âm tiết tiếng Việt hợp lệ
+// thì nó đọc bừa. Nên soi trước và mách ra, thay vì để người dùng nghe xong mới biết.
+// Âm tiết tiếng Việt = phụ âm đầu (bộ đóng) + nguyên âm + phụ âm cuối (bộ đóng, chỉ 8 cái).
+var ONSET = ["ngh","ng","nh","ch","gh","gi","kh","ph","th","tr","qu",
+             "b","c","d","đ","g","h","k","l","m","n","p","r","s","t","v","x"];
+var CODA = ["ng","nh","ch","c","m","n","p","t"];
+var NGUYEN = "aăâeêioôơuưy";
+function amTietViet(w){
+  // bỏ dấu thanh (huyền sắc ngã hỏi nặng) nhưng giữ ă â ê ô ơ ư vì đó là chữ cái riêng
+  w = String(w).toLowerCase().normalize("NFD")
+       .replace(/[̣̀́̃̉]/g, "").normalize("NFC");
+  if(!w) return true;
+  for(var i=0;i<ONSET.length;i++){
+    if(w.indexOf(ONSET[i]) === 0){ w = w.slice(ONSET[i].length); break; }
+  }
+  var k = 0;
+  while(k < w.length && NGUYEN.indexOf(w[k]) > -1) k++;
+  if(k === 0) return false;
+  var duoi = w.slice(k);
+  return !duoi || CODA.indexOf(duoi) > -1;
+}
+function chuLa(t){
+  var out = [];
+  (String(t).split(/[^a-zA-ZÀ-ỹđĐ]+/) || []).forEach(function(w){
+    if(!w || amTietViet(w) || out.indexOf(w) > -1 || out.length >= 8) return;
+    out.push(w);
+  });
+  return out;
+}
+function tachCau(t){
+  var out = [];
+  String(t).split(/\n/).forEach(function(dong){
+    (dong.match(/[^.!?…]+[.!?…]*/g) || []).forEach(function(c){
+      c = c.replace(/\s+/g, " ").trim();
+      if(!c) return;
+      // câu dài quá thì VITS đọc đuối dần — cắt ở dấu phẩy gần giữa nhất
+      while(c.length > 190){
+        var cat = c.lastIndexOf(",", 190);
+        if(cat < 60) cat = c.lastIndexOf(" ", 190);
+        if(cat < 40) break;
+        out.push(c.slice(0, cat+1).trim());
+        c = c.slice(cat+1).trim();
+      }
+      // mẩu quá ngắn thì dính vào câu trước cho khỏi vụn thành nhiều cảnh
+      if(c.length < 12 && out.length) out[out.length-1] += " " + c;
+      else out.push(c);
+    });
+  });
+  return out;
+}
+
+var saying = false, sayDl = {};
+function sayPrep(){
+  var cau = tachCau($("nSayText").value);
+  var box = $("nSayPrep");
+  if(!cau.length){ box.hidden = true; return cau; }
+  box.hidden = false;
+  var doc = cau.map(function(c){ return S.sayNum ? doiSoRaChu(c) : c; });
+  var la = chuLa(doc.join(" "));
+  box.innerHTML = "<b>" + cau.length + " câu.</b> Máy sẽ đọc là: “" +
+    esc(doc.join(" ").slice(0, 240)) + (doc.join(" ").length > 240 ? "…" : "") + "”" +
+    (la.length ? "<br><em>Nuốt mất: " + esc(la.join(", ")) +
+      "</em> — viết lại theo cách đọc, ví dụ <em>Facebook</em> thành <em>phây-búc</em>." : "");
+  return cau;
+}
+function startSay(){
+  if(saying) return;
+  var cau = sayPrep();
+  if(!cau.length){ $("nSayStatus").textContent = "Chưa có lời nào để đọc."; return; }
+  saying = true; sayDl = {};
+  var doc = cau.map(function(c){ return S.sayNum ? doiSoRaChu(c) : c; });
+  $("nSayGo").textContent = "Đang đọc…";
+  $("nSayStatus").textContent = "Đang chuẩn bị mô hình đọc…";
+
+  var phan = new Array(cau.length), sr = 16000, xong = 0;
+  function nhan(e){
+    var d = e.data;
+    if(d.type === "dl-doc") onSayDl(d.p);
+    else if(d.type === "stage" && d.text === "tai-doc")
+      $("nSayStatus").textContent = "Đang tải mô hình đọc về máy, chỉ lần đầu thôi.";
+    else if(d.type === "doc-cau"){
+      phan[d.i] = d.audio; sr = d.sr; xong++;
+      $("nSayDl").hidden = true;
+      $("nSayStatus").textContent = "Đang đọc câu " + xong + "/" + cau.length + "…";
+    }else if(d.type === "doc-xong"){
+      worker.removeEventListener("message", nhan);
+      ghepTieng(phan, sr, cau);
+    }else if(d.type === "err"){
+      worker.removeEventListener("message", nhan);
+      saying = false;
+      $("nSayGo").textContent = "Đọc thành tiếng";
+      $("nSayDl").hidden = true;
+      $("nSayStatus").innerHTML = "Hỏng ở khâu đọc: " + esc(d.msg) +
+        "<br>Mở thẳng file từ thư mục thì khâu này không chạy — vào qua localhost.";
+    }
+  }
+  if(!ensureWorker()){
+    saying = false;
+    $("nSayGo").textContent = "Đọc thành tiếng";
+    $("nSayStatus").textContent = "Không dựng được luồng phụ để chạy mô hình đọc.";
+    return;
+  }
+  worker.addEventListener("message", nhan);
+  worker.postMessage({job:"tts", dtype:S.sayQual, cau:doc});
+}
+function onSayDl(p){
+  if(!p) return;
+  if(p.status === "progress" && p.file){
+    sayDl[p.file] = {loaded:p.loaded||0, total:p.total||0};
+    var L = 0, T = 0;
+    Object.keys(sayDl).forEach(function(f){ L += sayDl[f].loaded; T += sayDl[f].total; });
+    var pct = T ? Math.round(L/T*100) : 0;
+    $("nSayDl").hidden = false;
+    $("nSayDlName").textContent = p.file.split("/").pop();
+    $("nSayDlPct").textContent = pct + "% · " + (L/1048576).toFixed(0) + "/" + (T/1048576).toFixed(0) + " MB";
+    $("nSayDlFill").style.width = pct + "%";
+  }else if(p.status === "ready") $("nSayDl").hidden = true;
+}
+// nối các câu lại, chèn khoảng lặng giữa hai câu, và ghi luôn mốc thời gian thật của từng câu
+function ghepTieng(phan, sr, cau){
+  saying = false;
+  $("nSayGo").textContent = "Đọc lại";
+  var co = phan.filter(Boolean);
+  if(!co.length){ $("nSayStatus").textContent = "Không dựng được tiếng nào."; return; }
+  var nghi = Math.round(sr * S.sayGap), tong = 0, i;
+  for(i=0;i<phan.length;i++) if(phan[i]) tong += phan[i].length + nghi;
+  var all = new Float32Array(Math.max(1, tong - nghi)), at = 0, segs = [];
+  for(i=0;i<phan.length;i++){
+    if(!phan[i]) continue;
+    segs.push({start: at/sr, end: (at + phan[i].length)/sr, text: cau[i]});
+    all.set(phan[i], at);
+    at += phan[i].length + nghi;
+  }
+  $("nSayStatus").textContent = "Đang dựng file tiếng…";
+  loadAudio(wavBlob(all, sr), "máy đọc", segs, function(err){
+    if(err){ $("nSayStatus").textContent = "Dựng được tiếng nhưng không đọc lại được: " + err.message; return; }
+    $("nSayStatus").innerHTML = "Đọc xong <b>" + segs.length + " câu</b> · " +
+      mmss(all.length/sr) + ". Mốc đổi ảnh lấy đúng thời gian thật của từng câu, " +
+      "không phải đoán. Muốn giọng người thì thu lại bằng nút <b>Thu tại chỗ</b>.";
+  });
+}
+function wavBlob(pcm, sr){
+  var n = pcm.length, b = new ArrayBuffer(44 + n*2), v = new DataView(b);
+  function chu(at, t){ for(var i=0;i<t.length;i++) v.setUint8(at+i, t.charCodeAt(i)); }
+  chu(0, "RIFF");  v.setUint32(4, 36 + n*2, true);   chu(8, "WAVE");
+  chu(12, "fmt "); v.setUint32(16, 16, true);        v.setUint16(20, 1, true);
+  v.setUint16(22, 1, true);                          v.setUint32(24, sr, true);
+  v.setUint32(28, sr*2, true);                       v.setUint16(32, 2, true);
+  v.setUint16(34, 16, true);                         chu(36, "data");
+  v.setUint32(40, n*2, true);
+  for(var i=0;i<n;i++){
+    var x = pcm[i] < -1 ? -1 : pcm[i] > 1 ? 1 : pcm[i];
+    v.setInt16(44 + i*2, Math.round(x * 32767), true);
+  }
+  return new Blob([b], {type:"audio/wav"});
+}
+
+/* ---------- danh sách ảnh ---------- */
+function renderShots(){
+  if(editingIn("nShots")) return;          // đang gõ từ khoá thì đừng dựng lại, mất chỗ nháy
+  var box = $("nShots");
+  if(!S.shots.length){
+    box.innerHTML = '<p class="hint" style="margin:0">Chưa có ảnh nào. Kéo cả bộ vào khung bên trái, hoặc bấm <b>Thêm ảnh</b>.</p>';
+    return;
+  }
+  var now = shotAt(curTime());
+  box.innerHTML = S.shots.map(function(s,i){
+    return '<div class="shot' + (i===now?" now":"") + '">' +
+      '<img src="' + s.url + '" alt="">' +
+      '<div class="shot-body">' +
+        '<span class="shot-time"><em>' + (i+1) + '</em>' +
+          '<span>' + mmss(s.start) + " → " + mmss(shotEnd(i)) + '</span></span>' +
+        '<input type="text" data-key="' + i + '" value="' + esc(s.key) + '" placeholder="từ khoá trong lời đọc…">' +
+      '</div>' +
+      '<div class="shot-btns">' +
+        '<button data-up="' + i + '" title="Đổi chỗ lên trên">↑</button>' +
+        '<button data-del="' + i + '" title="Bỏ ảnh này">×</button>' +
+      '</div></div>';
+  }).join("");
+}
+$("nShots").addEventListener("click", function(e){
+  var b = e.target.closest("button");
+  if(!b) return;
+  if(b.dataset.up != null) moveShot(+b.dataset.up, -1);
+  else if(b.dataset.del != null) dropShot(+b.dataset.del);
+});
+$("nShots").addEventListener("input", function(e){
+  var i = e.target.dataset && e.target.dataset.key;
+  if(i != null && S.shots[+i]) S.shots[+i].key = e.target.value;
+});
+
+/* ---------- bản bóc chữ ---------- */
+function renderScript(){
+  if(editingIn("nScript")) return;         // đang sửa lời thì để yên
+  var box = $("nScript");
+  box.hidden = !S.segs.length;
+  if(!S.segs.length) return;
+  var t = curTime();
+  box.innerHTML = S.segs.map(function(g,i){
+    var on = t >= g.start && t < g.end;
+    return '<p class="' + (on?"now":"") + '" data-seg="' + i + '">' +
+      '<b>' + mmss(g.start) + '</b><span contenteditable="true" data-txt="' + i + '">' +
+      esc(g.text) + '</span></p>';
+  }).join("");
+}
+$("nScript").addEventListener("click", function(e){
+  if(e.target.hasAttribute("contenteditable")) return;
+  var p = e.target.closest("p");
+  if(p && p.dataset.seg != null) seek(S.segs[+p.dataset.seg].start);
+});
+$("nScript").addEventListener("input", function(e){
+  var i = e.target.dataset && e.target.dataset.txt;
+  if(i != null && S.segs[+i]) S.segs[+i].text = e.target.textContent;
+});
+
+/* ---------- thanh thời gian ---------- */
+function css(n){ return getComputedStyle(document.body).getPropertyValue(n).trim(); }
+var tlBase = document.createElement("canvas"), tlKey = "";
+function tlDims(){
+  var r = tlc.getBoundingClientRect();
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  var w = Math.max(120, Math.round(r.width * dpr)), h = Math.round(100 * dpr);
+  if(tlc.width !== w || tlc.height !== h){ tlc.width = w; tlc.height = h; }
+  return {w:w, h:h, dpr:dpr};
+}
+// nền của thanh (sóng âm, khoảng lặng, vạch câu) chỉ vẽ lại khi dữ liệu đổi,
+// mỗi khung hình chỉ còn chép ảnh sẵn rồi vẽ mốc và đầu đọc lên trên
+function tlBaseDraw(W, H, d){
+  var key = [W, H, S.peaks ? S.peaks.length : 0, S.segs.length, S.pauses.length, d.toFixed(2)].join("|");
+  if(tlKey === key) return;
+  tlKey = key;
+  tlBase.width = W; tlBase.height = H;
+  var g = tlBase.getContext("2d");
+  g.fillStyle = css("--sunk"); g.fillRect(0,0,W,H);
+  g.fillStyle = css("--line");
+  g.globalAlpha = .55;
+  S.pauses.forEach(function(p){ g.fillRect(p.a/d*W, 0, Math.max(1,(p.b-p.a)/d*W), H); });
+  g.globalAlpha = 1;
+  g.fillStyle = css("--muted");
+  if(S.peaks){
+    var N = S.peaks.length, mid = H*.5, bw = Math.max(1, W/N - .5);
+    for(var i=0;i<N;i++){
+      var hh = Math.max(1, S.peaks[i]*H*.4);
+      g.fillRect(i/N*W, mid-hh, bw, hh*2);
+    }
+  }else{
+    g.globalAlpha = .3; g.fillRect(0, H*.5-1, W, 2); g.globalAlpha = 1;
+  }
+  g.strokeStyle = css("--line"); g.lineWidth = 1;
+  S.segs.forEach(function(s){
+    var x = Math.round(s.start/d*W) + .5;
+    g.beginPath(); g.moveTo(x, H*.85); g.lineTo(x, H); g.stroke();
+  });
+}
+function drawTl(){
+  if($("nTl").hidden) return;
+  var z = tlDims(), W = z.w, H = z.h, d = totalDur();
+  tlBaseDraw(W, H, d);
+  tctx.clearRect(0,0,W,H);
+  tctx.drawImage(tlBase, 0, 0);
+
+  var acc = css("--accent"), ink = css("--accent-ink");
+  var bw = 20*z.dpr, bh = 14*z.dpr;
+  tctx.textAlign = "center"; tctx.textBaseline = "middle";
+  tctx.font = (10*z.dpr) + 'px "IBM Plex Mono", monospace';
+  (videoMode() ? [] : S.shots).forEach(function(s,i){
+    var x = s.start/d*W, bx = clamp(x, 0, W-bw);
+    tctx.fillStyle = acc;
+    tctx.fillRect(Math.max(0,x-1), 0, 2, H);
+    tctx.fillRect(bx, 0, bw, bh);
+    tctx.fillStyle = ink;
+    tctx.fillText(String(i+1), bx+bw/2, bh/2 + z.dpr*.5);
+  });
+  var px = curTime()/d*W;
+  tctx.fillStyle = css("--ink");
+  tctx.fillRect(Math.max(0,px-1), 0, 2, H);
+}
+if(window.matchMedia){
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+  var reBase = function(){ tlKey = ""; };
+  if(mq.addEventListener) mq.addEventListener("change", reBase);
+  else if(mq.addListener) mq.addListener(reBase);
+}
+function tlAt(e){
+  var r = tlc.getBoundingClientRect();
+  return clamp((e.clientX - r.left)/r.width, 0, 1) * totalDur();
+}
+tlc.addEventListener("pointerdown", function(e){
+  if(rec.active) return;
+  if(videoMode()){ seek(tlAt(e)); return; }
+  var t = tlAt(e), d = totalDur(), r = tlc.getBoundingClientRect();
+  var near = -1, best = 10/r.width*d;
+  S.shots.forEach(function(s,i){
+    if(i === 0) return;                    // ảnh đầu luôn đứng ở giây 0
+    var g = Math.abs(s.start - t);
+    if(g < best){ best = g; near = i; }
+  });
+  if(near > -1){
+    drag = near;
+    tlc.setPointerCapture(e.pointerId);
+  }else seek(t);
+});
+tlc.addEventListener("pointermove", function(e){
+  if(drag < 0) return;
+  var lo = S.shots[drag-1].start + .25;
+  var hi = (drag+1 < S.shots.length ? S.shots[drag+1].start : totalDur()) - .25;
+  S.shots[drag].start = clamp(snapPause(tlAt(e)), lo, Math.max(lo, hi));
+  renderShots(); drawTl();
+});
+["pointerup","pointercancel"].forEach(function(ev){
+  tlc.addEventListener(ev, function(){ drag = -1; });
+});
+
+/* ---------- vẽ khung hình ---------- */
+function frameSize(){
+  var ar = ASPECTS[S.aspect] || 9/16, base = S.res, w, h;
+  if(ar < 1){ w = base; h = Math.round(base/ar); }
+  else { h = base; w = Math.round(base*ar); }
+  return {w: w - (w%2), h: h - (h%2)};
+}
+function fitCanvas(){
+  var f = frameSize();
+  if(canvas.width !== f.w || canvas.height !== f.h){ canvas.width = f.w; canvas.height = f.h; }
+}
+function smallOf(s){
+  if(s.small) return s.small;
+  var c = document.createElement("canvas"), iw = s.img.naturalWidth, ih = s.img.naturalHeight;
+  c.width = 240; c.height = Math.max(2, Math.round(240*ih/iw));
+  c.getContext("2d").drawImage(s.img, 0, 0, c.width, c.height);
+  s.small = c;
+  return c;
+}
+function coverRect(iw, ih, W, H){
+  var k = Math.max(W/iw, H/ih), w = iw*k, h = ih*k;
+  return {x:(W-w)/2, y:(H-h)/2, w:w, h:h};
+}
+var scratch = document.createElement("canvas");
+function paintBg(g, s, W, H, alpha){
+  g.globalAlpha = alpha;
+  if(S.bgMode === "color" || !s){
+    if(S.bgGrad && S.bgMode === "color"){
+      var lg = g.createLinearGradient(0,0,0,H);
+      lg.addColorStop(0, S.bgC1); lg.addColorStop(1, S.bgC2);
+      g.fillStyle = lg;
+    }else g.fillStyle = S.bgC1;
+    g.fillRect(0,0,W,H);
+  }else{
+    // làm mờ bằng cách thu thật nhỏ rồi phóng to lại — rẻ hơn filter blur rất nhiều
+    var k = Math.max(6, Math.round(200 - S.bgBlur*1.9));
+    scratch.width = k; scratch.height = Math.max(2, Math.round(k*H/W));
+    var s2 = scratch.getContext("2d");
+    s2.imageSmoothingQuality = "high";
+    var src = smallOf(s);
+    var r = coverRect(src.width, src.height, scratch.width, scratch.height);
+    s2.clearRect(0,0,scratch.width,scratch.height);
+    s2.drawImage(src, r.x, r.y, r.w, r.h);
+    g.imageSmoothingQuality = "high";
+    g.drawImage(scratch, 0, 0, W, H);
+    if(S.bgDim > 0){
+      g.fillStyle = "rgba(0,0,0," + (S.bgDim/125).toFixed(3) + ")";
+      g.fillRect(0,0,W,H);
+    }
+  }
+  g.globalAlpha = 1;
+}
+// một cảnh: vừa khung, chừa lề, trôi–phóng nhẹ. dx và k là phần chuyển cảnh cộng thêm.
+function paintShot(g, i, p, alpha, dx, k){
+  var s = S.shots[i];
+  if(!s) return;
+  var W = canvas.width, H = canvas.height, pad = S.pad/100;
+  var iw = s.img.naturalWidth, ih = s.img.naturalHeight;
+  var fit = Math.min(W*(1-pad*2)/iw, H*(1-pad*2)/ih);
+  var grow = 1, px = 0, py = 0;
+  if(S.ken){
+    // ảnh chỉ lớn dần *về* mức vừa khung, không bao giờ vượt — chữ trong infographic không bị cắt
+    var amt = S.kenAmt/100 * .16;
+    var q = (i % 2) ? (1-p) : p;
+    grow = 1 - amt*(1-q);
+    px = (q-.5) * amt * W * .35 * ((i%3)-1);
+    py = (q-.5) * amt * H * .12;
+  }
+  var sc = fit*grow*k, w = iw*sc, h = ih*sc;
+  g.globalAlpha = alpha;
+  g.imageSmoothingQuality = "high";
+  g.drawImage(s.img, (W-w)/2 + px + dx, (H-h)/2 + py, w, h);
+  g.globalAlpha = 1;
+}
+function wrapLines(g, text, maxW, maxLines){
+  var words = String(text).split(/\s+/), lines = [], cur = "";
+  for(var i=0;i<words.length && lines.length < maxLines;i++){
+    var t = cur ? cur + " " + words[i] : words[i];
+    if(g.measureText(t).width > maxW && cur){ lines.push(cur); cur = words[i]; }
+    else cur = t;
+  }
+  if(cur && lines.length < maxLines) lines.push(cur);
+  return lines;
+}
+function paintSub(g, t){
+  if(!S.sub || !S.segs.length) return;
+  var seg = null;
+  for(var i=0;i<S.segs.length;i++){
+    if(t >= S.segs[i].start && t < S.segs[i].end){ seg = S.segs[i]; break; }
+  }
+  if(!seg || !seg.text) return;
+  var W = canvas.width, H = canvas.height, size = H * S.subSize/1000;
+  g.font = '600 ' + size.toFixed(1) + 'px "IBM Plex Sans", system-ui, sans-serif';
+  g.textAlign = "center"; g.textBaseline = "middle";
+  var lines = wrapLines(g, seg.text, W*.84, 3);
+  var lh = size*1.32, block = lines.length*lh;
+  var cy = S.subPos === "top" ? H*.10 + block/2 : H*.90 - block/2;
+  if(S.subBand){
+    var wmax = 0;
+    lines.forEach(function(l){ wmax = Math.max(wmax, g.measureText(l).width); });
+    var bw = Math.min(W*.92, wmax + size*1.1), bh = block + size*.7;
+    var bx = (W-bw)/2, by = cy-bh/2, r = size*.28;
+    g.fillStyle = "rgba(0,0,0,.55)";
+    g.beginPath();
+    g.moveTo(bx+r,by); g.arcTo(bx+bw,by,bx+bw,by+bh,r); g.arcTo(bx+bw,by+bh,bx,by+bh,r);
+    g.arcTo(bx,by+bh,bx,by,r); g.arcTo(bx,by,bx+bw,by,r); g.closePath(); g.fill();
+  }else{
+    g.shadowColor = "rgba(0,0,0,.85)"; g.shadowBlur = size*.35;
+  }
+  g.fillStyle = "#ffffff";
+  lines.forEach(function(l, k){ g.fillText(l, W/2, cy - block/2 + lh*(k+.5)); });
+  g.shadowBlur = 0;
+}
+function draw(){
+  fitCanvas();
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  if(videoMode()){ drawVideo(W, H); return; }
+  if(!S.shots.length){
+    // mới có tiếng thôi cũng vẽ ra được: nền cộng phụ đề, xem thử và quay đều chạy
+    paintBg(ctx, null, W, H, 1);
+    paintSub(ctx, curTime());
+    return;
+  }
+  var t = curTime(), i = shotAt(t);
+  var a = S.shots[i].start, b = shotEnd(i);
+  var p = b > a ? clamp((t-a)/(b-a), 0, 1) : 0;
+  var u = (i > 0 && S.trans !== "cut" && S.transSecs > 0) ? clamp((t-a)/S.transSecs, 0, 1) : 1;
+
+  if(u < 1){
+    var j = i-1, aj = S.shots[j].start;
+    var pj = a > aj ? clamp((t-aj)/(a-aj), 0, 1) : 1;
+    paintBg(ctx, S.shots[j], W, H, 1);
+    paintBg(ctx, S.shots[i], W, H, u);
+    if(S.trans === "slide"){
+      paintShot(ctx, j, pj, 1, -u*W*1.05, 1);
+      paintShot(ctx, i, p, 1, (1-u)*W*1.05, 1);
+    }else if(S.trans === "zoom"){
+      paintShot(ctx, j, pj, 1-u, 0, 1 + u*.14);
+      paintShot(ctx, i, p, u, 0, 1.14 - u*.14);
+    }else{
+      paintShot(ctx, j, pj, 1, 0, 1);
+      paintShot(ctx, i, p, u, 0, 1);
+    }
+  }else{
+    paintBg(ctx, S.shots[i], W, H, 1);
+    paintShot(ctx, i, p, 1, 0, 1);
+  }
+  paintSub(ctx, t);
+}
+
+// chế độ video: khung phim đặt vừa khung đã chọn, nền là chính khung phim đó làm mờ
+function drawVideo(W, H){
+  var v = vid.el, pad = S.pad/100;
+  var san = v.readyState >= 2;
+  if(S.bgMode === "color" || !san) paintBg(ctx, null, W, H, 1);
+  else{
+    var k = Math.max(6, Math.round(200 - S.bgBlur*1.9));
+    scratch.width = k; scratch.height = Math.max(2, Math.round(k*H/W));
+    var s2 = scratch.getContext("2d");
+    s2.imageSmoothingQuality = "high";
+    var r = coverRect(vid.w, vid.h, scratch.width, scratch.height);
+    s2.clearRect(0,0,scratch.width,scratch.height);
+    try{ s2.drawImage(v, r.x, r.y, r.w, r.h); }catch(e){}
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(scratch, 0, 0, W, H);
+    if(S.bgDim > 0){
+      ctx.fillStyle = "rgba(0,0,0," + (S.bgDim/125).toFixed(3) + ")";
+      ctx.fillRect(0,0,W,H);
+    }
+  }
+  if(san){
+    var fit = Math.min(W*(1-pad*2)/vid.w, H*(1-pad*2)/vid.h);
+    var w = vid.w*fit, h = vid.h*fit;
+    ctx.imageSmoothingQuality = "high";
+    try{ ctx.drawImage(v, (W-w)/2, (H-h)/2, w, h); }catch(e){}
+  }
+  paintSub(ctx, curTime() - S.vidOff);      // phụ đề bám theo giọng đọc, không bám theo phim
+}
+
+/* ---------- chạy thử ---------- */
+function curTime(){
+  if(videoMode()) return scrub;             // chế độ video lấy đồng hồ riêng, vì hình và tiếng lệch nhau
+  if(S.audio && (playing || rec.active)) return audioEl.currentTime;
+  return scrub;
+}
+function seek(t){
+  scrub = clamp(t, 0, totalDur());
+  if(videoMode()){
+    if(vid.el){ try{ vid.el.currentTime = Math.min(scrub, vid.dur - .02); }catch(e){} }
+    if(S.audio){ try{ audioEl.currentTime = clamp(scrub - S.vidOff, 0, S.audio.dur); }catch(e){} }
+    return;
+  }
+  if(S.audio){ try{ audioEl.currentTime = scrub; }catch(e){} }
+}
+function ensureMix(){
+  if(mix.actx) return mix;
+  var AC = window.AudioContext || window.webkitAudioContext;
+  mix.actx = new AC();
+  mix.src = mix.actx.createMediaElementSource(audioEl);
+  mix.dest = mix.actx.createMediaStreamDestination();
+  mix.src.connect(mix.dest);
+  mix.src.connect(mix.actx.destination);
+  mix.an = mix.actx.createAnalyser();
+  mix.an.fftSize = 1024;
+  mix.src.connect(mix.an);
+  mix.mau = new Float32Array(mix.an.fftSize);
+  return mix;
+}
+function play(){
+  if(!S.shots.length && !videoMode() && !S.audio){
+    $("nTlHint").textContent = "Chưa có gì để chạy — nạp ảnh, video hoặc giọng đọc trước đã.";
+    return;
+  }
+  if(videoMode()){
+    if(S.audio) ensureMix();
+    if(mix.actx && mix.actx.state === "suspended") mix.actx.resume();
+    if(scrub >= totalDur()-.05) scrub = 0;
+    playing = true; lastClock = 0;
+    keepMedia();
+    $("nPlay").textContent = "Dừng";
+    return;
+  }
+  if(!S.audio){                              // chưa có tiếng thì vẫn xem thử được bằng đồng hồ
+    playing = true; lastClock = 0;
+    $("nPlay").textContent = "Dừng";
+    return;
+  }
+  ensureMix();
+  if(mix.actx.state === "suspended") mix.actx.resume();
+  if(scrub >= totalDur()-.05) scrub = 0;
+  try{ audioEl.currentTime = scrub; }catch(e){}
+  audioEl.play().then(function(){
+    playing = true;
+    $("nPlay").textContent = "Dừng";
+  }, function(err){
+    $("nTlHint").textContent = "Không phát được tiếng: " + (err && err.message || err);
+  });
+}
+function pause(){
+  playing = false;
+  try{ audioEl.pause(); }catch(e){}
+  if(vid.el){ try{ vid.el.pause(); }catch(e){} }
+  if(S.audio && !videoMode()) scrub = audioEl.currentTime;
+  $("nPlay").textContent = "Nghe thử";
+}
+audioEl.addEventListener("ended", function(){
+  if(rec.active) stopRec();
+  else { playing = false; scrub = 0; $("nPlay").textContent = "Nghe thử"; }
+});
+
+var lastClock = 0, lastShot = -1, lastSeg = -1;
+function markScript(){
+  if(!S.segs.length) return;
+  var t = curTime(), k = -1;
+  for(var i=0;i<S.segs.length;i++) if(t >= S.segs[i].start && t < S.segs[i].end){ k = i; break; }
+  if(k === lastSeg) return;
+  lastSeg = k;
+  var box = $("nScript");
+  Array.prototype.forEach.call(box.children, function(p, i){ p.classList.toggle("now", i === k); });
+  var el = k > -1 ? box.children[k] : null;
+  if(el && (playing || rec.active) &&
+     (el.offsetTop < box.scrollTop || el.offsetTop > box.scrollTop + box.clientHeight - 30)){
+    box.scrollTop = el.offsetTop - box.clientHeight/2;
+  }
+}
+// Vạch này trả lời đúng một câu hỏi: tiếng có đang thật sự chảy ra loa không.
+// Vạch nhảy mà tai không nghe gì → lỗi ở máy hoặc ở tab bị tắt tiếng, không phải ở xưởng.
+function veMuc(){
+  var el = $("nLevel");
+  var song = (playing || rec.active) && S.audio && mix.an;
+  el.hidden = !song;
+  if(!song) return;
+  mix.an.getFloatTimeDomainData(mix.mau);
+  var m = 0;
+  for(var i = 0; i < mix.mau.length; i += 4){
+    var v = mix.mau[i] < 0 ? -mix.mau[i] : mix.mau[i];
+    if(v > m) m = v;
+  }
+  $("nLevelFill").style.width = Math.min(100, Math.round(Math.sqrt(m) * 130)) + "%";
+}
+function paint(){
+  draw();
+  drawTl();
+  veMuc();
+  var i = shotAt(curTime());
+  if(i !== lastShot){ lastShot = i; renderShots(); }
+  markScript();
+}
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!live()) return;
+  if(playing && (videoMode() || !S.audio)){
+    var dt = lastClock ? (now-lastClock)/1000 : 0;
+    scrub += dt;
+    if(videoMode()) keepMedia();
+    if(scrub >= totalDur()){
+      scrub = 0;
+      if(!rec.active){
+        playing = false;
+        if(vid.el){ try{ vid.el.pause(); }catch(e){} }
+        try{ audioEl.pause(); }catch(e){}
+        $("nPlay").textContent = "Nghe thử";
+      }
+    }
+  }
+  lastClock = now;
+  paint();
+}
+requestAnimationFrame(loop);
+
+/* ---------- quay video ---------- */
+var formats = [];
+(function initFormats(){
+  var box = $("nFmtGroup"), seen = {};
+  if(window.MediaRecorder && MediaRecorder.isTypeSupported){
+    CANDIDATES.forEach(function(c){
+      if(seen[c.ext] || !MediaRecorder.isTypeSupported(c.mime)) return;
+      seen[c.ext] = 1; formats.push(c);
+    });
+  }
+  if(!formats.length || !canvas.captureStream){
+    box.innerHTML = "";
+    $("nRecBtn").disabled = true;
+    $("nRecStatus").textContent = "Trình duyệt này không quay được canvas — trên máy tính hãy dùng Chrome hoặc Edge.";
+    return;
+  }
+  formats.forEach(function(f, i){
+    var b = document.createElement("button");
+    b.textContent = f.label;
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.onclick = function(){
+      S.fmt = i;
+      Array.prototype.forEach.call(box.children, function(c, k){
+        c.setAttribute("aria-pressed", String(k === i));
+      });
+    };
+    box.appendChild(b);
+  });
+})();
+
+function startRec(){
+  if(rec.active || !formats.length) return;
+  if(!S.shots.length && !videoMode() && !S.audio){
+    $("nRecStatus").textContent = "Chưa có gì để quay — nạp ảnh, video hoặc giọng đọc trước đã.";
+    return;
+  }
+  var f = formats[S.fmt] || formats[0];
+  fitCanvas();
+  draw();
+  rec.chunks = []; rec.ext = f.ext; rec.active = true;
+  if(rec.url){ URL.revokeObjectURL(rec.url); rec.url = ""; }
+  $("nRecResult").hidden = true;
+  $("nRecVideo").removeAttribute("src");
+
+  var tracks = canvas.captureStream(S.fps).getVideoTracks();
+  if(S.audio){
+    ensureMix();
+    if(mix.actx.state === "suspended") mix.actx.resume();
+    tracks = tracks.concat(mix.dest.stream.getAudioTracks());
+  }
+  try{
+    rec.mr = new MediaRecorder(new MediaStream(tracks), {
+      mimeType: f.mime,
+      videoBitsPerSecond: S.mbps*1000000,
+      audioBitsPerSecond: 128000
+    });
+  }catch(err){
+    rec.active = false;
+    $("nRecStatus").textContent = "Không khởi động được bộ quay: " + err.message;
+    return;
+  }
+  rec.mr.ondataavailable = function(e){ if(e.data && e.data.size) rec.chunks.push(e.data); };
+  rec.mr.onstop = finishRec;
+
+  scrub = 0; lastSeg = -1;
+  if(videoMode()){
+    // đồng hồ riêng vì hình và tiếng chạy lệch nhau một quãng
+    if(vid.el){ try{ vid.el.currentTime = 0; }catch(e){} }
+    if(S.audio){ try{ audioEl.currentTime = 0; }catch(e){} }
+    playing = true; lastClock = 0;
+    keepMedia();
+    setTimeout(function(){ if(rec.active) stopRec(); }, totalDur()*1000 + 500);
+  }else if(S.audio){
+    try{ audioEl.currentTime = 0; }catch(e){}
+    audioEl.play().catch(function(){});
+  }else{
+    playing = true; lastClock = 0;
+    setTimeout(function(){ if(rec.active) stopRec(); }, totalDur()*1000 + 400);
+  }
+  rec.mr.start();
+
+  $("nRecBtn").textContent = "Dừng quay";
+  $("nRecBtn").classList.remove("primary");
+  $("nRecStatus").innerHTML = '<span class="rec-live">● đang quay</span> — ' +
+    canvas.width + "×" + canvas.height + " · " + S.fps + " hình/giây · " + mmss(totalDur());
+}
+function stopRec(){
+  if(!rec.active) return;
+  rec.active = false;
+  playing = false;
+  try{ audioEl.pause(); }catch(e){}
+  if(vid.el){ try{ vid.el.pause(); }catch(e){} }
+  if(rec.mr && rec.mr.state !== "inactive") rec.mr.stop();
+  $("nRecBtn").textContent = "Bắt đầu quay";
+  $("nRecBtn").classList.add("primary");
+  $("nRecStatus").textContent = "Đang đóng gói video…";
+}
+function finishRec(){
+  scrub = 0;
+  var blob = new Blob(rec.chunks, {type: rec.chunks.length ? rec.chunks[0].type : "video/webm"});
+  rec.chunks = [];
+  if(!blob.size){
+    $("nRecStatus").textContent = "Không thu được khung hình nào. Thử lại với 30 hình/giây.";
+    return;
+  }
+  rec.blob = blob;
+  rec.url = URL.createObjectURL(blob);
+  $("nRecVideo").src = rec.url;
+  $("nRecResult").hidden = false;
+  $("nRecStatus").textContent = "Xong · " + (blob.size/1048576).toFixed(1) + " MB · ." + rec.ext;
+  saveRec();
+}
+var SAVE_ERR = {
+  declined: "Bạn đã từ chối lưu.",
+  too_large: "Video quá 16 MB — hạ độ phân giải hoặc chất lượng rồi quay lại.",
+  rate_limited: "Đang có hộp thoại lưu khác mở — thử lại sau vài giây.",
+  rejected_extension: "Định dạng này không lưu được ở đây — chọn MP4 hoặc WebM."
+};
+function saveRec(){
+  if(!rec.url || !rec.blob) return;
+  var name = "thuyet-minh." + rec.ext;
+  function anchor(){
+    var a = document.createElement("a");
+    a.href = rec.url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  if(!(window.claude && typeof claude.use === "function")){ anchor(); return; }
+  claude.use("downloads").then(function(d){
+    if(!d){ anchor(); return; }
+    return d.save({filename:name, data:rec.blob}).then(function(){
+      $("nRecStatus").textContent = "Đã lưu " + name + " · " + (rec.blob.size/1048576).toFixed(1) + " MB";
+    }, function(err){
+      $("nRecStatus").textContent = SAVE_ERR[err && err.code] ||
+        "Không lưu được. Chuột phải lên video để lưu thủ công.";
+    });
+  }, anchor);
+}
+
+/* ---------- nối dây điều khiển ---------- */
+function datMoHinh(i){
+  S.model = i;
+  var box = $("nModelGroup");
+  Array.prototype.forEach.call(box.children, function(b, k){
+    b.setAttribute("aria-pressed", String(k === i));
+  });
+}
+function segGroup(id, attr, apply){
+  var box = $(id);
+  Array.prototype.forEach.call(box.children, function(b){
+    b.onclick = function(){
+      Array.prototype.forEach.call(box.children, function(c){
+        c.setAttribute("aria-pressed", String(c === b));
+      });
+      apply(b.dataset[attr]);
+      syncAll();
+    };
+  });
+}
+function slider(id, apply, fmt){
+  var el = $(id), out = $("o-" + id);
+  el.oninput = function(){
+    apply(+el.value);
+    if(out) out.textContent = fmt(+el.value);
+    syncMeta();
+  };
+  apply(+el.value);
+  if(out) out.textContent = fmt(+el.value);
+}
+function toggle(id, apply){
+  var el = $(id);
+  el.onchange = function(){ apply(el.checked); syncAll(); };
+}
+
+segGroup("nSrcGroup",    "src",    function(v){ S.src = v; scrub = 0; });
+segGroup("nSayQual",     "q",      function(v){ S.sayQual = v; });
+segGroup("nModelGroup",  "model",  function(v){ S.model = +v; });
+segGroup("nLangGroup",   "lang",   function(v){
+  S.lang = v;
+  // PhoWhisper chỉ biết tiếng Việt; để nguyên nó mà chọn tiếng Anh là ra chữ bậy
+  if(v !== "vi" && S.model === MODEL_VIET_ONLY) datMoHinh(1);
+});
+segGroup("nTransGroup",  "trans",  function(v){ S.trans = v; });
+segGroup("nSubPosGroup", "subpos", function(v){ S.subPos = v; });
+segGroup("nBgModes",     "bg",     function(v){ S.bgMode = v; });
+segGroup("nAspectGroup", "aspect", function(v){ S.aspect = v; });
+segGroup("nResGroup",    "res",    function(v){ S.res = +v; });
+segGroup("nFpsGroup",    "fps",    function(v){ S.fps = +v; });
+
+slider("nVidOff",    function(v){ S.vidOff = v/10; },      function(v){ return (v/10).toFixed(1) + " giây"; });
+slider("nVidSens",   function(v){
+  S.vidSens = v;
+  // Thanh này không tự làm gì cả — nó chỉ là tham số cho lần cắt sau. Không nói ra thì
+  // người dùng kéo tới kéo lui rồi kết luận là nó hỏng.
+  if(vid.el && !catting)
+    $("nVidName").innerHTML = "<b>" + esc(vid.name) + "</b> · " + mmss(vid.dur) +
+      " · độ nhạy đang để <b>" + v + "%</b>. Thanh này chỉ ăn ở lần cắt sau — " +
+      "bấm <b>Cắt thành bộ ảnh</b> để cắt lại.";
+}, function(v){ return v + "%"; });
+slider("nSayGap",    function(v){ S.sayGap = v/10; },     function(v){ return (v/10).toFixed(1) + " giây"; });
+slider("nMinHold",   function(v){ S.minHold = v/10; },   function(v){ return (v/10).toFixed(1) + " giây"; });
+slider("nTransSecs", function(v){ S.transSecs = v/10; }, function(v){ return (v/10).toFixed(1) + " giây"; });
+slider("nKenAmt",    function(v){ S.kenAmt = v; },       function(v){ return v + "%"; });
+slider("nSubSize",   function(v){ S.subSize = v; },      function(v){ return (v/10).toFixed(1) + "% chiều cao"; });
+slider("nBgBlur",    function(v){ S.bgBlur = v; },       function(v){ return v + "%"; });
+slider("nBgDim",     function(v){ S.bgDim = v; },        function(v){ return v + "%"; });
+slider("nPad",       function(v){ S.pad = v; },          function(v){ return v + "%"; });
+slider("nMbps",      function(v){ S.mbps = v; },         function(v){ return v + " Mbps"; });
+
+toggle("nSayNum",  function(v){ S.sayNum = v; sayPrep(); });
+toggle("nSnap",    function(v){ S.snap = v; });
+toggle("nKen",     function(v){ S.ken = v; });
+toggle("nSub",     function(v){ S.sub = v; });
+toggle("nSubBand", function(v){ S.subBand = v; });
+toggle("nGpu",     function(v){ S.gpu = v; });
+$("nBgGrad").onchange = function(){ S.bgGrad = this.checked; };
+$("nBgC1").oninput = function(){ S.bgC1 = this.value; };
+$("nBgC2").oninput = function(){ S.bgC2 = this.value; };
+
+if(!navigator.gpu){
+  $("nGpu").disabled = true;
+  var sw = $("nGpu").closest(".switch");
+  sw.style.opacity = ".5";
+  sw.title = "Trình duyệt này không có WebGPU";
+}
+
+$("nPick").onclick = $("nAddImg").onclick = function(){ $("nFile").click(); };
+$("nFile").onchange = function(){ addFiles(this.files); this.value = ""; };
+$("nClearImg").onclick = clearImages;
+$("nPickAudio").onclick = $("nLoadAudio").onclick = function(){ $("nAudioFile").click(); };
+$("nAudioFile").onchange = function(){
+  if(this.files && this.files[0]) loadAudio(this.files[0], this.files[0].name);
+  this.value = "";
+};
+$("nDropAudio").onclick = function(){ dropAudio(); };
+$("nScan").onclick = quetSong;
+// Khung xem nhúng trong VS Code, Cursor và vài app khác chạy trên bản Electron thiếu bộ giải mã
+// có bản quyền. Hậu quả rất dễ đánh lừa: file .m4a/.mp4 vẫn đọc ra độ dài (metadata là dữ liệu
+// thường) nhưng giải mã thì hỏng và phát ra thì im — nhìn như tool hỏng chứ không như trình duyệt
+// thiếu codec. Nên hỏi thẳng trình duyệt xem nó đọc được gì, rồi nói ra trước khi người dùng mất buổi.
+(function kiemCodec(){
+  var a = document.createElement("audio"), v = document.createElement("video");
+  var aac = a.canPlayType('audio/mp4; codecs="mp4a.40.2"');
+  var h264 = v.canPlayType('video/mp4; codecs="avc1.42E01E"');
+  var thieu = [];
+  if(!aac) thieu.push("tiếng AAC (.m4a, .mp4)");
+  if(!h264) thieu.push("hình H.264 (.mp4)");
+  if(!thieu.length) return;
+  var el = $("nCodec");
+  el.hidden = false;
+  el.innerHTML = "<b>Trình duyệt này không giải mã được " + thieu.join(" và ") + ".</b> " +
+    "Hay gặp khi mở trong khung xem nhúng của VS Code, Cursor hay app khác — bản Electron của chúng " +
+    "thiếu bộ giải mã có bản quyền. File vẫn đọc ra được độ dài nên nhìn như đã nạp xong, nhưng " +
+    "phát ra thì im và bóc chữ thì ra chữ bậy. <b>Mở trang này bằng Chrome hoặc Edge.</b>";
+})();
+
+$("nMic").onclick = toggleMic;
+$("nVidPick").onclick = function(){ $("nVidFile").click(); };
+$("nVidFile").onchange = function(){ if(this.files && this.files[0]) loadVideo(this.files[0]); this.value = ""; };
+$("nVidDrop").onclick = function(){ dropVideo(); };
+$("nVidCut").onclick = catCanh;
+$("nSayGo").onclick = startSay;
+$("nSayText").oninput = sayPrep;
+$("nHear").onclick = startHear;
+$("nPlay").onclick = function(){ playing ? pause() : play(); };
+// Hai nút này căn *bộ ảnh*. Bấm chúng lúc đang ở chế độ Video có sẵn thì chúng chạy trên một
+// danh sách rỗng rồi im lặng — nhìn y như nút hỏng. Bấm gì cũng phải có câu trả lời.
+function nhac(html){ $("nTlHint").innerHTML = html; }
+$("nAlign").onclick = function(){
+  if(videoMode()){
+    nhac("Đang ở chế độ <b>Video có sẵn</b> — nút này căn bộ ảnh, không căn được đoạn phim. " +
+         "Muốn ảnh bám theo lời thì bấm <b>Cắt thành bộ ảnh</b> ở bảng Nguồn hình trước.");
+    return;
+  }
+  if(!S.shots.length){ nhac("Chưa có ảnh nào để căn — nạp ảnh, hoặc cắt từ video."); return; }
+  if(!S.segs.length){
+    spread(); syncAll();
+    nhac("Chưa có lời để căn theo. Bấm <b>Nghe và bóc chữ</b> ở bảng Nghe hiểu lời trước đã — " +
+         "tạm thời đã chia đều " + S.shots.length + " ảnh.");
+    return;
+  }
+  alignByScript(); syncAll();
+  nhac("Đã căn <b>" + S.shots.length + " ảnh</b> theo <b>" + S.segs.length + " câu</b> vừa bóc được. " +
+       "Muốn ảnh nào bám câu nào thì gõ từ khoá vào ô dưới ảnh đó rồi bấm lại nút này.");
+};
+$("nSpread").onclick = function(){
+  if(videoMode()){
+    nhac("Đang ở chế độ <b>Video có sẵn</b> — đoạn phim chạy theo nhịp của chính nó. " +
+         "Muốn chia lại nhịp thì bấm <b>Cắt thành bộ ảnh</b> trước.");
+    return;
+  }
+  if(!S.shots.length){ nhac("Chưa có ảnh nào để chia."); return; }
+  spread(); syncAll();
+  nhac("Đã chia đều <b>" + S.shots.length + " ảnh</b> trên " + mmss(totalDur()) +
+       " — mỗi ảnh " + (totalDur()/S.shots.length).toFixed(1) + " giây.");
+};
+$("nRecBtn").onclick = function(){ rec.active ? stopRec() : startRec(); };
+$("nRecSave").onclick = saveRec;
+canvas.onclick = function(){ playing ? pause() : play(); };
+
+stage.addEventListener("dragover", function(e){ e.preventDefault(); stage.classList.add("drag"); });
+stage.addEventListener("dragleave", function(){ stage.classList.remove("drag"); });
+stage.addEventListener("drop", function(e){
+  e.preventDefault(); stage.classList.remove("drag");
+  var fs = e.dataTransfer && e.dataTransfer.files;
+  if(!fs) return;
+  // đừng lọc theo nhãn MIME: file .mp4 mang nhãn video, .m4a có máy để trống.
+  // Cứ thứ gì không phải ảnh thì đưa xuống giải mã, hỏng thì báo sau.
+  var khac = Array.prototype.slice.call(fs).filter(function(f){ return !/^image\//.test(f.type); })[0];
+  // đã có tiếng rồi mà thả thêm một file hình động vào thì hiểu là muốn dùng nó làm nguồn hình
+  if(khac){
+    var laPhim = /^video\//.test(khac.type) || /\.(mp4|mov|webm|mkv|m4v|avi|3gp)$/i.test(khac.name);
+    if(laPhim && S.audio && !vid.el) loadVideo(khac);
+    else loadAudio(khac, khac.name);
+  }
+  addFiles(fs);
+});
+document.addEventListener("paste", function(e){
+  if(!live() || !e.clipboardData) return;
+  var fs = Array.prototype.slice.call(e.clipboardData.items || [])
+    .filter(function(it){ return it.kind === "file"; })
+    .map(function(it){ return it.getAsFile(); }).filter(Boolean);
+  if(fs.length) addFiles(fs);
+});
+
+/* ---------- đồng bộ giao diện ---------- */
+function syncMeta(){
+  var f = frameSize();
+  canvas.style.aspectRatio = f.w + " / " + f.h;
+  $("nRecSize").textContent = f.w + " × " + f.h + " · dài " + mmss(totalDur()) +
+    " · nặng chừng " + Math.max(1, Math.round(S.mbps*totalDur()/8)) + " MB";
+  $("nMeta").textContent = (videoMode() ? "video " + mmss(vid.dur) : S.shots.length + " ảnh") + " · " +
+    (S.audio ? "giọng đọc " + mmss(S.audio.dur) : "chưa có tiếng") +
+    (S.segs.length ? " · " + S.segs.length + " câu" : "");
+}
+function syncAll(){
+  $("nBgColorWrap").hidden   = S.bgMode !== "color";
+  $("nBgBlurWrap").hidden    = S.bgMode !== "blur";
+  $("nKenWrap").hidden       = !S.ken;
+  $("nTransSecsWrap").hidden = S.trans === "cut";
+  $("nSubCtl").hidden        = !S.sub;
+  $("nModelHint").innerHTML = S.lang === "vi"
+    ? (S.model === MODEL_VIET_ONLY
+        ? "Bản Whisper tinh chỉnh riêng cho tiếng Việt. Đo trên cùng một đoạn tiếng: <b>sai 13% số từ</b>, so với 39% của bản <i>kỹ</i> và 48% của bản <i>nhiều tiếng</i>. Nhẹ hơn và nhanh hơn bản kỹ."
+        : "Đang dùng bản đa ngữ cho tiếng Việt — đo được <b>sai 39–48% số từ</b>, gần một nửa. Muốn chữ đọc được thì chọn <b>Tiếng Việt</b>.")
+    : "Bản đa ngữ. Bản <b>Tiếng Việt</b> chỉ dùng cho tiếng Việt, chọn nó ở đây là ra chữ bậy.";
+  $("nVidOffWrap").hidden    = !(videoMode() && S.audio);
+  $("nVidCutWrap").hidden    = !vid.el;
+  $("nVidCut").disabled      = !vid.el;
+  // Nút Nghe thử nằm trong thanh này. Giấu thanh khi mới chỉ có giọng đọc thì
+  // người dùng không có cách nào nghe lại thứ vừa nạp — bấm vào chỗ trống.
+  var coGi = S.shots.length || videoMode() || !!S.audio;
+  $("nTl").hidden            = !coGi;
+  stage.dataset.empty        = coGi ? "0" : "1";
+  tlKey = "";
+  syncMeta();
+  renderShots();
+  renderScript();
+  lastShot = shotAt(curTime());
+  lastSeg = -1;
+
+  // chia đều mà mỗi ảnh chưa được vài giây thì nói ra, chứ đừng để người ta quay xong mới thấy loé
+  var moi = S.shots.length ? totalDur()/S.shots.length : 0;
+  if(videoMode()){
+    $("nTlHint").innerHTML = S.audio
+      ? "Đoạn phim giữ nguyên nhịp của nó; chỉnh khớp bằng thanh <b>Giọng đọc vào sau</b>. " +
+        "Nếu lệch khác nhau ở từng đoạn thì một mình thanh đó không cứu được — " +
+        "bấm <b>Cắt thành bộ ảnh</b> rồi kéo từng mốc cho khớp."
+      : "Đang chạy đoạn phim có sẵn. Nạp thêm giọng đọc để ghép tiếng vào.";
+    return;
+  }
+  $("nTlHint").innerHTML = (S.shots.length > 1 && moi < 1.6)
+    ? "<b>Mỗi ảnh chỉ được " + moi.toFixed(1) + " giây</b> — giọng đọc " + mmss(totalDur()) +
+      " chia cho " + S.shots.length + " ảnh là quá vụn. Bớt ảnh, hoặc dùng giọng dài hơn."
+    : "Kéo mốc màu cam để dời chỗ đổi ảnh; bấm chỗ khác trên thanh để tua.";
+}
+// Trang không lưu gì cả: ảnh, video, giọng đọc đều chỉ nằm trong bộ nhớ. Nạp lại là mất sạch,
+// và người dùng đã mất trắng hai lần vì bấm Ctrl+F5 theo lời nhắc ở chỗ khác.
+window.addEventListener("beforeunload", function(e){
+  if(!live() || (!S.shots.length && !S.audio && !vid.el)) return;
+  e.preventDefault();
+  e.returnValue = "";
+  return "";
+});
+window.addEventListener("resize", function(){ if(live()){ tlKey = ""; drawTl(); } });
+syncAll();
 })();
 </script>
