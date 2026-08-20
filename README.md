@@ -60,8 +60,8 @@ kiểu xếp dọc:
 - **Cột điều khiển cuộn riêng** trong đúng chiều cao màn hình — trang gần như không cuộn nữa
   (cao 1155px thay vì chạy theo cột điều khiển, có tab từng dài hơn 4200px).
 - **Từ 1500px trở lên cột điều khiển tách làm hai**, chiều cao giảm khoảng một phần ba.
-- **Bấm tiêu đề để gập bảng lại**, nhớ lựa chọn cho lần sau trong  (khoá
-  ). Nút *Thu gọn tất cả* ở góc trên gập hết một lượt: cột từ 2769px xuống 623px,
+- **Bấm tiêu đề để gập bảng lại**, nhớ lựa chọn cho lần sau trong `localStorage` (khoá
+  `xuong-gap`). Nút *Thu gọn tất cả* ở góc trên gập hết một lượt: cột từ 2769px xuống 623px,
   tức là toàn bộ tiêu đề nằm gọn trong một màn hình, mở đúng bảng nào cần dùng.
 
 ## Cách chạy
