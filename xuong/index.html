@@ -16,28 +16,24 @@
 <style>
 
 :root{
-  --ground:#EEE8DD;
-  --surface:#F8F4EC;
-  --sunk:#E2D9CA;
-  --line:#D2C6B2;
-  --ink:#241F19;
-  --muted:#6B6053;
-  --accent:#C0552A;
-  --accent-ink:#FFF6F0;
-  --stage:#DCD3C4;
-  --shadow:rgba(60,46,30,.18);
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --ground:#151210; --surface:#1E1A15; --sunk:#120F0C; --line:#3A3126;
-    --ink:#EFE7D9; --muted:#A2957F; --accent:#E4794A; --accent-ink:#1A0F09;
-    --stage:#0E0C0A; --shadow:rgba(0,0,0,.55);
-  }
+  --ground:#F7F2E9;
+  --surface:#FFFFFF;
+  --sunk:#F1EBE0;
+  --line:#E4DBCB;
+  --ink:#2A241D;
+  --muted:#7A6E60;
+  --accent:#C4562A;
+  --accent-ink:#FFF7F2;
+  --accent-soft:#F9E4D8;
+  --stage:#EBE4D8;
+  --shadow:rgba(90,70,45,.16);
+  color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --ground:#151210; --surface:#1E1A15; --sunk:#120F0C; --line:#3A3126;
-  --ink:#EFE7D9; --muted:#A2957F; --accent:#E4794A; --accent-ink:#1A0F09;
-  --stage:#0E0C0A; --shadow:rgba(0,0,0,.55);
+  --ground:#1A1613; --surface:#241F1A; --sunk:#151110; --line:#3D342A;
+  --ink:#F1EADD; --muted:#A99C89; --accent:#E4794A; --accent-ink:#1A0F09;
+  --accent-soft:#3E271B; --stage:#141110; --shadow:rgba(0,0,0,.5);
+  color-scheme:dark;
 }
 
 *{box-sizing:border-box}
@@ -261,6 +257,85 @@ footer b{font-weight:500;color:var(--ink)}
   display:flex;justify-content:space-between;gap:10px}
 .dlbar span i{font-style:normal;font-variant-numeric:tabular-nums}
 
+
+/* ================== lớp phủ: sáng sủa và dễ gần ==================
+   Đặt cuối bảng kiểu để đè lên các quy tắc phía trên mà không phải sửa từng chỗ. */
+
+body{font-size:15.5px}
+.wrap{gap:24px}
+
+/* bảng điều khiển: trắng, bo góc rộng, có bóng nhẹ thay cho viền cứng */
+.panel{
+  border-radius:14px;padding:18px 18px 20px;
+  border-color:var(--line);box-shadow:0 2px 10px -6px var(--shadow);
+}
+.panel > h2{
+  font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13.5px;font-weight:600;
+  letter-spacing:0;text-transform:none;color:var(--ink);
+  border-bottom:none;padding-bottom:0;margin:0 0 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.panel > h2::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none;
+}
+
+/* sân khấu và khung ảnh */
+.stage{border-radius:14px}
+.drop{border-radius:12px;border-width:2px}
+canvas#view,canvas#board{border-radius:10px}
+.readout{border-radius:8px;padding:6px 10px}
+.recbox video{border-radius:10px}
+
+/* nút bấm: to hơn, bo tròn hơn */
+.btn{border-radius:9px;padding:9px 15px;font-size:13.5px}
+.btn.primary{box-shadow:0 2px 8px -4px var(--accent)}
+.seg{gap:7px}
+.seg button{border-radius:9px;padding:10px 8px;font-size:12.5px}
+.seg button[aria-pressed="true"]{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--ink);font-weight:600;
+}
+.tabs button{border-radius:11px;padding:11px 20px;border-color:var(--line)}
+.tabs button[aria-pressed="true"]{
+  background:var(--accent);border-color:var(--accent);color:var(--accent-ink);
+  box-shadow:0 3px 12px -6px var(--accent);
+}
+.tabs button[aria-pressed="false"]{background:var(--surface);color:var(--muted)}
+.tabs button[aria-pressed="false"]:hover{color:var(--ink);border-color:var(--accent)}
+
+/* thanh trượt: dày hơn, núm to hơn cho dễ kéo, kể cả bằng ngón tay */
+input[type=range]{height:24px}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--sunk);border-radius:3px}
+input[type=range]::-moz-range-track{height:6px;background:var(--sunk);border-radius:3px}
+input[type=range]::-webkit-slider-thumb{
+  width:18px;height:18px;margin-top:-6px;background:var(--accent);
+  box-shadow:0 0 0 3px var(--surface),0 1px 4px -1px var(--shadow);
+}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;background:var(--accent);
+  box-shadow:0 0 0 3px var(--surface),0 1px 4px -1px var(--shadow);
+}
+
+/* công tắc to hơn */
+.track{width:46px;height:26px;border-radius:13px}
+.track::after{width:20px;height:20px;top:2px;left:2px}
+.switch input:checked + .track{background:var(--accent-soft)}
+.switch input:checked + .track::after{transform:translateX(20px)}
+.switch{font-size:13.5px}
+
+.ctl-head{font-size:13.5px}
+.meter{height:6px;border-radius:3px}
+.hint{font-size:13px;line-height:1.55}
+.hint code{border-radius:5px}
+.swatch input[type=color]{border-radius:8px;width:40px;height:30px}
+
+/* nút chuyển sáng/tối trên đầu trang */
+.theme{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:8px 14px;font-size:13px;color:var(--muted);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;transition:.15s;
+}
+.theme:hover{border-color:var(--accent);color:var(--ink)}
+.headtools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 </style>
 
 <div class="wrap">
@@ -270,7 +345,10 @@ footer b{font-weight:500;color:var(--ink)}
     <h1>Xưởng <em>Ảnh 3D</em></h1>
     <p class="lede" id="lede"></p>
   </div>
-  <div class="stamp" id="stamp"></div>
+  <div class="headtools">
+    <button class="theme" id="themeBtn" type="button" aria-live="polite"></button>
+    <div class="stamp" id="stamp"></div>
+  </div>
 </header>
 
 <nav class="tabs" id="tabs">
@@ -980,6 +1058,33 @@ footer b{font-weight:500;color:var(--ink)}
 "use strict";
 var LEDE = {"song": "Suy bản đồ độ sâu từ độ nét của ảnh rồi cho ảnh nghiêng ngả theo con trỏ như một khối 3D — kèm ba kiểu sóng làm mặt ảnh gợn lên.", "ghep": "Ảnh được cắt thành những mảnh jigsaw có mộng lồi lõm khớp nhau. Chúng bung ra, lộn nhào trong không gian, rồi tự tìm về đúng ô của mình cho tới khi ảnh liền lại như cũ.", "noi": "Bộ ảnh infographic cộng một file giọng đọc. Xưởng nghe lời đọc ngay trong máy, bóc ra chữ kèm mốc thời gian, rồi tự canh ảnh nào hiện lúc nào — ra một video có tiếng, có phụ đề."};
 var STAMP = {"song": "webgl · độ sâu · sóng", "ghep": "canvas · 3d giả lập · mộng jigsaw", "noi": "whisper trong máy · dựng video có tiếng"};
+var rootEl = document.documentElement;
+var themeBtn = document.getElementById("themeBtn");
+var saved = null;
+try{ saved = localStorage.getItem("xuong-giao-dien"); }catch(e){}
+if(saved) rootEl.setAttribute("data-theme", saved);
+else if(!rootEl.getAttribute("data-theme")) rootEl.setAttribute("data-theme", "light");
+
+function paintTheme(){
+  var dark = rootEl.getAttribute("data-theme") === "dark";
+  themeBtn.textContent = dark ? "☾  Nền tối" : "☀  Nền sáng";
+  themeBtn.title = dark ? "Đang dùng nền tối — bấm để chuyển sang nền sáng"
+                        : "Đang dùng nền sáng — bấm để chuyển sang nền tối";
+}
+themeBtn.onclick = function(){
+  var next = rootEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  rootEl.setAttribute("data-theme", next);
+  try{ localStorage.setItem("xuong-giao-dien", next); }catch(e){}
+  // ép tính lại kiểu: có phiên bản Chrome không cập nhật màu chữ thừa kế của <button>
+  // khi biến CSS đổi, làm chữ trên nút chìm hẳn vào nền
+  var b = document.body;
+  b.style.display = "none";
+  void b.offsetHeight;
+  b.style.display = "";
+  paintTheme();
+};
+paintTheme();
+
 var tabs = Array.prototype.slice.call(document.querySelectorAll("#tabs button"));
 
 function show(name){

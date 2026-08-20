@@ -32,6 +32,24 @@ hỏi tài khoản mật khẩu.
 Lỡ sửa hỏng thì git giữ đủ lịch sử: `git log --oneline` xem các mốc, `git revert <mã>` để lùi
 đúng một commit, hoặc `git checkout <mã> -- index.html` để lấy lại nguyên file ở mốc cũ.
 
+## Giao diện
+
+Mặc định là **nền sáng**: kem ấm, các bảng điều khiển trắng, bo góc rộng, thanh trượt và công tắc
+to cho dễ kéo. Nút **Nền sáng / Nền tối** ở đầu trang đổi qua lại, lựa chọn được nhớ trong
+`localStorage` (khoá `xuong-giao-dien`). Trước đây trang chạy theo chế độ của hệ điều hành nên
+máy để tối là xưởng tối om, không đổi được.
+
+Hai điều cần nhớ khi sửa giao diện:
+
+- Lớp kiểu mới nằm cuối khối `<style>` dưới tiêu đề *lớp phủ*, đè lên các quy tắc gốc phía trên
+  mà không phải sửa từng chỗ. Muốn đổi hình khối thì sửa ở đó.
+- Màu `--stage` vừa là nền sân khấu vừa là **nền mặc định của video xuất ra** khi chọn
+  *Màu giao diện*. Đổi nó là đổi luôn màu nền clip.
+
+Có khai báo `color-scheme` cho cả hai nền, và sau khi bấm đổi nền thì ép trình duyệt tính lại
+kiểu một nhịp — thiếu nhịp đó, vài phiên bản Chrome không cập nhật màu chữ thừa kế của thẻ
+`<button>`, chữ trên nút chìm hẳn vào nền tối.
+
 ## Cách chạy
 
 Nhấp đúp vào `index.html` để xem trang giới thiệu, hoặc mở thẳng `xuong/index.html` để vào
