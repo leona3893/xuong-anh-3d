@@ -50,6 +50,20 @@ Có khai báo `color-scheme` cho cả hai nền, và sau khi bấm đổi nền 
 kiểu một nhịp — thiếu nhịp đó, vài phiên bản Chrome không cập nhật màu chữ thừa kế của thẻ
 `<button>`, chữ trên nút chìm hẳn vào nền tối.
 
+## Bố cục cho đỡ phải cuộn
+
+Mỗi tab có 6–10 bảng điều khiển, xếp dọc một cột thì phải cuộn cả nghìn pixel và cuộn tới đâu
+mất hình tới đó. Bốn cách xử lý, đều chỉ áp dụng từ 941px trở lên, còn điện thoại giữ nguyên
+kiểu xếp dọc:
+
+- **Khung ảnh dính lại** khi cuộn, nên hình luôn nằm trong tầm mắt.
+- **Cột điều khiển cuộn riêng** trong đúng chiều cao màn hình — trang gần như không cuộn nữa
+  (cao 1155px thay vì chạy theo cột điều khiển, có tab từng dài hơn 4200px).
+- **Từ 1500px trở lên cột điều khiển tách làm hai**, chiều cao giảm khoảng một phần ba.
+- **Bấm tiêu đề để gập bảng lại**, nhớ lựa chọn cho lần sau trong  (khoá
+  ). Nút *Thu gọn tất cả* ở góc trên gập hết một lượt: cột từ 2769px xuống 623px,
+  tức là toàn bộ tiêu đề nằm gọn trong một màn hình, mở đúng bảng nào cần dùng.
+
 ## Cách chạy
 
 Nhấp đúp vào `index.html` để xem trang giới thiệu, hoặc mở thẳng `xuong/index.html` để vào

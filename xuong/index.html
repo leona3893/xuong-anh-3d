@@ -336,6 +336,44 @@ input[type=range]::-moz-range-thumb{
 }
 .theme:hover{border-color:var(--accent);color:var(--ink)}
 .headtools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* ================== bố cục đỡ phải cuộn ================== */
+@media (min-width:941px){
+  /* hình dính lại, cột điều khiển tự cuộn trong chiều cao màn hình */
+  .stage{position:sticky;top:14px}
+  .rail{
+    position:sticky;top:14px;
+    max-height:calc(100vh - 28px);overflow-y:auto;overscroll-behavior:contain;
+    padding-right:6px;scrollbar-width:thin;
+  }
+  .rail::-webkit-scrollbar{width:8px}
+  .rail::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  .rail::-webkit-scrollbar-track{background:transparent}
+}
+/* màn hình rộng: hai cột điều khiển */
+@media (min-width:1500px){
+  .work{grid-template-columns:minmax(0,1fr) 668px}
+  .rail{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start}
+  .railbar{grid-column:1/-1}
+}
+
+/* tiêu đề bảng bấm được để gập */
+.panel > h2{cursor:pointer;user-select:none}
+.panel > h2::after{
+  content:"";margin-left:auto;width:8px;height:8px;flex:none;
+  border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  transform:rotate(-135deg) translate(-2px,-2px);transition:transform .15s;
+}
+.panel.folded > h2::after{transform:rotate(45deg) translate(-2px,-2px)}
+.panel.folded > h2{margin-bottom:0}
+.panel.folded .panel-body{display:none}
+
+.railbar{display:flex;justify-content:flex-end;margin-bottom:-4px}
+.railbar button{
+  background:none;border:none;color:var(--muted);font-size:12.5px;cursor:pointer;
+  padding:4px 6px;border-radius:6px;
+}
+.railbar button:hover{color:var(--accent);background:var(--surface)}
 </style>
 
 <div class="wrap">
@@ -1058,6 +1096,71 @@ input[type=range]::-moz-range-thumb{
 "use strict";
 var LEDE = {"song": "Suy bản đồ độ sâu từ độ nét của ảnh rồi cho ảnh nghiêng ngả theo con trỏ như một khối 3D — kèm ba kiểu sóng làm mặt ảnh gợn lên.", "ghep": "Ảnh được cắt thành những mảnh jigsaw có mộng lồi lõm khớp nhau. Chúng bung ra, lộn nhào trong không gian, rồi tự tìm về đúng ô của mình cho tới khi ảnh liền lại như cũ.", "noi": "Bộ ảnh infographic cộng một file giọng đọc. Xưởng nghe lời đọc ngay trong máy, bóc ra chữ kèm mốc thời gian, rồi tự canh ảnh nào hiện lúc nào — ra một video có tiếng, có phụ đề."};
 var STAMP = {"song": "webgl · độ sâu · sóng", "ghep": "canvas · 3d giả lập · mộng jigsaw", "noi": "whisper trong máy · dựng video có tiếng"};
+
+// ---- gập bảng điều khiển cho đỡ phải cuộn ----
+var folded = {};
+try{ folded = JSON.parse(localStorage.getItem("xuong-gap") || "{}"); }catch(e){}
+function saveFolded(){
+  try{ localStorage.setItem("xuong-gap", JSON.stringify(folded)); }catch(e){}
+}
+
+Array.prototype.forEach.call(document.querySelectorAll(".panel"), function(p){
+  var h = p.querySelector("h2");
+  if(!h || p.querySelector(".panel-body")) return;
+  var body = document.createElement("div");
+  body.className = "panel-body";
+  while(h.nextSibling) body.appendChild(h.nextSibling);   // gom phần thân lại một khối
+  p.appendChild(body);
+
+  var key = h.textContent.trim();
+  if(folded[key]) p.classList.add("folded");
+  h.setAttribute("role", "button");
+  h.setAttribute("tabindex", "0");
+  h.setAttribute("aria-expanded", String(!folded[key]));
+  function flip(){
+    var f = p.classList.toggle("folded");
+    h.setAttribute("aria-expanded", String(!f));
+    folded[key] = f;
+    saveFolded();
+  }
+  h.addEventListener("click", flip);
+  h.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flip(); }
+  });
+});
+
+Array.prototype.forEach.call(document.querySelectorAll(".rail"), function(rail){
+  var bar = document.createElement("div");
+  bar.className = "railbar";
+  var btn = document.createElement("button");
+  btn.type = "button";
+  bar.appendChild(btn);
+  rail.insertBefore(bar, rail.firstChild);
+
+  function panels(){ return rail.querySelectorAll(".panel"); }
+  function allFolded(){
+    var ps = panels(), n = 0;
+    Array.prototype.forEach.call(ps, function(p){ if(p.classList.contains("folded")) n++; });
+    return ps.length > 0 && n === ps.length;
+  }
+  function paint(){ btn.textContent = allFolded() ? "Mở tất cả" : "Thu gọn tất cả"; }
+  btn.onclick = function(){
+    var fold = !allFolded();
+    Array.prototype.forEach.call(panels(), function(p){
+      p.classList.toggle("folded", fold);
+      var h = p.querySelector("h2");
+      if(h){
+        h.setAttribute("aria-expanded", String(!fold));
+        folded[h.textContent.trim()] = fold;
+      }
+    });
+    saveFolded();
+    paint();
+  };
+  rail.addEventListener("click", function(e){ if(e.target.closest("h2")) paint(); });
+  paint();
+});
+
 var rootEl = document.documentElement;
 var themeBtn = document.getElementById("themeBtn");
 var saved = null;
